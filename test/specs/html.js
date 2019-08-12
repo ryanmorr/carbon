@@ -56,4 +56,31 @@ describe('html', () => {
             ]
         });
     });
+
+    it('should support JSX', () => {
+        const title = 'Hello World';
+        const content = 'Lorem ipsum dolor sit amet';
+
+        expect((
+            <div>
+                <h1>{title}</h1>
+                <section class="content">{content}</section>
+            </div>
+        )).to.deep.equal({
+            nodeName: 'div',
+            attributes: {},
+            children: [
+                {
+                    nodeName: 'h1',
+                    attributes: {},
+                    children: ['Hello World']
+                },
+                {
+                    nodeName: 'section',
+                    attributes: {class: 'content'},
+                    children: ['Lorem ipsum dolor sit amet']
+                }
+            ]
+        });
+    });
 });
