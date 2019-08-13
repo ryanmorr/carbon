@@ -19,6 +19,23 @@ function isSameNodeType(a, b) {
     return true;
 }
 
+function createElement(vnode, isSvg = false) {
+    if (typeof vnode === 'string' || typeof vnode === 'number') {
+        return document.createTextNode(vnode);
+    }
+    const nodeName = vnode.nodeName;
+    isSvg = (isSvg || nodeName === 'svg');
+    const element = isSvg
+        ? document.createElementNS('http://www.w3.org/2000/svg', nodeName)
+        : document.createElement(nodeName);
+    const attributes = vnode.attributes;
+    if (attributes) {
+        Object.keys(attributes).forEach((name) => patchAttribute(element, name, attributes[name], null));
+    }
+    vnode.children.forEach((vchild) => element.appendChild(createElement(vchild, isSvg)));
+    return element;
+}
+
 function patchAttribute(element, name, newVal, oldVal = null) {
     if (name === 'style') {
         if (typeof newVal === 'string') {
@@ -48,19 +65,6 @@ function patchAttribute(element, name, newVal, oldVal = null) {
             element.setAttribute(name, newVal);
         }
     }
-}
-
-function createElement(vnode) {
-    if (typeof vnode === 'string' || typeof vnode === 'number') {
-        return document.createTextNode(vnode);
-    }
-    const element = document.createElement(vnode.nodeName);
-    const attributes = vnode.attributes;
-    if (attributes) {
-        Object.keys(attributes).forEach((name) => patchAttribute(element, name, attributes[name], null));
-    }
-    vnode.children.forEach((vchild) => element.appendChild(createElement(vchild)));
-    return element;
 }
 
 export function render(parent, newVNode, oldVNode = null, index = 0) {

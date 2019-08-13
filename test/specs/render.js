@@ -195,6 +195,24 @@ describe('render', () => {
         removeEventSpy.restore();
     });
 
+    it('should support SVG', () => {
+        render(root,
+            <svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>
+        );
+
+        expectHTML('<svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>');
+
+        const svg = root.querySelector('svg');
+        expect(svg.nodeType).to.equal(1);
+        expect(svg.namespaceURI).to.equal('http://www.w3.org/2000/svg');
+        expect(svg).to.be.instanceof(SVGElement);
+
+        const circle = svg.querySelector('circle');
+        expect(circle.nodeType).to.equal(1);
+        expect(circle.namespaceURI).to.equal('http://www.w3.org/2000/svg');
+        expect(circle).to.be.instanceof(SVGElement);
+    });
+
     it('should patch deeply nested text nodes', () => {
         setHTML(`
             <section>
