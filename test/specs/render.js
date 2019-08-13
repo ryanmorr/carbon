@@ -119,6 +119,45 @@ describe('render', () => {
         expectHTML('<div style="background-color: rgb(20, 20, 20); position: static;"></div>');
     });
 
+    it('should add CSS styles as a key/value map', () => {
+        render(root,
+            <div style={{display: 'inline', position: 'absolute'}}></div>
+        );
+
+        expectHTML('<div style="display: inline; position: absolute;"></div>');
+    });
+
+    it('should support CSS variables', () => {
+        render(root,
+            <div style={{color: 'var(--color)', '--color': 'red'}}></div>
+        );
+
+        const div = root.firstChild;
+        expect(div.style.color).to.equal('var(--color)');
+        expect(window.getComputedStyle(div).getPropertyValue('color')).to.equal('rgb(255, 0, 0)');
+        expect(window.getComputedStyle(div).getPropertyValue('--color')).to.equal('red');
+    });
+
+    it('should remove CSS styles', () => {
+        render(root,
+            <div style={{zIndex: 2, display: 'inline', position: 'absolute'}}></div>
+        );
+
+        const div = root.firstChild;
+        expect(div.style.zIndex).to.equal('2');
+        expect(div.style.display).to.equal('inline');
+        expect(div.style.position).to.equal('absolute');
+
+        render(root,
+            <div style={{zIndex: 3}}></div>,
+            <div style={{zIndex: 2, display: 'inline', position: 'absolute'}}></div>
+        );
+
+        expect(div.style.zIndex).to.equal('3');
+        expect(div.style.display).to.equal('');
+        expect(div.style.position).to.equal('');
+    });
+
     it('should add an event listener', () => {
         const div = root.appendChild(document.createElement('div'));
 
