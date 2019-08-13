@@ -125,7 +125,7 @@ export function recycle(element) {
 export function html(nodeName, attributes, ...children) {
     attributes = attributes || {};
     children = flatten(children);
-    if (typeof nodeName === 'function') {
+    if (isFunction(nodeName)) {
         return nodeName(attributes, children);
     }
     return {
