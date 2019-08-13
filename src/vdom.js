@@ -108,9 +108,9 @@ export function recycle(element) {
     if (element.nodeType === 3) {
         return element.nodeValue;
     }
-    return {
-        nodeName: element.nodeName.toLowerCase(),
-        attributes: Array.from(element.attributes).reduce((map, attr) => {
+    return html(
+        element.nodeName.toLowerCase(),
+        Array.from(element.attributes).reduce((map, attr) => {
             const name = attr.name, value = attr.value;
             if (name === 'style') {
                 return map;
@@ -118,8 +118,8 @@ export function recycle(element) {
             map[name] = value;
             return map;
         }, {}),
-        children: Array.from(element.childNodes).map(recycle)
-    };
+        Array.from(element.childNodes).map(recycle)
+    );
 }
 
 export function html(nodeName, attributes, ...children) {
