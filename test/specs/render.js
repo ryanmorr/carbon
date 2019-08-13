@@ -25,6 +25,14 @@ describe('render', () => {
         document.body.removeChild(root);
     });
 
+    it('should patch an empty root', () => {
+        render(root,
+            <div></div>
+        );
+
+        expectHTML('<div></div>');
+    });
+
     it('should patch a text node', () => {
         setHTML('foo');
 
