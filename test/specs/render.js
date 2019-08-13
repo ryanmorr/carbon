@@ -158,6 +158,47 @@ describe('render', () => {
         expect(div.style.position).to.equal('');
     });
 
+    it('should support boolean attributes', () => {
+        render(root,
+            <div>
+                <input type="radio" checked={true} />
+                <input type="checkbox" checked={false} />
+                <select multiple>
+                    <option value="foo" selected={true}>foo</option>
+                    <option value="bar" selected={false}>bar</option>
+                    <option value="baz" selected={true}>baz</option>
+                </select>
+            </div>
+        );
+
+        expectHTML(`
+            <div>
+                <input type="radio">
+                <input type="checkbox">
+                <select multiple="">
+                    <option value="foo">foo</option>
+                    <option value="bar">bar</option>
+                    <option value="baz">baz</option>
+                </select>
+            </div>
+        `);
+
+        const radio = root.querySelector('[type=radio]');
+        const checkbox = root.querySelector('[type=checkbox]');
+        const select = root.querySelector('select');
+        const option1 = select.children[0];
+        const option2 = select.children[1];
+        const option3 = select.children[2];
+
+        expect(radio.checked).to.equal(true);
+        expect(checkbox.checked).to.equal(false);
+        expect(select.selectedIndex).to.equal(0);
+        expect(Array.from(select.selectedOptions)).to.deep.equal([option1, option3]);
+        expect(option1.selected).to.equal(true);
+        expect(option2.selected).to.equal(false);
+        expect(option3.selected).to.equal(true);
+    });
+
     it('should add an event listener', () => {
         const div = root.appendChild(document.createElement('div'));
 

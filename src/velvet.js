@@ -30,13 +30,13 @@ function createElement(vnode, isSvg = false) {
         : document.createElement(nodeName);
     const attributes = vnode.attributes;
     if (attributes) {
-        Object.keys(attributes).forEach((name) => patchAttribute(element, name, attributes[name], null));
+        Object.keys(attributes).forEach((name) => patchAttribute(element, name, attributes[name], null, isSvg));
     }
     vnode.children.forEach((vchild) => element.appendChild(createElement(vchild, isSvg)));
     return element;
 }
 
-function patchAttribute(element, name, newVal, oldVal = null) {
+function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
     if (name === 'style') {
         if (typeof newVal === 'string') {
             element.style.cssText = newVal;
@@ -57,17 +57,16 @@ function patchAttribute(element, name, newVal, oldVal = null) {
         } else if (oldVal == null) {
             element.addEventListener(name, newVal);
         }
-        return;
+    } else if (!isSvg && name in element) {
+        element[name] = newVal == null ? '' : newVal;
+    } else if (newVal == null || newVal === false) {
+        element.removeAttribute(name);
     } else {
-        if (newVal == null || newVal === false) {
-            element.removeAttribute(name);
-        } else {
-            element.setAttribute(name, newVal);
-        }
+        element.setAttribute(name, newVal);
     }
 }
 
-export function render(parent, newVNode, oldVNode = null, index = 0) {
+export function render(parent, newVNode, oldVNode = null, index = 0, isSvg = false) {
     const element = parent.childNodes[index];
     if (oldVNode == null) {
         return parent.appendChild(createElement(newVNode));
@@ -78,11 +77,16 @@ export function render(parent, newVNode, oldVNode = null, index = 0) {
         return parent.replaceChild(createElement(newVNode), element);
     }
     if (newVNode.nodeName) {
-        for (const name in merge(newVNode.attributes, oldVNode.attributes)) {
-            patchAttribute(element, name, newVNode.attributes[name], oldVNode.attributes[name]);
+        isSvg = isSvg || newVNode.nodeName === 'svg';
+        const oldVAttrs = oldVNode.attributes;
+        const newVAttrs = newVNode.attributes;
+        for (const name in merge(newVAttrs, oldVAttrs)) {
+            if ((name === 'value' || name === 'selected' || name === 'checked '? element[name] : oldVAttrs[name]) !== newVAttrs[name]) {
+                patchAttribute(element, name, newVAttrs[name], oldVAttrs[name], isSvg);
+            }
         }
         for (let i = 0; i < Math.max(newVNode.children.length, oldVNode.children.length); ++i) {
-            render(element, newVNode.children[i], oldVNode.children[i], i);
+            render(element, newVNode.children[i], oldVNode.children[i], i, isSvg);
         }
     }
 }
