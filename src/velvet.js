@@ -2,7 +2,20 @@ function flatten(arr) {
     return [].concat.apply([], arr);
 }
 
-function updateAttribute(element, name, newVal, oldVal = null) {
+function isSameNodeType(a, b) {
+    if (typeof a !== typeof b) {
+        return false;
+    }
+    if (typeof a === 'string' && a !== b) {
+        return false;
+    }
+    if (a.nodeName !== b.nodeName) {
+        return false;
+    }
+    return true;
+}
+
+function patchAttribute(element, name, newVal, oldVal = null) {
     if (name[0] === 'o' && name[1] === 'n') {
         name = name.slice(2).toLowerCase();
         if (newVal == null) {
@@ -27,31 +40,29 @@ function createElement(vnode) {
     const attributes = vnode.attributes;
     if (attributes) {
         Object.keys(attributes).forEach((name) => {
-            updateAttribute(element, name, attributes[name], null);
+            patchAttribute(element, name, attributes[name], null);
         });
     }
-    vnode.children.map(createElement).forEach((node) => element.appendChild(node));
+    vnode.children.forEach((vchild) => element.appendChild(createElement(vchild)));
     return element;
 }
 
-export function render(parent, newNode, oldNode = null, index = 0) {
+export function render(parent, newVNode, oldVNode = null, index = 0) {
     const element = parent.childNodes[index];
-    if (oldNode == null) {
-        return parent.appendChild(createElement(newNode));
+    if (oldVNode == null) {
+        return parent.appendChild(createElement(newVNode));
     }
-    if (newNode == null) {
+    if (newVNode == null) {
         return parent.removeChild(element);
-    } else if (typeof newNode !== typeof oldNode
-        || typeof newNode === 'string' && newNode !== oldNode
-        || newNode.nodeName !== oldNode.nodeName) {
-        return parent.replaceChild(createElement(newNode), element);
+    } else if (!isSameNodeType(newVNode, oldVNode)) {
+        return parent.replaceChild(createElement(newVNode), element);
     }
-    if (newNode.nodeName) {
-        for (const name in Object.assign({}, newNode.attributes, oldNode.attributes)) {
-            updateAttribute(element, name, newNode.attributes[name], oldNode.attributes[name]);
+    if (newVNode.nodeName) {
+        for (const name in Object.assign({}, newVNode.attributes, oldVNode.attributes)) {
+            patchAttribute(element, name, newVNode.attributes[name], oldVNode.attributes[name]);
         }
-        for (let i = 0; i < Math.max(newNode.children.length, oldNode.children.length); ++i) {
-            render(element, newNode.children[i], oldNode.children[i], i);
+        for (let i = 0; i < Math.max(newVNode.children.length, oldVNode.children.length); ++i) {
+            render(element, newVNode.children[i], oldVNode.children[i], i);
         }
     }
 }
