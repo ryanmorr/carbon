@@ -254,6 +254,19 @@ describe('render', () => {
         expect(circle).to.be.instanceof(SVGElement);
     });
 
+    it('should skip equal vnodes', () => {
+        setHTML('');
+
+        const vnode = html('div');
+
+        render(root,
+            vnode,
+            vnode
+        );
+
+        expectHTML('');
+    });
+
     it('should patch deeply nested text nodes', () => {
         setHTML(`
             <section>

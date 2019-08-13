@@ -67,6 +67,9 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
 }
 
 export function render(parent, newVNode, oldVNode = null, index = 0, isSvg = false) {
+    if (oldVNode === newVNode) {
+        return;
+    }
     const element = parent.childNodes[index];
     if (oldVNode == null) {
         return parent.appendChild(createElement(newVNode));
