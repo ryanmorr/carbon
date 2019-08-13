@@ -79,16 +79,6 @@ describe('render', () => {
         );
 
         expectHTML('<div></div>');
-
-        /*render(root,
-            <div foo="bar"></div>
-        );
-
-        render(root,
-            <div></div>
-        );
-
-        expectHTML('<div></div>');*/
     });
 
     it('should remove an attribute if the value assigned is undefined, null, or false', () => {
