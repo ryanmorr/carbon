@@ -98,6 +98,8 @@ describe('html', () => {
     it('should support JSX', () => {
         const title = 'Hello World';
         const content = 'Lorem ipsum dolor sit amet';
+
+        // eslint-disable-next-line no-unused-vars
         const Component = sinon.spy(({foo, bar}, child) => (
             <div id={foo} class={bar}>{child}</div>
         ));
