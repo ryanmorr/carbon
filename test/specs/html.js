@@ -57,6 +57,30 @@ describe('html', () => {
         });
     });
 
+    it('should accept an array as children', () => {
+        expect(html('div', null, [html('i'), html('em')], html('span'))).to.deep.equal({
+            nodeName: 'div',
+            attributes: {},
+            children: [
+                {
+                    nodeName: 'i',
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeName: 'em',
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeName: 'span',
+                    attributes: {},
+                    children: []
+                }
+            ]
+        });
+    });
+
     it('should support JSX', () => {
         const title = 'Hello World';
         const content = 'Lorem ipsum dolor sit amet';
