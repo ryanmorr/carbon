@@ -35,6 +35,14 @@ describe('render', () => {
         expectHTML('bar');
     });
 
+    it('should convert numbers to text nodes', () => {
+        render(root,
+            123
+        );
+
+        expect(root.innerHTML).to.equal('123');
+    });
+
     it('should replace an element', () => {
         setHTML('<span></span>');
 

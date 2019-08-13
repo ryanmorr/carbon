@@ -33,7 +33,7 @@ function patchAttribute(element, name, newVal, oldVal = null) {
 }
 
 function createElement(vnode) {
-    if (typeof vnode === 'string') {
+    if (typeof vnode === 'string' || typeof vnode === 'number') {
         return document.createTextNode(vnode);
     }
     const element = document.createElement(vnode.nodeName);
