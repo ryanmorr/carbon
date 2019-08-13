@@ -94,6 +94,17 @@ export function render(parent, newVNode, oldVNode = null, index = 0, isSvg = fal
     }
 }
 
+export function recycle(element) {
+    if (element.nodeType === 3) {
+        return element.nodeValue;
+    }
+    return {
+        nodeName: element.nodeName.toLowerCase(),
+        attributes: {},
+        children: Array.from(element.childNodes).map(recycle)
+    };
+}
+
 export function html(nodeName, attributes, ...children) {
     attributes = attributes || {};
     children = flatten(children);
