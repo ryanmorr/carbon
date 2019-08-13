@@ -1,11 +1,11 @@
-import { recycle } from '../../src/velvet';
+import { recycle } from '../../src/vdom';
 
 describe('recycle', () => {
     it('should convert a null or undefined value to an empty vnode', () => {
         expect(recycle(null)).to.equal(null);
         expect(recycle(void 0)).to.equal(null);
     });
-    
+
     it('should convert a text node into a vnode', () => {
         const text = document.createTextNode('foo');
 

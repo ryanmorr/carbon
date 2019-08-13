@@ -1,4 +1,4 @@
-import { html, render } from '../../src/velvet';
+import { html, render } from '../../src/vdom';
 
 describe('render', () => {
     const root = document.createElement('div');

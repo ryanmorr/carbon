@@ -1,4 +1,4 @@
-import { html } from '../../src/velvet';
+import { html } from '../../src/vdom';
 
 describe('html', () => {
     it('should create an element', () => {
