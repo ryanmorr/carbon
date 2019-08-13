@@ -1,3 +1,7 @@
+function isFunction(obj) {
+    return typeof obj === 'function';
+}
+
 function flatten(arr) {
     return [].concat.apply([], arr);
 }
@@ -50,7 +54,7 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
                 }
             }
         }
-    } else if (name[0] === 'o' && name[1] === 'n') {
+    } else if (name[0] === 'o' && name[1] === 'n' && (isFunction(oldVal) || isFunction(newVal))) {
         name = name.slice(2).toLowerCase();
         if (newVal == null) {
             element.removeEventListener(name, oldVal);
