@@ -5,6 +5,9 @@ function flatten(arr) {
 export function html(nodeName, attributes, ...children) {
     attributes = attributes || {};
     children = flatten(children);
+    if (typeof nodeName === 'function') {
+        return nodeName(attributes, children);
+    }
     return {
         nodeName,
         attributes,

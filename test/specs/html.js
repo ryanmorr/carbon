@@ -81,14 +81,32 @@ describe('html', () => {
         });
     });
 
+    it('should support functional components', () => {
+        const Component = sinon.spy((attributes, child) => html('div', attributes, child));
+
+        expect(html(Component, {foo: 1, bar: 2, baz: 3}, 'foo')).to.deep.equal({
+            nodeName: 'div',
+            attributes: {foo: 1, bar: 2, baz: 3},
+            children: ['foo']
+        });
+
+        expect(Component.called).to.equal(true);
+        expect(Component.args[0][0]).to.deep.equal({foo: 1, bar: 2, baz: 3});
+        expect(Component.args[0][1]).to.deep.equal(['foo']);
+    });
+
     it('should support JSX', () => {
         const title = 'Hello World';
         const content = 'Lorem ipsum dolor sit amet';
+        const Component = sinon.spy(({foo, bar}, child) => (
+            <div id={foo} class={bar}>{child}</div>
+        ));
 
         expect((
             <div>
                 <h1>{title}</h1>
                 <section class="content">{content}</section>
+                <Component foo="1" bar="2">foobar</Component>
             </div>
         )).to.deep.equal({
             nodeName: 'div',
@@ -103,6 +121,11 @@ describe('html', () => {
                     nodeName: 'section',
                     attributes: {class: 'content'},
                     children: ['Lorem ipsum dolor sit amet']
+                },
+                {
+                    nodeName: 'div',
+                    attributes: {id: '1', class: '2'},
+                    children: ['foobar']
                 }
             ]
         });
