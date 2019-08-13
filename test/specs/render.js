@@ -18,6 +18,7 @@ describe('render', () => {
 
     afterEach(() => {
         root.innerHTML = '';
+        root._prevVNode = null;
     });
 
     after(() => {
@@ -28,8 +29,7 @@ describe('render', () => {
         setHTML('foo');
 
         render(root,
-            'bar',
-            'foo'
+            'bar'
         );
 
         expectHTML('bar');
@@ -47,8 +47,7 @@ describe('render', () => {
         setHTML('<span></span>');
 
         render(root,
-            <div></div>,
-            <span></span>
+            <div></div>
         );
 
         expectHTML('<div></div>');
@@ -58,8 +57,7 @@ describe('render', () => {
         setHTML('<div></div>');
 
         render(root,
-            <div id="foo"></div>,
-            <div></div>
+            <div id="foo"></div>
         );
 
         expectHTML('<div id="foo"></div>');
@@ -69,19 +67,27 @@ describe('render', () => {
         setHTML('<div foo="bar"></div>');
 
         render(root,
-            <div></div>,
-            <div foo="bar"></div>
+            <div></div>
         );
 
         expectHTML('<div></div>');
+
+        /*render(root,
+            <div foo="bar"></div>
+        );
+
+        render(root,
+            <div></div>
+        );
+
+        expectHTML('<div></div>');*/
     });
 
     it('should remove an attribute if the value assigned is undefined, null, or false', () => {
         setHTML('<div foo="1" bar="2" baz="3"></div>');
 
         render(root,
-            <div foo={void 0} bar={null} baz={false}></div>,
-            <div foo="1" bar="2" baz="3"></div>
+            <div foo={void 0} bar={null} baz={false}></div>
         );
 
         expectHTML('<div></div>');
@@ -91,8 +97,7 @@ describe('render', () => {
         setHTML('<div foo="bar"></div>');
 
         render(root,
-            <div foo="baz"></div>,
-            <div foo="bar"></div>
+            <div foo="baz"></div>
         );
 
         expectHTML('<div foo="baz"></div>');
@@ -103,8 +108,7 @@ describe('render', () => {
         const div = root.firstChild;
 
         render(root,
-            <div foo="1" bar="2" baz="3"></div>,
-            <div foo="1" bar="2"></div>
+            <div foo="1" bar="2" baz="3"></div>
         );
 
         expect(root.children[0]).to.equal(div);
@@ -149,8 +153,7 @@ describe('render', () => {
         expect(div.style.position).to.equal('absolute');
 
         render(root,
-            <div style={{zIndex: 3}}></div>,
-            <div style={{zIndex: 2, display: 'inline', position: 'absolute'}}></div>
+            <div style={{zIndex: 3}}></div>
         );
 
         expect(div.style.zIndex).to.equal('3');
@@ -206,8 +209,7 @@ describe('render', () => {
         const addEventSpy = sinon.spy(div, 'addEventListener');
 
         render(root,
-            <div onclick={callback}></div>,
-            <div></div>
+            <div onclick={callback}></div>
         );
 
         expect(addEventSpy.called).to.equal(true);
@@ -222,13 +224,11 @@ describe('render', () => {
         const removeEventSpy = sinon.spy(div, 'removeEventListener');
 
         render(root,
-            <div onclick={callback}></div>,
-            <div></div>
+            <div onclick={callback}></div>
         );
 
         render(root,
-            <div></div>,
-            <div onclick={callback}></div>
+            <div></div>
         );
 
         expect(removeEventSpy.called).to.equal(true);
@@ -257,14 +257,21 @@ describe('render', () => {
     it('should skip equal vnodes', () => {
         setHTML('');
 
-        const vnode = html('div');
+        const vnode = <div></div>;
 
         render(root,
-            vnode,
             vnode
         );
 
-        expectHTML('');
+        expectHTML('<div></div>');
+
+        vnode.nodeName = 'span';
+
+        render(root,
+            vnode
+        );
+
+        expectHTML('<div></div>');
     });
 
     it('should patch deeply nested text nodes', () => {
@@ -277,9 +284,6 @@ describe('render', () => {
         render(root,
             <section>
                 <div>baz<span>qux</span></div>
-            </section>,
-            <section>
-                <div>foo<span>bar</span></div>
             </section>
         );
 
@@ -309,13 +313,6 @@ describe('render', () => {
                     </span>
                     <b></b>
                 </div>
-            </section>,
-            <section>
-                <div>
-                    <span>
-                        <i></i>
-                    </span>
-                </div>
             </section>
         );
 
@@ -344,11 +341,6 @@ describe('render', () => {
             <section>
                 <div qux="4">
                     <span foo="2" baz="3"></span>
-                </div>
-            </section>,
-            <section>
-                <div>
-                    <span foo="1" bar="2"></span>
                 </div>
             </section>
         );
@@ -388,17 +380,6 @@ describe('render', () => {
                     <span></span>
                 </div>
                 <div data-foo="321">
-                </div>
-            </main>,
-            <main id="foo">
-                <section class="aaa bbb">
-                    <i>a</i>
-                    <em>b</em>
-                    <span>c</span>
-                </section>
-                <div></div>
-                <div data-foo="123">
-                    <div></div>
                 </div>
             </main>
         );

@@ -1,6 +1,11 @@
 import { recycle } from '../../src/velvet';
 
 describe('recycle', () => {
+    it('should convert a null or undefined value to an empty vnode', () => {
+        expect(recycle(null)).to.equal(null);
+        expect(recycle(void 0)).to.equal(null);
+    });
+    
     it('should convert a text node into a vnode', () => {
         const text = document.createTextNode('foo');
 
@@ -13,11 +18,11 @@ describe('recycle', () => {
 
         expect(recycle(root.firstChild)).to.deep.equal({
             nodeName: 'div',
-            attributes: {},
+            attributes: {id: 'foo'},
             children: [
                 {
                     nodeName: 'span',
-                    attributes: {},
+                    attributes: {class: 'bar'},
                     children: ['baz']
                 },
                             {
@@ -26,6 +31,17 @@ describe('recycle', () => {
                     children: []
                 }
             ]
+        });
+    });
+
+    it('should ignore the style attribute', () => {
+        const root = document.createElement('div');
+        root.innerHTML = '<div style="width: 100px"></div>';
+
+        expect(recycle(root.firstChild)).to.deep.equal({
+            nodeName: 'div',
+            attributes: {},
+            children: []
         });
     });
 });

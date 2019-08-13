@@ -66,20 +66,17 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
     }
 }
 
-export function render(parent, newVNode, oldVNode = null, index = 0, isSvg = false) {
+function patchElement(parent, element, oldVNode, newVNode, isSvg = false) {
     if (oldVNode === newVNode) {
         return;
     }
-    const element = parent.childNodes[index];
     if (oldVNode == null) {
-        return parent.appendChild(createElement(newVNode));
-    }
-    if (newVNode == null) {
-        return parent.removeChild(element);
+        parent.appendChild(createElement(newVNode));
+    }else if (newVNode == null) {
+        parent.removeChild(element);
     } else if (!isSameNodeType(newVNode, oldVNode)) {
-        return parent.replaceChild(createElement(newVNode), element);
-    }
-    if (newVNode.nodeName) {
+        parent.replaceChild(createElement(newVNode), element);
+    } else if (newVNode.nodeName) {
         isSvg = isSvg || newVNode.nodeName === 'svg';
         const oldVAttrs = oldVNode.attributes;
         const newVAttrs = newVNode.attributes;
@@ -89,18 +86,34 @@ export function render(parent, newVNode, oldVNode = null, index = 0, isSvg = fal
             }
         }
         for (let i = 0; i < Math.max(newVNode.children.length, oldVNode.children.length); ++i) {
-            render(element, newVNode.children[i], oldVNode.children[i], i, isSvg);
+            patchElement(element, element.childNodes[i], oldVNode.children[i], newVNode.children[i], isSvg);
         }
     }
 }
 
+export function render(parent, newVNode) {
+    const oldVNode = parent._prevVNode || recycle((parent && parent.childNodes[0]) || null);
+    patchElement(parent, parent.childNodes[0], oldVNode, newVNode);
+    parent._prevVNode = newVNode;
+}
+
 export function recycle(element) {
+    if (element == null) {
+        return null;
+    }
     if (element.nodeType === 3) {
         return element.nodeValue;
     }
     return {
         nodeName: element.nodeName.toLowerCase(),
-        attributes: {},
+        attributes: Array.from(element.attributes).reduce((map, attr) => {
+            const name = attr.name, value = attr.value;
+            if (name === 'style') {
+                return map;
+            }
+            map[name] = value;
+            return map;
+        }, {}),
         children: Array.from(element.childNodes).map(recycle)
     };
 }
