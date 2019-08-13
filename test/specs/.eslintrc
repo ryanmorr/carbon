@@ -7,6 +7,7 @@
     "sinon": true
   },
   "rules": {
-    "max-len": 0
+    "max-len": 0,
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^html$" }]
   }
 }
