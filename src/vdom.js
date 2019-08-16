@@ -72,14 +72,16 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
 
 function patchElement(parent, element, oldVNode, newVNode, isSvg = false) {
     if (oldVNode === newVNode) {
-        return;
+        return element;
     }
     if (oldVNode == null) {
-        parent.appendChild(createElement(newVNode));
+        element = parent.appendChild(createElement(newVNode));
     }else if (newVNode == null) {
         parent.removeChild(element);
     } else if (!isSameNodeType(newVNode, oldVNode)) {
-        parent.replaceChild(createElement(newVNode), element);
+        const newElement = createElement(newVNode, isSvg);
+        parent.replaceChild(newElement, element);
+        element = newElement;
     } else if (newVNode.nodeName) {
         isSvg = isSvg || newVNode.nodeName === 'svg';
         const oldVAttrs = oldVNode.attributes;
@@ -93,12 +95,14 @@ function patchElement(parent, element, oldVNode, newVNode, isSvg = false) {
             patchElement(element, element.childNodes[i], oldVNode.children[i], newVNode.children[i], isSvg);
         }
     }
+    return element;
 }
 
 export function render(parent, newVNode) {
     const oldVNode = parent._prevVNode || recycle((parent && parent.childNodes[0]) || null);
-    patchElement(parent, parent.childNodes[0], oldVNode, newVNode);
+    const element = patchElement(parent, parent.childNodes[0], oldVNode, newVNode);
     parent._prevVNode = newVNode;
+    return element;
 }
 
 export function recycle(element) {

@@ -26,39 +26,34 @@ describe('render', () => {
     });
 
     it('should patch an empty root', () => {
-        render(root,
+        const el = render(root,
             <div></div>
         );
 
         expectHTML('<div></div>');
+        expect(el).to.equal(root.firstChild);
     });
 
     it('should patch a text node', () => {
         setHTML('foo');
 
-        render(root,
+        const el = render(root,
             'bar'
         );
 
         expectHTML('bar');
-    });
-
-    it('should convert numbers to text nodes', () => {
-        render(root,
-            123
-        );
-
-        expect(root.innerHTML).to.equal('123');
+        expect(el).to.equal(root.firstChild);
     });
 
     it('should replace an element', () => {
         setHTML('<span></span>');
 
-        render(root,
+        const el = render(root,
             <div></div>
         );
 
         expectHTML('<div></div>');
+        expect(el).to.equal(root.firstChild);
     });
 
     it('should add an attribute', () => {
@@ -250,6 +245,14 @@ describe('render', () => {
         expect(circle.nodeType).to.equal(1);
         expect(circle.namespaceURI).to.equal('http://www.w3.org/2000/svg');
         expect(circle).to.be.instanceof(SVGElement);
+    });
+
+    it('should convert numbers to text nodes', () => {
+        render(root,
+            123
+        );
+
+        expect(root.innerHTML).to.equal('123');
     });
 
     it('should skip equal vnodes', () => {
