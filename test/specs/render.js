@@ -229,6 +229,14 @@ describe('render', () => {
         removeEventSpy.restore();
     });
 
+    it('should ignore keys', () => {
+        render(root,
+            <div key="foo"></div>
+        );
+
+        expectHTML('<div></div>');
+    });
+
     it('should support SVG', () => {
         render(root,
             <svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>

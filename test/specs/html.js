@@ -5,7 +5,8 @@ describe('html', () => {
         expect(html('div')).to.deep.equal({
             nodeName: 'div',
             attributes: {},
-            children: []
+            children: [],
+            key: null
         });
     });
 
@@ -13,7 +14,8 @@ describe('html', () => {
         expect(html('div', {id: 'foo', class: 'bar'})).to.deep.equal({
             nodeName: 'div',
             attributes: {id: 'foo', class: 'bar'},
-            children: []
+            children: [],
+            key: null
         });
     });
 
@@ -21,7 +23,8 @@ describe('html', () => {
         expect(html('div', null, 'foo')).to.deep.equal({
             nodeName: 'div',
             attributes: {},
-            children: ['foo']
+            children: ['foo'],
+            key: null
         });
     });
 
@@ -32,8 +35,10 @@ describe('html', () => {
             children: [{
                 nodeName: 'span',
                 attributes: {},
-                children: []
-            }]
+                children: [],
+                key: null
+            }],
+            key: null
         });
     });
 
@@ -45,15 +50,18 @@ describe('html', () => {
                 {
                     nodeName: 'i',
                     attributes: {},
-                    children: []
+                    children: [],
+                    key: null
                 },
                 'foo',
                 {
                     nodeName: 'em',
                     attributes: {},
-                    children: []
+                    children: [],
+                    key: null
                 }
-            ]
+            ],
+            key: null
         });
     });
 
@@ -65,19 +73,32 @@ describe('html', () => {
                 {
                     nodeName: 'i',
                     attributes: {},
-                    children: []
+                    children: [],
+                    key: null
                 },
                 {
                     nodeName: 'em',
                     attributes: {},
-                    children: []
+                    children: [],
+                    key: null
                 },
                 {
                     nodeName: 'span',
                     attributes: {},
-                    children: []
+                    children: [],
+                    key: null
                 }
-            ]
+            ],
+            key: null
+        });
+    });
+
+    it('should support keys', () => {
+        expect(html('div', {key: 'foo'})).to.deep.equal({
+            nodeName: 'div',
+            attributes: {key: 'foo'},
+            children: [],
+            key: 'foo'
         });
     });
 
@@ -87,7 +108,8 @@ describe('html', () => {
         expect(html(Component, {foo: 1, bar: 2, baz: 3}, 'foo')).to.deep.equal({
             nodeName: 'div',
             attributes: {foo: 1, bar: 2, baz: 3},
-            children: ['foo']
+            children: ['foo'],
+            key: null
         });
 
         expect(Component.called).to.equal(true);
@@ -108,7 +130,10 @@ describe('html', () => {
             <div>
                 <h1>{title}</h1>
                 <section class="content">{content}</section>
-                <Component foo="1" bar="2">foobar</Component>
+                <Component foo="1" bar="2">
+                    <div key="foo">foo</div>
+                    <div key="bar">bar</div>
+                </Component>
             </div>
         )).to.deep.equal({
             nodeName: 'div',
@@ -117,19 +142,36 @@ describe('html', () => {
                 {
                     nodeName: 'h1',
                     attributes: {},
-                    children: ['Hello World']
+                    children: ['Hello World'],
+                    key: null
                 },
                 {
                     nodeName: 'section',
                     attributes: {class: 'content'},
-                    children: ['Lorem ipsum dolor sit amet']
+                    children: ['Lorem ipsum dolor sit amet'],
+                    key: null
                 },
                 {
                     nodeName: 'div',
                     attributes: {id: '1', class: '2'},
-                    children: ['foobar']
+                    children: [
+                        {
+                            nodeName: 'div',
+                            attributes: {key: 'foo'},
+                            children: ['foo'],
+                            key: 'foo'
+                        },
+                        {
+                            nodeName: 'div',
+                            attributes: {key: 'bar'},
+                            children: ['bar'],
+                            key: 'bar'
+                        }
+                    ],
+                    key: null
                 }
-            ]
+            ],
+            key: null
         });
     });
 });

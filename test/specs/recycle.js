@@ -23,14 +23,17 @@ describe('recycle', () => {
                 {
                     nodeName: 'span',
                     attributes: {class: 'bar'},
-                    children: ['baz']
+                    children: ['baz'],
+                    key: null
                 },
                             {
                     nodeName: 'em',
                     attributes: {},
-                    children: []
+                    children: [],
+                    key: null
                 }
-            ]
+            ],
+            key: null
         });
     });
 
@@ -41,7 +44,20 @@ describe('recycle', () => {
         expect(recycle(root.firstChild)).to.deep.equal({
             nodeName: 'div',
             attributes: {},
-            children: []
+            children: [],
+            key: null
+        });
+    });
+
+    it('should recycle keys', () => {
+        const root = document.createElement('div');
+        root.innerHTML = '<div key="foo"></div>';
+
+        expect(recycle(root.firstChild)).to.deep.equal({
+            nodeName: 'div',
+            attributes: {key: 'foo'},
+            children: [],
+            key: 'foo'
         });
     });
 });

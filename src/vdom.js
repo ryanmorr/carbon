@@ -41,6 +41,9 @@ function createElement(vnode, isSvg = false) {
 }
 
 function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
+    if (name === 'key') {
+        return;
+    }
     if (name === 'style') {
         if (typeof newVal === 'string') {
             element.style.cssText = newVal;
@@ -70,6 +73,12 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
     }
 }
 
+function patchChildren(element, oldVChildren, newVChildren, isSvg) {
+    for (let i = 0; i < Math.max(newVChildren.length, oldVChildren.length); ++i) {
+        patchElement(element, element.childNodes[i], oldVChildren[i], newVChildren[i], isSvg);
+    }
+}
+
 function patchElement(parent, element, oldVNode, newVNode, isSvg = false) {
     if (oldVNode === newVNode) {
         return element;
@@ -91,9 +100,7 @@ function patchElement(parent, element, oldVNode, newVNode, isSvg = false) {
                 patchAttribute(element, name, newVAttrs[name], oldVAttrs[name], isSvg);
             }
         }
-        for (let i = 0; i < Math.max(newVNode.children.length, oldVNode.children.length); ++i) {
-            patchElement(element, element.childNodes[i], oldVNode.children[i], newVNode.children[i], isSvg);
-        }
+        patchChildren(element, oldVNode.children, newVNode.children, isSvg);
     }
     return element;
 }
@@ -135,6 +142,7 @@ export function html(nodeName, attributes, ...children) {
     return {
         nodeName,
         attributes,
-        children
+        children,
+        key: attributes.key || null
     };
 }
