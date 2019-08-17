@@ -232,6 +232,32 @@ describe('render', () => {
 
             expectHTML('<div></div>');
         });
+
+        it('should patch deeply nested attributes', () => {
+            setHTML(`
+                <section>
+                    <div>
+                        <span foo="1" bar="2"></span>
+                    </div>
+                </section>
+            `);
+
+            render(root,
+                <section>
+                    <div qux="4">
+                        <span foo="2" baz="3"></span>
+                    </div>
+                </section>
+            );
+
+            expectHTML(`
+                <section>
+                    <div qux="4">
+                        <span foo="2" baz="3"></span>
+                    </div>
+                </section>
+            `);
+        });
     });
     
     describe('non-keyed nodes', () => {
@@ -264,12 +290,80 @@ describe('render', () => {
             expect(el).to.equal(root.firstChild);
         });
 
-        it('should convert numbers to text nodes', () => {
+        it('should append nodes', () => {            
+            render(root,
+                <div><span>Hello</span></div>
+            );
+
+            render(root, 
+                <div><span>Hello</span><span>World</span></div>
+            );
+
+            expectHTML('<div><span>Hello</span><span>World</span></div>');
+        });
+
+        it('should prepend nodes', () => {            
+            render(root,
+                <div><span>World</span></div>
+            );
+
+            render(root, 
+                <div><span>Hello</span><span>World</span></div>
+            );
+
+            expectHTML('<div><span>Hello</span><span>World</span></div>');
+        });
+
+        it('should change text nodes', () => {            
+            render(root,
+                <div><span>foo</span><span>bar</span></div>
+            );
+
+            render(root, 
+                <div><span>baz</span><span>qux</span></div>
+            );
+
+            expectHTML('<div><span>baz</span><span>qux</span></div>');
+        });
+
+        it('should handle numeric nodes', () => {
             render(root,
                 <div>{123}</div>
             );
 
-            expect(root.innerHTML).to.equal('<div>123</div>');
+            expectHTML('<div>123</div>');
+        });
+
+        it('should handle empty text nodes', () => {
+            render(root,
+                <div>{''}</div>
+            );
+
+            expectHTML('<div></div>');
+        });
+
+        it('should replace a text node with an element node', () => {
+            render(root,
+                <div>foo</div>
+            );
+
+            render(root,
+                <div><span></span></div>
+            );
+
+            expectHTML('<div><span></span></div>');
+        });
+
+        it('should replace an element node with a text node', () => {
+            render(root,
+                <div><span></span></div>
+            );
+
+            render(root,
+                <div>foo</div>
+            );
+
+            expectHTML('<div>foo</div>');
         });
 
         it('should support SVG', () => {
@@ -335,132 +429,6 @@ describe('render', () => {
             );
 
             expectHTML('<div></div>');
-        });
-
-        it('should patch deeply nested text nodes', () => {
-            setHTML(`
-                <section>
-                    <div>foo<span>bar</span></div>
-                </section>
-            `);
-
-            render(root,
-                <section>
-                    <div>baz<span>qux</span></div>
-                </section>
-            );
-
-            expectHTML(`
-                <section>
-                    <div>baz<span>qux</span></div>
-                </section>
-            `);
-        });
-
-        it('should patch deeply nested elements', () => {
-            setHTML(`
-                <section>
-                    <div>
-                        <span>
-                            <i></i>
-                        </span>
-                    </div>
-                </section>
-            `);
-
-            render(root,
-                <section>
-                    <div>
-                        <span>
-                            <em></em>
-                        </span>
-                        <b></b>
-                    </div>
-                </section>
-            );
-
-            expectHTML(`
-                <section>
-                    <div>
-                        <span>
-                            <em></em>
-                        </span>
-                        <b></b>
-                    </div>
-                </section>
-            `);
-        });
-
-        it('should patch deeply nested attributes', () => {
-            setHTML(`
-                <section>
-                    <div>
-                        <span foo="1" bar="2"></span>
-                    </div>
-                </section>
-            `);
-
-            render(root,
-                <section>
-                    <div qux="4">
-                        <span foo="2" baz="3"></span>
-                    </div>
-                </section>
-            );
-
-            expectHTML(`
-                <section>
-                    <div qux="4">
-                        <span foo="2" baz="3"></span>
-                    </div>
-                </section>
-            `);
-        });
-
-        it('should support multiple patches', () => {
-            setHTML(`
-                <main id="foo">
-                    <section class="aaa bbb">
-                        <i>a</i>
-                        <em>b</em>
-                        <span>c</span>
-                    </section>
-                    <div></div>
-                    <div data-foo="123">
-                        <div></div>
-                    </div>
-                </main>
-            `);
-
-            render(root,
-                <main id="bar">
-                    <section class="aaa 111 bbb 222">
-                        <i>aa</i>
-                        <b>bb</b>
-                        <span id="cc">cc</span>
-                    </section>
-                    <div>
-                        <span></span>
-                    </div>
-                    <div data-foo="321">
-                    </div>
-                </main>
-            );
-
-            expectHTML(`
-                <main id="bar">
-                    <section class="aaa 111 bbb 222">
-                        <i>aa</i>
-                        <b>bb</b>
-                        <span id="cc">cc</span>
-                    </section>
-                    <div>
-                        <span></span>
-                    </div>
-                    <div data-foo="321">
-                    </div>
-                </main>
-            `);
         });
     });
 
