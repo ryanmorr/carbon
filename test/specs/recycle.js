@@ -1,4 +1,4 @@
-import { recycle } from '../../src/vdom';
+import recycle from '../../src/recycle';
 
 describe('recycle', () => {
     it('should convert a null or undefined value to an empty vnode', () => {

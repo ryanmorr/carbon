@@ -5,14 +5,6 @@ for (const prop in document) {
     }
 }
 
-function isFunction(obj) {
-    return typeof obj === 'function';
-}
-
-function flatten(arr) {
-    return [].concat.apply([], arr);
-}
-
 function merge(...objects) {
     return Object.assign({}, ...objects);
 }
@@ -48,27 +40,6 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
         }
     }
     return map;
-}
-
-function createVNode(nodeName, attributes, children) {
-    attributes = attributes || {};
-    children = flatten(children).map((vchild) => typeof vchild === 'object' ? vchild : createTextVNode(vchild));
-    return {
-        type: 'element',
-        node: null,
-        nodeName,
-        attributes,
-        children,
-        key: attributes.key || null
-    };
-}
-
-function createTextVNode(text) {
-    return {
-        type: 'text',
-        node: null,
-        text
-    };
 }
 
 function createElement(vnode, refs, isSvg = false) {
@@ -140,20 +111,20 @@ function patchChildren(parent, oldChildren, newChildren, refs, isSvg) {
         } else if (!oldEndChild) {
             oldEndChild = oldChildren[--oldEndIndex];
         } else if (isSameNode(oldStartChild, newStartChild)) {
-            patchElement(parent, oldStartChild, newStartChild, refs, isSvg);
+            patch(parent, oldStartChild, newStartChild, refs, isSvg);
             oldStartChild = oldChildren[++oldStartIndex];
             newStartChild = newChildren[++newStartIndex];
         } else if (isSameNode(oldEndChild, newEndChild)) {
-            patchElement(parent, oldEndChild, newEndChild, refs, isSvg);
+            patch(parent, oldEndChild, newEndChild, refs, isSvg);
             oldEndChild = oldChildren[--oldEndIndex];
             newEndChild = newChildren[--newEndIndex];
         } else if (isSameNode(oldStartChild, newEndChild)) {
-            patchElement(parent, oldStartChild, newEndChild, refs, isSvg);
+            patch(parent, oldStartChild, newEndChild, refs, isSvg);
             parent.insertBefore(oldStartChild.node, oldEndChild.node.nextSibling);
             oldStartChild = oldChildren[++oldStartIndex];
             newEndChild = newChildren[--newEndIndex];
         } else if (isSameNode(oldEndChild, newStartChild)) {
-            patchElement(parent, oldEndChild, newStartChild, refs, isSvg);
+            patch(parent, oldEndChild, newStartChild, refs, isSvg);
             parent.insertBefore(oldEndChild.node, oldStartChild.node);
             oldEndChild = oldChildren[--oldEndIndex];
             newStartChild = newChildren[++newStartIndex];
@@ -168,7 +139,7 @@ function patchChildren(parent, oldChildren, newChildren, refs, isSvg) {
                 newStartChild = newChildren[++newStartIndex];
             } else {
                 let oldChildToMove = oldChildren[oldIndex];
-                patchElement(parent, oldChildToMove, newStartChild, isSvg);
+                patch(parent, oldChildToMove, newStartChild, isSvg);
                 oldChildren[oldIndex] = undefined;
                 parent.insertBefore(oldChildToMove.node, oldStartChild.node);
                 newStartChild = newChildren[++newStartIndex];
@@ -190,7 +161,7 @@ function patchChildren(parent, oldChildren, newChildren, refs, isSvg) {
     }
 }
 
-function patchElement(parent, oldVNode, newVNode, refs, isSvg = false) {
+export default function patch(parent, oldVNode, newVNode, refs, isSvg = false) {
     isSvg = isSvg || newVNode.nodeName === 'svg';
     if (oldVNode == null) {
         return parent.appendChild(createElement(newVNode, refs, isSvg));
@@ -216,41 +187,4 @@ function patchElement(parent, oldVNode, newVNode, refs, isSvg = false) {
         newVNode.node = element;
     }
     return element;
-}
-
-export function render(parent, newVNode) {
-    const refs = {};
-    const oldVNode = parent._prevVNode || recycle((parent && parent.childNodes[0]) || null);
-    const element = patchElement(parent, oldVNode, newVNode, refs);
-    parent._prevVNode = newVNode;
-    return Object.keys(refs).length > 0 ? refs : element;
-}
-
-export function recycle(node) {
-    if (node == null) {
-        return null;
-    }
-    let vnode = (node.nodeType === 3)
-        ? createTextVNode(node.nodeValue)
-        : createVNode(
-            node.nodeName.toLowerCase(),
-            Array.from(node.attributes).reduce((map, attr) => {
-                const name = attr.name, value = attr.value;
-                if (name === 'style') {
-                    return map;
-                }
-                map[name] = value;
-                return map;
-            }, {}),
-            Array.from(node.childNodes).map(recycle)
-        );
-    vnode.node = node;
-    return vnode;
-}
-
-export function html(nodeName, attributes, ...children) {
-    if (isFunction(nodeName)) {
-        return nodeName(attributes, children);
-    }
-    return createVNode(nodeName, attributes, children);
 }

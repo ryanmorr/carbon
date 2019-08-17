@@ -1,6 +1,12 @@
-import { html, render } from './vdom';
+import patch from './patch';
+import recycle from './recycle';
 
-export {
-    html,
-    render
-};
+export { html } from './html';
+
+export function render(parent, newVNode) {
+    const refs = {};
+    const oldVNode = parent._prevVNode || recycle((parent && parent.childNodes[0]) || null);
+    const element = patch(parent, oldVNode, newVNode, refs);
+    parent._prevVNode = newVNode;
+    return Object.keys(refs).length > 0 ? refs : element;
+}
