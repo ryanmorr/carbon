@@ -193,6 +193,28 @@ describe('render', () => {
         expect(option3.selected).to.equal(true);
     });
 
+    it('should support dynamic properties', () => {
+        render(root,
+            <input type="text" value="foo" />
+        );
+
+        expectHTML(`
+            <input type="text">
+        `);
+
+        expect(root.firstChild.value).to.equal('foo');
+
+        render(root,
+            <input type="text" value="bar" />
+        );
+
+        expectHTML(`
+            <input type="text">
+        `);
+
+        expect(root.firstChild.value).to.equal('bar');
+    });
+
     it('should add an event listener', () => {
         const div = root.appendChild(document.createElement('div'));
 
