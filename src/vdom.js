@@ -1,3 +1,10 @@
+const events = [];
+for (const prop in document) {
+    if (prop.substring(0,2) === 'on' && (document[prop] === null || typeof document[prop] === 'function')) {
+        events.push(prop);
+    }
+}
+
 function isFunction(obj) {
     return typeof obj === 'function';
 }
@@ -101,7 +108,7 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
                 }
             }
         }
-    } else if (name[0] === 'o' && name[1] === 'n' && (isFunction(oldVal) || isFunction(newVal))) {
+    } else if (events.includes(name)) {
         name = name.slice(2).toLowerCase();
         if (newVal == null) {
             element.removeEventListener(name, oldVal);
