@@ -195,32 +195,26 @@ export function render(parent, newVNode) {
     return element;
 }
 
-export function recycle(element) {
-    if (element == null) {
+export function recycle(node) {
+    if (node == null) {
         return null;
     }
-    if (element.nodeType === 3) {
-        return {
-            type: 'text',
-            node: element,
-            text: element.nodeValue
-        };
-    }
-    return {
-        type: 'element',
-        node: element,
-        nodeName: element.nodeName.toLowerCase(),
-        attributes: Array.from(element.attributes).reduce((map, attr) => {
-            const name = attr.name, value = attr.value;
-            if (name === 'style') {
+    let vnode = (node.nodeType === 3)
+        ? createTextVNode(node.nodeValue)
+        : createVNode(
+            node.nodeName.toLowerCase(),
+            Array.from(node.attributes).reduce((map, attr) => {
+                const name = attr.name, value = attr.value;
+                if (name === 'style') {
+                    return map;
+                }
+                map[name] = value;
                 return map;
-            }
-            map[name] = value;
-            return map;
-        }, {}),
-        children: Array.from(element.childNodes).map(recycle),
-        key: element.getAttribute('key') || null
-    };
+            }, {}),
+            Array.from(node.childNodes).map(recycle)
+        );
+    vnode.node = node;
+    return vnode;
 }
 
 function createVNode(nodeName, attributes, children) {
