@@ -161,6 +161,7 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
 }
 
 function patchElement(parent, oldVNode, newVNode, isSvg = false) {
+    isSvg = isSvg || newVNode.nodeName === 'svg';
     if (oldVNode == null) {
         return parent.appendChild(createElement(newVNode));
     }
@@ -172,7 +173,6 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
         parent.replaceChild(newElement, element);
         element = newElement;
     } else if (newVNode.type === 'element') {
-        isSvg = isSvg || newVNode.nodeName === 'svg';
         const oldVAttrs = oldVNode.attributes;
         const newVAttrs = newVNode.attributes;
         for (const name in merge(newVAttrs, oldVAttrs)) {
