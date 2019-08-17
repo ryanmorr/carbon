@@ -1,5 +1,5 @@
 import patch from './patch';
-import recycle from './recycle';
+import { recycle } from './html';
 
 export { html } from './html';
 

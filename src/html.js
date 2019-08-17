@@ -118,7 +118,7 @@ function build(statics) {
     return current;
 }
 
-export function createVNode(nodeName, attributes, ...children) {
+function createVNode(nodeName, attributes, ...children) {
     attributes = attributes || {};
     if (isFunction(nodeName)) {
         return nodeName(attributes, children);
@@ -134,12 +134,34 @@ export function createVNode(nodeName, attributes, ...children) {
     };
 }
 
-export function createTextVNode(text) {
+function createTextVNode(text) {
     return {
         type: 'text',
         node: null,
         text
     };
+}
+
+export function recycle(node) {
+    if (node == null) {
+        return null;
+    }
+    let vnode = (node.nodeType === 3)
+        ? createTextVNode(node.nodeValue)
+        : createVNode(
+            node.nodeName.toLowerCase(),
+            Array.from(node.attributes).reduce((map, attr) => {
+                const name = attr.name, value = attr.value;
+                if (name === 'style') {
+                    return map;
+                }
+                map[name] = value;
+                return map;
+            }, {}),
+            Array.from(node.childNodes).map(recycle)
+        );
+    vnode.node = node;
+    return vnode;
 }
 
 export function html(nodeName, attributes, ...children) {
