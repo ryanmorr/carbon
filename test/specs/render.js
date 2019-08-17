@@ -34,6 +34,15 @@ describe('render', () => {
         expect(el).to.equal(root.firstChild);
     });
 
+    it('should remove all root children', () => {
+        setHTML('<span></span>');
+        
+        const el = render(root, null);
+
+        expectHTML('');
+        expect(el).to.equal(null);
+    });
+
     it('should replace an element', () => {
         setHTML('<span></span>');
         
