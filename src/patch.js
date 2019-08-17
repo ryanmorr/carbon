@@ -162,18 +162,27 @@ function patchChildren(parent, oldChildren, newChildren, refs, isSvg) {
 }
 
 export default function patch(parent, oldVNode, newVNode, refs, isSvg = false) {
-    isSvg = isSvg || newVNode.nodeName === 'svg';
+    if (oldVNode === newVNode) {
+        return oldVNode.node;
+    }
     if (oldVNode == null) {
         return parent.appendChild(createElement(newVNode, refs, isSvg));
     }
     let element = oldVNode.node;
     if (newVNode == null) {
         parent.removeChild(element);
+        return null;
+    }
+    if (oldVNode.type === 'text' && newVNode.type === 'text') {
+        if (oldVNode.text !== newVNode.text) {
+            oldVNode.node.nodeValue = newVNode.text;
+        }
     } else if (!isSameNodeType(newVNode, oldVNode)) {
         const newElement = createElement(newVNode, refs, isSvg);
         parent.replaceChild(newElement, element);
         element = newElement;
     } else if (newVNode.type === 'element') {
+        isSvg = isSvg || newVNode.nodeName === 'svg';
         const oldVAttrs = oldVNode.attributes;
         const newVAttrs = newVNode.attributes;
         for (const name in merge(newVAttrs, oldVAttrs)) {
@@ -183,8 +192,6 @@ export default function patch(parent, oldVNode, newVNode, refs, isSvg = false) {
         }
         patchChildren(element, oldVNode.children, newVNode.children, refs, isSvg);
     }
-    if (newVNode) {
-        newVNode.node = element;
-    }
+    newVNode.node = element;
     return element;
 }
