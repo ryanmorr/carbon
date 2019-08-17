@@ -148,6 +148,7 @@ function createVNode(nodeName, attributes, children) {
     children = flatten(children).map((vchild) => typeof vchild === 'object' ? vchild : createTextVNode(vchild));
     return {
         type: 'element',
+        node: null,
         nodeName,
         attributes,
         children,
@@ -158,6 +159,7 @@ function createVNode(nodeName, attributes, children) {
 function createTextVNode(text) {
     return {
         type: 'text',
+        node: null,
         text
     };
 }
