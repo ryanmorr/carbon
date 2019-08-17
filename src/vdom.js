@@ -14,7 +14,7 @@ function getKey(vnode) {
     return vnode.attributes ? vnode.attributes.key : null;
 }
 
-function isEqualVNode(oldVNode, newVNode) {
+function isSameNode(oldVNode, newVNode) {
     return getKey(oldVNode) === getKey(newVNode) && oldVNode.nodeName === newVNode.nodeName;
 }
 
@@ -111,20 +111,20 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
             oldStartChild = oldChildren[++oldStartIndex];
         } else if (!oldEndChild) {
             oldEndChild = oldChildren[--oldEndIndex];
-        } else if (isEqualVNode(oldStartChild, newStartChild)) {
+        } else if (isSameNode(oldStartChild, newStartChild)) {
             patchElement(parent, oldStartChild, newStartChild, isSvg);
             oldStartChild = oldChildren[++oldStartIndex];
             newStartChild = newChildren[++newStartIndex];
-        } else if (isEqualVNode(oldEndChild, newEndChild)) {
+        } else if (isSameNode(oldEndChild, newEndChild)) {
             patchElement(parent, oldEndChild, newEndChild, isSvg);
             oldEndChild = oldChildren[--oldEndIndex];
             newEndChild = newChildren[--newEndIndex];
-        } else if (isEqualVNode(oldStartChild, newEndChild)) {
+        } else if (isSameNode(oldStartChild, newEndChild)) {
             patchElement(parent, oldStartChild, newEndChild, isSvg);
             parent.insertBefore(oldStartChild.node, oldEndChild.node.nextSibling);
             oldStartChild = oldChildren[++oldStartIndex];
             newEndChild = newChildren[--newEndIndex];
-        } else if (isEqualVNode(oldEndChild, newStartChild)) {
+        } else if (isSameNode(oldEndChild, newStartChild)) {
             patchElement(parent, oldEndChild, newStartChild, isSvg);
             parent.insertBefore(oldEndChild.node, oldStartChild.node);
             oldEndChild = oldChildren[--oldEndIndex];
