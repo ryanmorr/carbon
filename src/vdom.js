@@ -10,6 +10,14 @@ function merge(...objects) {
     return Object.assign({}, ...objects);
 }
 
+function getKey(vnode) {
+    return vnode.attributes ? vnode.attributes.key : null;
+}
+
+function isEqualVNode(oldVNode, newVNode) {
+    return getKey(oldVNode) === getKey(newVNode) && oldVNode.nodeName === newVNode.nodeName;
+}
+
 function isSameNodeType(a, b) {
     if (a.type !== b.type) {
         return false;
@@ -21,6 +29,20 @@ function isSameNodeType(a, b) {
         return false;
     }
     return true;
+}
+
+function createKeyToIndexMap(children, beginIdx, endIdx) {
+    const map = {};
+    for (let i = beginIdx; i <= endIdx; ++i) {
+        const child = children[i];
+        if (child != null) {
+            key = child.key;
+            if (key !== undefined) {
+                map[key] = i;
+            }
+        }
+    }
+    return map;
 }
 
 function createElement(vnode, isSvg = false) {
@@ -74,9 +96,67 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
     }
 }
 
-function patchChildren(element, oldVChildren, newVChildren, isSvg) {
-    for (let i = 0; i < Math.max(newVChildren.length, oldVChildren.length); ++i) {
-        patchElement(element, oldVChildren[i], newVChildren[i], isSvg);
+function patchChildren(parent, oldChildren, newChildren, isSvg) {
+    let oldStartIndex = 0;
+    let oldEndIndex = oldChildren.length - 1;
+    let oldStartChild = oldChildren[0];
+    let oldEndChild = oldChildren[oldEndIndex];
+    let newStartIndex = 0;
+    let newEndIndex = newChildren.length - 1;
+    let newStartChild = newChildren[0];
+    let newEndChild = newChildren[newEndIndex];
+    let oldIndicesByKey
+    while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
+        if (!oldStartChild) {
+            oldStartChild = oldChildren[++oldStartIndex];
+        } else if (!oldEndChild) {
+            oldEndChild = oldChildren[--oldEndIndex];
+        } else if (isEqualVNode(oldStartChild, newStartChild)) {
+            patchElement(parent, oldStartChild, newStartChild, isSvg);
+            oldStartChild = oldChildren[++oldStartIndex];
+            newStartChild = newChildren[++newStartIndex];
+        } else if (isEqualVNode(oldEndChild, newEndChild)) {
+            patchElement(parent, oldEndChild, newEndChild, isSvg);
+            oldEndChild = oldChildren[--oldEndIndex];
+            newEndChild = newChildren[--newEndIndex];
+        } else if (isEqualVNode(oldStartChild, newEndChild)) {
+            patchElement(parent, oldStartChild, newEndChild, isSvg);
+            parent.insertBefore(oldStartChild.node, oldEndChild.node.nextSibling);
+            oldStartChild = oldChildren[++oldStartIndex];
+            newEndChild = newChildren[--newEndIndex];
+        } else if (isEqualVNode(oldEndChild, newStartChild)) {
+            patchElement(parent, oldEndChild, newStartChild, isSvg);
+            parent.insertBefore(oldEndChild.node, oldStartChild.node);
+            oldEndChild = oldChildren[--oldEndIndex];
+            newStartChild = newChildren[++newStartIndex];
+        } else {
+            if (!oldIndicesByKey) {
+                oldIndicesByKey = createKeyToIndexMap(oldChildren, oldStartIndex, oldEndIndex);
+            }
+            let key = getKey(newStartChild);
+            let oldIndex = key ? oldIndicesByKey[key] : null;
+            if (oldIndex == null) {
+                parent.insertBefore(createElement(newStartChild, isSvg), oldStartChild.node);
+                newStartChild = newChildren[++newStartIndex];
+            } else {
+                let oldChildToMove = oldChildren[oldIndex];
+                patchElement(parent, oldChildToMove, newStartChild, isSvg);
+                oldChildren[oldIndex] = undefined;
+                parent.insertBefore(oldChildToMove.node, oldStartChild.node);
+                newStartChild = newChildren[++newStartIndex];
+            }
+        }
+    }
+    if (oldStartIndex > oldEndIndex) {
+        let subsequentElement = newChildren[newEndIndex + 1] ? newChildren[newEndIndex + 1].node : null;
+        for (let i = newStartIndex; i <= newEndIndex; i++) {
+            parent.insertBefore(createElement(newChildren[i], isSvg), subsequentElement);
+        }
+    } else if (newStartIndex > newEndIndex) {
+        for (let i = oldStartIndex; i <= oldEndIndex; i++) {
+            let child = oldChildren[i];
+            if (child && child.node) child.node.remove();
+        }
     }
 }
 

@@ -6,7 +6,7 @@ describe('recycle', () => {
         expect(recycle(void 0)).to.equal(null);
     });
 
-    it('should convert a text node into a vnode', () => {
+    it('should convert a text node into a virtual text node', () => {
         const text = document.createTextNode('foo');
 
         expect(recycle(text)).to.deep.equal({
@@ -16,7 +16,7 @@ describe('recycle', () => {
         });
     });
 
-    it('should convert a DOM tree into a vnode tree', () => {
+    it('should convert a DOM tree into a virtual node tree', () => {
         const root = document.createElement('div');
         root.innerHTML = '<div id="foo"><span class="bar">baz</span><em></em></div>';
 
@@ -34,15 +34,15 @@ describe('recycle', () => {
                     type: 'element',
                     nodeName: 'span',
                     attributes: {class: 'bar'},
+                    key: null,
+                    node: span,
                     children: [
                         {
                             type: 'text',
                             text: 'baz',
                             node: text
                         }
-                    ],
-                    key: null,
-                    node: span
+                    ]
                 },
                 {
                     type: 'element',

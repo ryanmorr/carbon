@@ -397,4 +397,176 @@ describe('render', () => {
             </main>
         `);
     });
+
+    it('should support keyed nodes', () => {
+        render(root,
+            <section>
+                <div key="a">foo</div>
+                <div key="b">foo</div>
+                <div key="c">foo</div>
+                <div key="d">foo</div>
+                <div key="e">foo</div>
+            </section>
+        );
+
+        const keyed1 = Array.from(root.getElementsByTagName('div'));
+        const a1 = keyed1[0];
+        const b1 = keyed1[1];
+        const c1 = keyed1[2];
+        const d1 = keyed1[3];
+        const e1 = keyed1[4];
+
+        render(root,
+            <section>
+                <div key="e">bar</div>
+                <div key="d">bar</div>
+                <div key="b">bar</div>
+                <div key="a">bar</div>
+                <div key="c">bar</div>
+            </section>
+        );
+
+        const keyed2 = Array.from(root.getElementsByTagName('div'));
+        const a2 = keyed2[3];
+        const b2 = keyed2[2];
+        const c2 = keyed2[4];
+        const d2 = keyed2[1];
+        const e2 = keyed2[0];
+
+        expect(a1).to.equal(a2);
+        expect(b1).to.equal(b2);
+        expect(c1).to.equal(c2);
+        expect(d1).to.equal(d2);
+        expect(e1).to.equal(e2);
+
+        expectHTML(`
+            <section>
+                <div>bar</div>
+                <div>bar</div>
+                <div>bar</div>
+                <div>bar</div>
+                <div>bar</div>
+            </section>
+        `);
+    });
+
+    it('should support increasing/decreasing keyed nodes', () => {
+        render(root,
+            <section>
+                <div key="a">foo</div>
+                <div key="b">foo</div>
+                <div key="c">foo</div>
+            </section>
+        );
+
+        const keyed1 = Array.from(root.getElementsByTagName('div'));
+        const a1 = keyed1[0];
+        const b1 = keyed1[1];
+        const c1 = keyed1[2];
+
+        render(root,
+            <section>
+                <div key="b">bar</div>
+                <div key="c">bar</div>
+                <div key="a">bar</div>
+                <div key="d">bar</div>
+                <div key="e">bar</div>
+            </section>
+        );
+
+        const keyed2 = Array.from(root.getElementsByTagName('div'));
+        const a2 = keyed2[2];
+        const b2 = keyed2[0];
+        const c2 = keyed2[1];
+        const d1 = keyed2[3];
+        const e1 = keyed2[4];
+
+        expect(a1).to.equal(a2);
+        expect(b1).to.equal(b2);
+        expect(c1).to.equal(c2);
+
+        expectHTML(`
+            <section>
+                <div>bar</div>
+                <div>bar</div>
+                <div>bar</div>
+                <div>bar</div>
+                <div>bar</div>
+            </section>
+        `);
+
+        render(root,
+            <section>
+                <div key="d">baz</div>
+                <div key="e">baz</div>
+                <div key="b">baz</div>
+            </section>
+        );
+
+        const keyed3 = Array.from(root.getElementsByTagName('div'));
+        const b3 = keyed3[2];
+        const d2 = keyed3[0];
+        const e2 = keyed3[1];
+
+        expect(b3).to.equal(b2);
+        expect(d2).to.equal(d1);
+        expect(e2).to.equal(e1);
+
+        expectHTML(`
+            <section>
+                <div>baz</div>
+                <div>baz</div>
+                <div>baz</div>
+            </section>
+        `);
+    });
+
+    it('should support mixed keyed/non-keyed nodes', () => {
+        render(root,
+            <section>
+                <div key="a">foo</div>
+                <span>foo</span>
+                <div key="b">foo</div>
+                <span>foo</span>
+                <div key="c">foo</div>
+                <span>foo</span>
+            </section>
+        );
+
+        const keyed1 = Array.from(root.getElementsByTagName('div'));
+        const a1 = keyed1[0];
+        const b1 = keyed1[1];
+        const c1 = keyed1[2];
+
+        render(root,
+            <section>
+                <span>bar</span>
+                <div key="c">bar</div>
+                <span>bar</span>
+                <span>bar</span>
+                <div key="a">bar</div>
+                <div key="b">bar</div>
+            </section>
+        );
+
+        const keyed2 = Array.from(root.getElementsByTagName('div'));
+        const a2 = keyed2[1];
+        const b2 = keyed2[2];
+        const c2 = keyed2[0];
+
+        expect(a1).to.equal(a2);
+        expect(b1).to.equal(b2);
+        expect(c1).to.equal(c2);
+
+        expectHTML(`
+            <section>
+                <span>bar</span>
+                <div>bar</div>
+                <span>bar</span>
+                <span>bar</span>
+                <div>bar</div>
+                <div>bar</div>
+            </section>
+        `);
+    });
 });

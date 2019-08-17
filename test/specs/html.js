@@ -1,27 +1,29 @@
 import { html } from '../../src/vdom';
 
 describe('html', () => {
-    it('should create an element', () => {
+    it('should create a virtual element', () => {
         expect(html('div')).to.deep.equal({
             type: 'element',
             nodeName: 'div',
             attributes: {},
             children: [],
-            key: null
+            key: null,
+            node: null
         });
     });
 
-    it('should create an element with attributes', () => {
+    it('should create a virtual element with attributes', () => {
         expect(html('div', {id: 'foo', class: 'bar'})).to.deep.equal({
             type: 'element',
             nodeName: 'div',
             attributes: {id: 'foo', class: 'bar'},
             children: [],
-            key: null
+            key: null,
+            node: null
         });
     });
 
-    it('should create an element with a single text child', () => {
+    it('should create a virtual element with a single text child', () => {
         expect(html('div', null, 'foo')).to.deep.equal({
             type: 'element',
             nodeName: 'div',
@@ -29,14 +31,16 @@ describe('html', () => {
             children: [
                 {
                     type: 'text',
-                    text: 'foo'
+                    text: 'foo',
+                    node: null
                 }
             ],
-            key: null
+            key: null,
+            node: null
         });
     });
 
-    it('should create an element with a single element child', () => {
+    it('should create a virtual element with a single element child', () => {
         expect(html('div', null, html('span'))).to.deep.equal({
             type: 'element',
             nodeName: 'div',
@@ -47,14 +51,16 @@ describe('html', () => {
                     nodeName: 'span',
                     attributes: {},
                     children: [],
-                    key: null
+                    key: null,
+                    node: null
                 }
             ],
-            key: null
+            key: null,
+            node: null
         });
     });
 
-    it('should create an element with multiple children', () => {
+    it('should create a virtual element with multiple children', () => {
         expect(html('div', null, html('i'), 'foo', html('em'))).to.deep.equal({
             type: 'element',
             nodeName: 'div',
@@ -65,21 +71,25 @@ describe('html', () => {
                     nodeName: 'i',
                     attributes: {},
                     children: [],
-                    key: null
+                    key: null,
+                    node: null
                 },
                 {
                     type: 'text',
-                    text: 'foo'
+                    text: 'foo',
+                    node: null
                 },
                 {
                     type: 'element',
                     nodeName: 'em',
                     attributes: {},
                     children: [],
-                    key: null
+                    key: null,
+                    node: null
                 }
             ],
-            key: null
+            key: null,
+            node: null
         });
     });
 
@@ -94,24 +104,28 @@ describe('html', () => {
                     nodeName: 'i',
                     attributes: {},
                     children: [],
-                    key: null
+                    key: null,
+                    node: null
                 },
                 {
                     type: 'element',
                     nodeName: 'em',
                     attributes: {},
                     children: [],
-                    key: null
+                    key: null,
+                    node: null
                 },
                 {
                     type: 'element',
                     nodeName: 'span',
                     attributes: {},
                     children: [],
-                    key: null
+                    key: null,
+                    node: null
                 }
             ],
-            key: null
+            key: null,
+            node: null
         });
     });
 
@@ -121,7 +135,8 @@ describe('html', () => {
             nodeName: 'div',
             attributes: {key: 'foo'},
             children: [],
-            key: 'foo'
+            key: 'foo',
+            node: null
         });
     });
 
@@ -135,10 +150,12 @@ describe('html', () => {
             children: [
                 {
                     type: 'text',
-                    text: 'foo'
+                    text: 'foo',
+                    node: null
                 }
             ],
-            key: null
+            key: null,
+            node: null
         });
 
         expect(Component.called).to.equal(true);
@@ -176,10 +193,12 @@ describe('html', () => {
                     children: [
                         {
                             type: 'text',
-                            text: 'Hello World'
+                            text: 'Hello World',
+                            node: null
                         }
                     ],
-                    key: null
+                    key: null,
+                    node: null
                 },
                 {
                     type: 'element',
@@ -188,10 +207,12 @@ describe('html', () => {
                     children: [
                         {
                             type: 'text',
-                            text: 'Lorem ipsum dolor sit amet'
+                            text: 'Lorem ipsum dolor sit amet',
+                            node: null
                         }
                     ],
-                    key: null
+                    key: null,
+                    node: null
                 },
                 {
                     type: 'element',
@@ -205,10 +226,12 @@ describe('html', () => {
                             children: [
                                 {
                                     type: 'text',
-                                    text: 'foo'
+                                    text: 'foo',
+                                    node: null
                                 }
                             ],
-                            key: 'foo'
+                            key: 'foo',
+                            node: null
                         },
                         {
                             type: 'element',
@@ -217,16 +240,20 @@ describe('html', () => {
                             children: [
                                 {
                                     type: 'text',
-                                    text: 'bar'
+                                    text: 'bar',
+                                    node: null
                                 }
                             ],
-                            key: 'bar'
+                            key: 'bar',
+                            node: null
                         }
                     ],
-                    key: null
+                    key: null,
+                    node: null
                 }
             ],
-            key: null
+            key: null,
+            node: null
         });
     });
 });
