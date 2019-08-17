@@ -29,6 +29,102 @@ describe('render', () => {
         document.body.removeChild(root);
     });
 
+    describe('nodes', () => {
+        it('should append to an empty root', () => {
+            const el = render(root,
+                <div></div>
+            );
+
+            expectHTML('<div></div>');
+            expect(el).to.equal(root.firstChild);
+        });
+
+        it('should remove all root children', () => {
+            setHTML('<span></span>');
+            
+            const el = render(root, null);
+
+            expectHTML('');
+            expect(el).to.equal(null);
+        });
+
+        it('should replace the first element', () => {
+            setHTML('<span></span>');
+            
+            const el = render(root,
+                <div></div>
+            );
+
+            expectHTML('<div></div>');
+            expect(el).to.equal(root.firstChild);
+        });
+
+        it('should support SVG', () => {
+            render(root,
+                <svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>
+            );
+
+            expectHTML('<svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>');
+
+            const svg = root.querySelector('svg');
+            expect(svg.nodeType).to.equal(1);
+            expect(svg.namespaceURI).to.equal('http://www.w3.org/2000/svg');
+            expect(svg).to.be.instanceof(SVGElement);
+
+            const circle = svg.querySelector('circle');
+            expect(circle.nodeType).to.equal(1);
+            expect(circle.namespaceURI).to.equal('http://www.w3.org/2000/svg');
+            expect(circle).to.be.instanceof(SVGElement);
+        });
+
+        it('should support refs', () => {
+            const { foo, bar, baz, qux } = render(root,
+                <div ref="foo">
+                    <span ref="bar"></span>
+                    <em ref="baz"></em>
+                    <section>
+                        <i ref="qux"></i>
+                    </section>
+                </div>
+            );
+
+            expectHTML(`
+                <div>
+                    <span></span>
+                    <em></em>
+                    <section>
+                        <i></i>
+                    </section>
+                </div>
+            `);
+
+            expect(foo).to.equal(root.querySelector('div'));
+            expect(bar).to.equal(root.querySelector('span'));
+            expect(baz).to.equal(root.querySelector('em'));
+            expect(qux).to.equal(root.querySelector('i'));
+        });
+
+        it('should skip equal vnodes', () => {
+            setHTML('');
+
+            const vnode = <div></div>;
+
+            render(root,
+                vnode
+            );
+
+            expectHTML('<div></div>');
+
+            vnode.nodeName = 'span';
+
+            render(root,
+                vnode
+            );
+
+            expectHTML('<div></div>');
+        });
+    });
+
     describe('attributes', () => {
         it('should add an attribute', () => {
             setHTML('<div></div>');
@@ -260,40 +356,9 @@ describe('render', () => {
         });
     });
     
-    describe('non-keyed nodes', () => {
-        it('should patch an empty root', () => {
-            const el = render(root,
-                <div></div>
-            );
-
-            expectHTML('<div></div>');
-            expect(el).to.equal(root.firstChild);
-        });
-
-        it('should remove all root children', () => {
-            setHTML('<span></span>');
-            
-            const el = render(root, null);
-
-            expectHTML('');
-            expect(el).to.equal(null);
-        });
-
-        it('should replace an element', () => {
-            setHTML('<span></span>');
-            
-            const el = render(root,
-                <div></div>
-            );
-
-            expectHTML('<div></div>');
-            expect(el).to.equal(root.firstChild);
-        });
-
+    describe('non-keyed children', () => {
         it('should append nodes', () => {            
-            render(root,
-                <div><span>Hello</span></div>
-            );
+            setHTML('<div><span>Hello</span></div>');
 
             render(root, 
                 <div><span>Hello</span><span>World</span></div>
@@ -303,9 +368,7 @@ describe('render', () => {
         });
 
         it('should prepend nodes', () => {            
-            render(root,
-                <div><span>World</span></div>
-            );
+            setHTML('<div><span>World</span></div>');
 
             render(root, 
                 <div><span>Hello</span><span>World</span></div>
@@ -315,9 +378,7 @@ describe('render', () => {
         });
 
         it('should change text nodes', () => {            
-            render(root,
-                <div><span>foo</span><span>bar</span></div>
-            );
+            setHTML('<div><span>foo</span><span>bar</span></div>');
 
             render(root, 
                 <div><span>baz</span><span>qux</span></div>
@@ -343,9 +404,7 @@ describe('render', () => {
         });
 
         it('should replace a text node with an element node', () => {
-            render(root,
-                <div>foo</div>
-            );
+            setHTML('<div>foo</div>');
 
             render(root,
                 <div><span></span></div>
@@ -355,9 +414,7 @@ describe('render', () => {
         });
 
         it('should replace an element node with a text node', () => {
-            render(root,
-                <div><span></span></div>
-            );
+            setHTML('<div><span></span></div>');
 
             render(root,
                 <div>foo</div>
@@ -366,74 +423,19 @@ describe('render', () => {
             expectHTML('<div>foo</div>');
         });
 
-        it('should support SVG', () => {
+        it('should replace an element node with a different element node', () => {
+            setHTML('<div><span></span></div>');
+            
             render(root,
-                <svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>
+                <div><em></em></div>
             );
 
-            expectHTML('<svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>');
-
-            const svg = root.querySelector('svg');
-            expect(svg.nodeType).to.equal(1);
-            expect(svg.namespaceURI).to.equal('http://www.w3.org/2000/svg');
-            expect(svg).to.be.instanceof(SVGElement);
-
-            const circle = svg.querySelector('circle');
-            expect(circle.nodeType).to.equal(1);
-            expect(circle.namespaceURI).to.equal('http://www.w3.org/2000/svg');
-            expect(circle).to.be.instanceof(SVGElement);
-        });
-
-        it('should support refs', () => {
-            const { foo, bar, baz, qux } = render(root,
-                <div ref="foo">
-                    <span ref="bar"></span>
-                    <em ref="baz"></em>
-                    <section>
-                        <i ref="qux"></i>
-                    </section>
-                </div>
-            );
-
-            expectHTML(`
-                <div>
-                    <span></span>
-                    <em></em>
-                    <section>
-                        <i></i>
-                    </section>
-                </div>
-            `);
-
-            expect(foo).to.equal(root.querySelector('div'));
-            expect(bar).to.equal(root.querySelector('span'));
-            expect(baz).to.equal(root.querySelector('em'));
-            expect(qux).to.equal(root.querySelector('i'));
-        });
-
-        it('should skip equal vnodes', () => {
-            setHTML('');
-
-            const vnode = <div></div>;
-
-            render(root,
-                vnode
-            );
-
-            expectHTML('<div></div>');
-
-            vnode.nodeName = 'span';
-
-            render(root,
-                vnode
-            );
-
-            expectHTML('<div></div>');
+            expectHTML('<div><em></em></div>');
         });
     });
 
-    describe('keyed nodes', () => {
-        it('should support appending keyed nodes', () => {
+    describe('keyed children', () => {
+        it('should append keyed nodes', () => {
             render(root,
                 <div>{keyedSpans('a', 'b')}</div>
             );
@@ -459,7 +461,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support prepending keyed nodes', () => {
+        it('should prepend keyed nodes', () => {
             render(root,
                 <div>{keyedSpans('d', 'e')}</div>
             );
@@ -497,7 +499,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support adding keyed nodes in the middle', () => {
+        it('should add keyed nodes in the middle', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'd', 'e')}</div>
             );
@@ -543,7 +545,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support adding keyed nodes at both ends', () => {
+        it('should add keyed nodes at both ends', () => {
             render(root,
                 <div>{keyedSpans('b', 'c', 'd')}</div>
             );
@@ -585,7 +587,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support removing keyed nodes', () => {
+        it('should remove keyed nodes', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd')}</div>
             );
@@ -608,7 +610,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support removing keyed nodes from the beginning', () => {
+        it('should remove keyed nodes from the beginning', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd')}</div>
             );
@@ -645,7 +647,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support removing keyed nodes from the middle', () => {
+        it('should remove keyed nodes from the middle', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd', 'e')}</div>
             );
@@ -691,7 +693,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support removing keyed nodes at both ends', () => {
+        it('should remove keyed nodes at both ends', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd', 'e')}</div>
             );
@@ -733,7 +735,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support moving keyed nodes forward', () => {
+        it('should move keyed nodes forward', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd')}</div>
             );
@@ -778,7 +780,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support moving keyed nodes to the end', () => {
+        it('should move keyed nodes to the end', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd')}</div>
             );
@@ -823,7 +825,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support moving keyed nodes backwards', () => {
+        it('should move keyed nodes backwards', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd')}</div>
             );
@@ -868,7 +870,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support moving keyed nodes to the beginning', () => {
+        it('should move keyed nodes to the beginning', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd')}</div>
             );
@@ -913,7 +915,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support swapping the first and last keyed nodes', () => {
+        it('should swap the first and last keyed nodes', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd')}</div>
             );
@@ -958,7 +960,7 @@ describe('render', () => {
             `);
         });
 
-        it('should support reversed ordering of keyed nodes', () => {
+        it('should reverse the order of keyed nodes', () => {
             render(root,
                 <div>{keyedSpans('a', 'b', 'c', 'd', 'e', 'f', 'g')}</div>
             );

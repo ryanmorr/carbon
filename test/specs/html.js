@@ -1,4 +1,4 @@
-import { html } from '../../src/velvet';
+import { html, recycle } from '../../src/html';
 
 describe('html', () => {
     describe('hyperscript', () => {
