@@ -3,6 +3,7 @@ import { html } from '../../src/vdom';
 describe('html', () => {
     it('should create an element', () => {
         expect(html('div')).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {},
             children: [],
@@ -12,6 +13,7 @@ describe('html', () => {
 
     it('should create an element with attributes', () => {
         expect(html('div', {id: 'foo', class: 'bar'})).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {id: 'foo', class: 'bar'},
             children: [],
@@ -21,40 +23,56 @@ describe('html', () => {
 
     it('should create an element with a single text child', () => {
         expect(html('div', null, 'foo')).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {},
-            children: ['foo'],
+            children: [
+                {
+                    type: 'text',
+                    text: 'foo'
+                }
+            ],
             key: null
         });
     });
 
     it('should create an element with a single element child', () => {
         expect(html('div', null, html('span'))).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {},
-            children: [{
-                nodeName: 'span',
-                attributes: {},
-                children: [],
-                key: null
-            }],
+            children: [
+                {
+                    type: 'element',
+                    nodeName: 'span',
+                    attributes: {},
+                    children: [],
+                    key: null
+                }
+            ],
             key: null
         });
     });
 
     it('should create an element with multiple children', () => {
         expect(html('div', null, html('i'), 'foo', html('em'))).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {},
             children: [
                 {
+                    type: 'element',
                     nodeName: 'i',
                     attributes: {},
                     children: [],
                     key: null
                 },
-                'foo',
                 {
+                    type: 'text',
+                    text: 'foo'
+                },
+                {
+                    type: 'element',
                     nodeName: 'em',
                     attributes: {},
                     children: [],
@@ -67,22 +85,26 @@ describe('html', () => {
 
     it('should accept an array as children', () => {
         expect(html('div', null, [html('i'), html('em')], html('span'))).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {},
             children: [
                 {
+                    type: 'element',
                     nodeName: 'i',
                     attributes: {},
                     children: [],
                     key: null
                 },
                 {
+                    type: 'element',
                     nodeName: 'em',
                     attributes: {},
                     children: [],
                     key: null
                 },
                 {
+                    type: 'element',
                     nodeName: 'span',
                     attributes: {},
                     children: [],
@@ -95,6 +117,7 @@ describe('html', () => {
 
     it('should support keys', () => {
         expect(html('div', {key: 'foo'})).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {key: 'foo'},
             children: [],
@@ -106,9 +129,15 @@ describe('html', () => {
         const Component = sinon.spy((attributes, child) => html('div', attributes, child));
 
         expect(html(Component, {foo: 1, bar: 2, baz: 3}, 'foo')).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {foo: 1, bar: 2, baz: 3},
-            children: ['foo'],
+            children: [
+                {
+                    type: 'text',
+                    text: 'foo'
+                }
+            ],
             key: null
         });
 
@@ -136,35 +165,61 @@ describe('html', () => {
                 </Component>
             </div>
         )).to.deep.equal({
+            type: 'element',
             nodeName: 'div',
             attributes: {},
             children: [
                 {
+                    type: 'element',
                     nodeName: 'h1',
                     attributes: {},
-                    children: ['Hello World'],
+                    children: [
+                        {
+                            type: 'text',
+                            text: 'Hello World'
+                        }
+                    ],
                     key: null
                 },
                 {
+                    type: 'element',
                     nodeName: 'section',
                     attributes: {class: 'content'},
-                    children: ['Lorem ipsum dolor sit amet'],
+                    children: [
+                        {
+                            type: 'text',
+                            text: 'Lorem ipsum dolor sit amet'
+                        }
+                    ],
                     key: null
                 },
                 {
+                    type: 'element',
                     nodeName: 'div',
                     attributes: {id: '1', class: '2'},
                     children: [
                         {
+                            type: 'element',
                             nodeName: 'div',
                             attributes: {key: 'foo'},
-                            children: ['foo'],
+                            children: [
+                                {
+                                    type: 'text',
+                                    text: 'foo'
+                                }
+                            ],
                             key: 'foo'
                         },
                         {
+                            type: 'element',
                             nodeName: 'div',
                             attributes: {key: 'bar'},
-                            children: ['bar'],
+                            children: [
+                                {
+                                    type: 'text',
+                                    text: 'bar'
+                                }
+                            ],
                             key: 'bar'
                         }
                     ],

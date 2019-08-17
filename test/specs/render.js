@@ -34,20 +34,9 @@ describe('render', () => {
         expect(el).to.equal(root.firstChild);
     });
 
-    it('should patch a text node', () => {
-        setHTML('foo');
-
-        const el = render(root,
-            'bar'
-        );
-
-        expectHTML('bar');
-        expect(el).to.equal(root.firstChild);
-    });
-
     it('should replace an element', () => {
         setHTML('<span></span>');
-
+        
         const el = render(root,
             <div></div>
         );
@@ -257,10 +246,10 @@ describe('render', () => {
 
     it('should convert numbers to text nodes', () => {
         render(root,
-            123
+            <div>{123}</div>
         );
 
-        expect(root.innerHTML).to.equal('123');
+        expect(root.innerHTML).to.equal('<div>123</div>');
     });
 
     it('should skip equal vnodes', () => {
