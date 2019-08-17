@@ -14,8 +14,8 @@ function getKey(vnode) {
     return vnode.attributes ? vnode.attributes.key : null;
 }
 
-function isSameNode(oldVNode, newVNode) {
-    return getKey(oldVNode) === getKey(newVNode) && oldVNode.nodeName === newVNode.nodeName;
+function isSameNode(a, b) {
+    return getKey(a) === getKey(b) && a.nodeName === b.nodeName;
 }
 
 function isSameNodeType(a, b) {
@@ -35,14 +35,33 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
     const map = {};
     for (let i = beginIdx; i <= endIdx; ++i) {
         const child = children[i];
-        if (child != null) {
-            key = child.key;
-            if (key !== undefined) {
-                map[key] = i;
-            }
+        const key = child && child.key;
+        if (key != null) {
+            map[key] = i;
         }
     }
     return map;
+}
+
+function createVNode(nodeName, attributes, children) {
+    attributes = attributes || {};
+    children = flatten(children).map((vchild) => typeof vchild === 'object' ? vchild : createTextVNode(vchild));
+    return {
+        type: 'element',
+        node: null,
+        nodeName,
+        attributes,
+        children,
+        key: attributes.key || null
+    };
+}
+
+function createTextVNode(text) {
+    return {
+        type: 'text',
+        node: null,
+        text
+    };
 }
 
 function createElement(vnode, isSvg = false) {
@@ -105,7 +124,7 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
     let newEndIndex = newChildren.length - 1;
     let newStartChild = newChildren[0];
     let newEndChild = newChildren[newEndIndex];
-    let oldIndicesByKey
+    let oldKeyToIdx;
     while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
         if (!oldStartChild) {
             oldStartChild = oldChildren[++oldStartIndex];
@@ -130,11 +149,11 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
             oldEndChild = oldChildren[--oldEndIndex];
             newStartChild = newChildren[++newStartIndex];
         } else {
-            if (!oldIndicesByKey) {
-                oldIndicesByKey = createKeyToIndexMap(oldChildren, oldStartIndex, oldEndIndex);
+            if (!oldKeyToIdx) {
+                oldKeyToIdx = createKeyToIndexMap(oldChildren, oldStartIndex, oldEndIndex);
             }
             let key = getKey(newStartChild);
-            let oldIndex = key ? oldIndicesByKey[key] : null;
+            let oldIndex = key ? oldKeyToIdx[key] : null;
             if (oldIndex == null) {
                 parent.insertBefore(createElement(newStartChild, isSvg), oldStartChild.node);
                 newStartChild = newChildren[++newStartIndex];
@@ -155,7 +174,9 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
     } else if (newStartIndex > newEndIndex) {
         for (let i = oldStartIndex; i <= oldEndIndex; i++) {
             let child = oldChildren[i];
-            if (child && child.node) child.node.remove();
+            if (child && child.node) {
+                child.node.remove();
+            }
         }
     }
 }
@@ -176,7 +197,7 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
         const oldVAttrs = oldVNode.attributes;
         const newVAttrs = newVNode.attributes;
         for (const name in merge(newVAttrs, oldVAttrs)) {
-            if ((name === 'value' || name === 'selected' || name === 'checked '? element[name] : oldVAttrs[name]) !== newVAttrs[name]) {
+            if ((name === 'value' || name === 'selected' || name === 'checked ' ? element[name] : oldVAttrs[name]) !== newVAttrs[name]) {
                 patchAttribute(element, name, newVAttrs[name], oldVAttrs[name], isSvg);
             }
         }
@@ -215,27 +236,6 @@ export function recycle(node) {
         );
     vnode.node = node;
     return vnode;
-}
-
-function createVNode(nodeName, attributes, children) {
-    attributes = attributes || {};
-    children = flatten(children).map((vchild) => typeof vchild === 'object' ? vchild : createTextVNode(vchild));
-    return {
-        type: 'element',
-        node: null,
-        nodeName,
-        attributes,
-        children,
-        key: attributes.key || null
-    };
-}
-
-function createTextVNode(text) {
-    return {
-        type: 'text',
-        node: null,
-        text
-    };
 }
 
 export function html(nodeName, attributes, ...children) {
