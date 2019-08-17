@@ -294,10 +294,20 @@ describe('render', () => {
             </div>
         );
 
-        expect(compact(foo.outerHTML)).to.equal('<div><span></span><em></em><section><i></i></section></div>');
-        expect(compact(bar.outerHTML)).to.equal('<span></span>');
-        expect(compact(baz.outerHTML)).to.equal('<em></em>');
-        expect(compact(qux.outerHTML)).to.equal('<i></i>');
+        expectHTML(`
+            <div>
+                <span></span>
+                <em></em>
+                <section>
+                    <i></i>
+                </section>
+            </div>
+        `);
+
+        expect(foo).to.equal(root.querySelector('div'));
+        expect(bar).to.equal(root.querySelector('span'));
+        expect(baz).to.equal(root.querySelector('em'));
+        expect(qux).to.equal(root.querySelector('i'));
     });
 
     it('should skip equal vnodes', () => {
