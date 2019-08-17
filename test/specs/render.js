@@ -252,6 +252,23 @@ describe('render', () => {
         expect(root.innerHTML).to.equal('<div>123</div>');
     });
 
+    it('should support refs', () => {
+        const { foo, bar, baz, qux } = render(root,
+            <div ref="foo">
+                <span ref="bar"></span>
+                <em ref="baz"></em>
+                <section>
+                    <i ref="qux"></i>
+                </section>
+            </div>
+        );
+
+        expect(compact(foo.outerHTML)).to.equal('<div><span></span><em></em><section><i></i></section></div>');
+        expect(compact(bar.outerHTML)).to.equal('<span></span>');
+        expect(compact(baz.outerHTML)).to.equal('<em></em>');
+        expect(compact(qux.outerHTML)).to.equal('<i></i>');
+    });
+
     it('should skip equal vnodes', () => {
         setHTML('');
 
