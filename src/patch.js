@@ -53,7 +53,7 @@ function createElement(vnode, refs, isSvg = false) {
         isSvg = (isSvg || nodeName === 'svg');
         node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
         const attributes = vnode.attributes;
-        Object.keys(attributes).forEach((name) => patchAttribute(node, name, attributes[name], null, isSvg));
+        Object.keys(attributes).forEach((name) => patchAttribute(node, name, null, attributes[name], isSvg));
         const ref = attributes.ref;
         if (ref) {
             refs[ref] = node;
@@ -64,7 +64,7 @@ function createElement(vnode, refs, isSvg = false) {
     return node;
 }
 
-function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
+function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
     if (name === 'key' || name === 'ref') {
         return;
     }
@@ -191,7 +191,7 @@ export default function patch(parent, oldVNode, newVNode, refs, isSvg = false) {
         const newVAttrs = newVNode.attributes;
         for (const name in merge(newVAttrs, oldVAttrs)) {
             if ((name === 'value' || name === 'selected' || name === 'checked ' ? element[name] : oldVAttrs[name]) !== newVAttrs[name]) {
-                patchAttribute(element, name, newVAttrs[name], oldVAttrs[name], isSvg);
+                patchAttribute(element, name, oldVAttrs[name], newVAttrs[name], isSvg);
             }
         }
         patchChildren(element, oldVNode.children, newVNode.children, refs, isSvg);
