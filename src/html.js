@@ -1,9 +1,6 @@
 const cache = new Map();
 const newLineRe = /^\s*\n\s*|\s*\n\s*$/g;
 
-export const ELEMENT_NODE = 1;
-export const TEXT_NODE = 3;
-
 const TAG_SET = 1;
 const PROPS_SET = 2;
 const PROPS_ASSIGN = 3;
@@ -15,6 +12,9 @@ const MODE_TEXT = 1;
 const MODE_WHITESPACE = 2;
 const MODE_TAGNAME = 3;
 const MODE_ATTRIBUTE = 4;
+
+export const ELEMENT_NODE = 1;
+export const TEXT_NODE = 3;
 
 function flatten(arr) {
     return [].concat.apply([], arr);

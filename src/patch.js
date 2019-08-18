@@ -1,9 +1,9 @@
 import { TEXT_NODE } from './html';
 
-const events = [];
+const EVENTS = [];
 for (const prop in document) {
     if (prop.substring(0,2) === 'on' && (document[prop] === null || typeof document[prop] === 'function')) {
-        events.push(prop);
+        EVENTS.push(prop);
     }
 }
 
@@ -81,7 +81,7 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
                 }
             }
         }
-    } else if (events.includes(name)) {
+    } else if (EVENTS.includes(name)) {
         name = name.slice(2).toLowerCase();
         if (newVal == null) {
             element.removeEventListener(name, oldVal);
@@ -175,12 +175,11 @@ export default function patch(parent, oldVNode, newVNode, refs, isSvg = false) {
     }
     let element = oldVNode.node;
     if (newVNode == null) {
-        parent.removeChild(element);
-        return null;
+        return parent.removeChild(element) && null;
     }
     if (oldVNode.type === TEXT_NODE && newVNode.type === TEXT_NODE) {
         if (oldVNode.text !== newVNode.text) {
-            oldVNode.node.nodeValue = newVNode.text;
+            element.nodeValue = newVNode.text;
         }
     } else if (!isSameNodeType(newVNode, oldVNode)) {
         const newElement = createElement(newVNode, refs, isSvg);
