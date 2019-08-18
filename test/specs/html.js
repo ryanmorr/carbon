@@ -141,6 +141,28 @@ describe('html', () => {
             });
         });
 
+        it('should remove null and undefined children', () => {
+            expect(html('div', {}, [null, 'foo', undefined, 'bar'])).to.deep.equal({
+                type: ELEMENT_NODE,
+                nodeName: 'div',
+                attributes: {},
+                children: [
+                    {
+                        type: TEXT_NODE,
+                        text: 'foo',
+                        node: null
+                    },
+                    {
+                        type: TEXT_NODE,
+                        text: 'bar',
+                        node: null
+                    }
+                ],
+                key: null,
+                node: null
+            });
+        });
+
         it('should support functional components', () => {
             const Component = sinon.spy((attributes, child) => html('div', attributes, child));
 
@@ -1100,6 +1122,28 @@ describe('html', () => {
                     {
                         type: TEXT_NODE,
                         text: 'after',
+                        node: null
+                    }
+                ],
+                key: null,
+                node: null
+            });
+        });
+
+        it('should remove null and undefined children', () => {
+            expect(html`<div>${null}foo${undefined}bar</div>`).to.deep.equal({
+                type: ELEMENT_NODE,
+                nodeName: 'div',
+                attributes: {},
+                children: [
+                    {
+                        type: TEXT_NODE,
+                        text: 'foo',
+                        node: null
+                    },
+                    {
+                        type: TEXT_NODE,
+                        text: 'bar',
                         node: null
                     }
                 ],

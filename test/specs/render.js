@@ -441,6 +441,19 @@ describe('render', () => {
 
             expectHTML('<div><em></em></div>');
         });
+
+        it('should not render null and undefined children', () => {            
+            render(root,
+                <div>
+                    {null}
+                    foo
+                    {undefined}
+                    bar
+                </div>
+            );
+
+            expectHTML('<div>foobar</div>');
+        });
     });
 
     describe('keyed children', () => {

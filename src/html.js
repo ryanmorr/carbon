@@ -122,14 +122,19 @@ function createVNode(nodeName, attributes, ...children) {
     if (typeof nodeName === 'function') {
         return nodeName(attributes, children);
     }
-    children = flatten(children).map((vchild) => typeof vchild === 'object' ? vchild : createTextVNode(vchild));
     return {
         type: ELEMENT_NODE,
         node: null,
         nodeName,
         attributes,
-        children,
-        key: attributes.key || null
+        key: attributes.key || null,
+        children: flatten(children).reduce((vnodes, vchild) => {
+            if (vchild == null) {
+                return vnodes;
+            }
+            vnodes.push(typeof vchild === 'object' ? vchild : createTextVNode(vchild));
+            return vnodes;
+        }, [])
     };
 }
 
