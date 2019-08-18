@@ -164,6 +164,23 @@ describe('html', () => {
             expect(Component.args[0][1]).to.deep.equal(['foo']);
         });
 
+        it('should provide an empty object and an empty array to functional components if no attributes or children are supplied', () => {
+            const Component = sinon.spy(() => <div></div>);
+
+            expect(html(Component)).to.deep.equal({
+                type: 'element',
+                nodeName: 'div',
+                attributes: {},
+                children: [],
+                key: null,
+                node: null
+            });
+
+            expect(Component.called).to.equal(true);
+            expect(Component.args[0][0]).to.deep.equal({});
+            expect(Component.args[0][1]).to.deep.equal([]);
+        });
+
         it('should support JSX', () => {
             const title = 'Hello World';
             const content = 'Lorem ipsum dolor sit amet';
@@ -1112,6 +1129,58 @@ describe('html', () => {
             expect(Component.called).to.equal(true);
             expect(Component.args[0][0]).to.deep.equal({foo: 1, bar: 2, baz: 3});
             expect(Component.args[0][1]).to.deep.equal(['foo']);
+        });
+
+        it('should provide an empty object and an empty array to functional components if no attributes or children are supplied', () => {
+            const Component = sinon.spy(() => html`<div></div>`);
+
+            expect(html`<${Component} />`).to.deep.equal({
+                type: 'element',
+                nodeName: 'div',
+                attributes: {},
+                children: [],
+                key: null,
+                node: null
+            });
+
+            expect(Component.called).to.equal(true);
+            expect(Component.args[0][0]).to.deep.equal({});
+            expect(Component.args[0][1]).to.deep.equal([]);
+        });
+
+        it('should support appending children provided to functional components as an array', () => {
+            const Component = sinon.spy((attributes, children) => html`<div>${children}</div>`);
+
+            expect(html`<${Component}><div></div>foo<span></span><//>`).to.deep.equal({
+                type: 'element',
+                nodeName: 'div',
+                attributes: {},
+                children: [
+                    {
+                        type: 'element',
+                        nodeName: 'div',
+                        attributes: {},
+                        children: [],
+                        key: null,
+                        node: null
+                    },
+                    {
+                        type: 'text',
+                        text: 'foo',
+                        node: null
+                    },
+                    {
+                        type: 'element',
+                        nodeName: 'span',
+                        attributes: {},
+                        children: [],
+                        key: null,
+                        node: null
+                    }
+                ],
+                key: null,
+                node: null
+            });
         });
     });
 
