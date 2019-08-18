@@ -13,10 +13,6 @@ const MODE_WHITESPACE = 2;
 const MODE_TAGNAME = 3;
 const MODE_ATTRIBUTE = 4;
 
-function isFunction(obj) {
-    return typeof obj === 'function';
-}
-
 function flatten(arr) {
     return [].concat.apply([], arr);
 }
@@ -120,7 +116,7 @@ function build(statics) {
 
 function createVNode(nodeName, attributes, ...children) {
     attributes = attributes || {};
-    if (isFunction(nodeName)) {
+    if (typeof nodeName === 'function') {
         return nodeName(attributes, children);
     }
     children = flatten(children).map((vchild) => typeof vchild === 'object' ? vchild : createTextVNode(vchild));
