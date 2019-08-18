@@ -329,6 +329,15 @@ describe('render', () => {
             expectHTML('<div></div>');
         });
 
+        it('should not set an attribute for functions', () => {
+            render(root,
+                <div oncreate={() => {}}></div>
+            );
+
+            expect(root.innerHTML).to.equal('<div></div>');
+            expect(root.oncreate).to.equal(undefined);
+        });
+
         it('should patch deeply nested attributes', () => {
             setHTML(`
                 <section>

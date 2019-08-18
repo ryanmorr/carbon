@@ -91,6 +91,9 @@ function patchAttribute(element, name, newVal, oldVal, isSvg = false) {
     } else if (newVal == null || newVal === false) {
         element.removeAttribute(name);
     } else {
+        if (typeof newVal === 'function') {
+            return;
+        }
         element.setAttribute(name, newVal);
     }
 }
