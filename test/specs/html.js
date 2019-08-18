@@ -1,10 +1,10 @@
-import { html, recycle } from '../../src/html';
+import { html, recycle, ELEMENT_NODE, TEXT_NODE } from '../../src/html';
 
 describe('html', () => {
     describe('hyperscript', () => {
         it('should create a virtual element', () => {
             expect(html('div')).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -15,7 +15,7 @@ describe('html', () => {
 
         it('should create a virtual element with attributes', () => {
             expect(html('div', {id: 'foo', class: 'bar'})).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {id: 'foo', class: 'bar'},
                 children: [],
@@ -26,12 +26,12 @@ describe('html', () => {
 
         it('should create a virtual element with a single text child', () => {
             expect(html('div', null, 'foo')).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     }
@@ -43,12 +43,12 @@ describe('html', () => {
 
         it('should create a virtual element with a single element child', () => {
             expect(html('div', null, html('span'))).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -63,12 +63,12 @@ describe('html', () => {
 
         it('should create a virtual element with multiple children', () => {
             expect(html('div', null, html('i'), 'foo', html('em'))).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'i',
                         attributes: {},
                         children: [],
@@ -76,12 +76,12 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'em',
                         attributes: {},
                         children: [],
@@ -96,12 +96,12 @@ describe('html', () => {
 
         it('should accept an array as children', () => {
             expect(html('div', null, [html('i'), html('em')], html('span'))).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'i',
                         attributes: {},
                         children: [],
@@ -109,7 +109,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'em',
                         attributes: {},
                         children: [],
@@ -117,7 +117,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -132,7 +132,7 @@ describe('html', () => {
 
         it('should support keys', () => {
             expect(html('div', {key: 'foo'})).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {key: 'foo'},
                 children: [],
@@ -145,12 +145,12 @@ describe('html', () => {
             const Component = sinon.spy((attributes, child) => html('div', attributes, child));
 
             expect(html(Component, {foo: 1, bar: 2, baz: 3}, 'foo')).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 1, bar: 2, baz: 3},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     }
@@ -168,7 +168,7 @@ describe('html', () => {
             const Component = sinon.spy(() => <div></div>);
 
             expect(html(Component)).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -200,17 +200,17 @@ describe('html', () => {
                     </Component>
                 </div>
             )).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'h1',
                         attributes: {},
                         children: [
                             {
-                                type: 'text',
+                                type: TEXT_NODE,
                                 text: 'Hello World',
                                 node: null
                             }
@@ -219,12 +219,12 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'section',
                         attributes: {class: 'content'},
                         children: [
                             {
-                                type: 'text',
+                                type: TEXT_NODE,
                                 text: 'Lorem ipsum dolor sit amet',
                                 node: null
                             }
@@ -233,17 +233,17 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'div',
                         attributes: {id: '1', class: '2'},
                         children: [
                             {
-                                type: 'element',
+                                type: ELEMENT_NODE,
                                 nodeName: 'div',
                                 attributes: {key: 'foo'},
                                 children: [
                                     {
-                                        type: 'text',
+                                        type: TEXT_NODE,
                                         text: 'foo',
                                         node: null
                                     }
@@ -252,12 +252,12 @@ describe('html', () => {
                                 node: null
                             },
                             {
-                                type: 'element',
+                                type: ELEMENT_NODE,
                                 nodeName: 'div',
                                 attributes: {key: 'bar'},
                                 children: [
                                     {
-                                        type: 'text',
+                                        type: TEXT_NODE,
                                         text: 'bar',
                                         node: null
                                     }
@@ -283,7 +283,7 @@ describe('html', () => {
         
         it('should support single named elements', () => {
             expect(html`<div />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -292,7 +292,7 @@ describe('html', () => {
             });
 
             expect(html`<div/>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -303,7 +303,7 @@ describe('html', () => {
 
         it('should support closing tags', () => {
             expect(html`<div></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -314,7 +314,7 @@ describe('html', () => {
 
         it('should support auto-closing tags', () => {
             expect(html`<div><//>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -326,7 +326,7 @@ describe('html', () => {
         it('should support multiple root elements', () => {
                 expect(html`<div /><span></span><em><//>`).to.deep.equal([
                 {
-                    type: 'element',
+                    type: ELEMENT_NODE,
                     nodeName: 'div',
                     attributes: {},
                     children: [],
@@ -334,7 +334,7 @@ describe('html', () => {
                     node: null
                 },
                 {
-                    type: 'element',
+                    type: ELEMENT_NODE,
                     nodeName: 'span',
                     attributes: {},
                     children: [],
@@ -342,7 +342,7 @@ describe('html', () => {
                     node: null
                 },
                 {
-                    type: 'element',
+                    type: ELEMENT_NODE,
                     nodeName: 'em',
                     attributes: {},
                     children: [],
@@ -354,7 +354,7 @@ describe('html', () => {
 
         it('should support dynamic tag names', () => {
             expect(html`<${'foo'} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'foo',
                 attributes: {},
                 children: [],
@@ -365,7 +365,7 @@ describe('html', () => {
 
         it('should support a boolean attribute', () => {
             expect(html`<div foo />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: true},
                 children: [],
@@ -376,7 +376,7 @@ describe('html', () => {
 
         it('should support multiple boolean attributes', () => {
             expect(html`<div foo bar />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: true, bar: true},
                 children: [],
@@ -387,7 +387,7 @@ describe('html', () => {
 
         it('should support an attribute with an empty value', () => {
             expect(html`<div foo="" />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: ''},
                 children: [],
@@ -398,7 +398,7 @@ describe('html', () => {
 
         it('should support multiple attributes with empty values', () => {
             expect(html`<div foo="" bar="" />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: '', bar: ''},
                 children: [],
@@ -409,7 +409,7 @@ describe('html', () => {
 
         it('should support an attribute with a static value', () => {
             expect(html`<div foo="bar" />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar'},
                 children: [],
@@ -420,7 +420,7 @@ describe('html', () => {
 
         it('should support an attribute with a static value followed by a boolean attribute', () => {
             expect(html`<div foo="bar" baz />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar', baz: true},
                 children: [],
@@ -431,7 +431,7 @@ describe('html', () => {
 
         it('should support multiple attributes with a static value', () => {
             expect(html`<div foo="bar" baz="qux" />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar', baz: 'qux'},
                 children: [],
@@ -442,7 +442,7 @@ describe('html', () => {
 
         it('should support an attribute with a dyanmic value', () => {
             expect(html`<div foo=${'bar'} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar'},
                 children: [],
@@ -455,7 +455,7 @@ describe('html', () => {
             function onClick() {}
 
             expect(html`<div foo=${'bar'} onClick=${onClick} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar', onClick: onClick},
                 children: [],
@@ -466,7 +466,7 @@ describe('html', () => {
 
         it('should support an attribute with a quoted dynamic value', () => {
             expect(html`<div foo="${'bar'}" />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar'},
                 children: [],
@@ -477,7 +477,7 @@ describe('html', () => {
 
         it('should support an attribute with a quoted dyanmic value that ignores static parts', () => {
             expect(html`<div foo="before${'bar'}after" />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar'},
                 children: [],
@@ -488,7 +488,7 @@ describe('html', () => {
 
         it('should support hyphens in attribute names', () => {
             expect(html`<div foo-bar />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {'foo-bar': true},
                 children: [],
@@ -499,7 +499,7 @@ describe('html', () => {
 
         it('should support NUL characters in attribute values', () => {
             expect(html`<div foo="\0" />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: '\0'},
                 children: [],
@@ -508,7 +508,7 @@ describe('html', () => {
             });
 
             expect(html`<div foo="\0" bar baz=${'qux'} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: '\0', bar: true, baz: 'qux'},
                 children: [],
@@ -519,7 +519,7 @@ describe('html', () => {
 
         it('should support keys', () => {
             expect(html`<div key="foo"></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {key: 'foo'},
                 children: [],
@@ -530,7 +530,7 @@ describe('html', () => {
 
         it('should support spread attributes', () => {
             expect(html`<div ...${{ foo: 'bar' }} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar'},
                 children: [],
@@ -539,7 +539,7 @@ describe('html', () => {
             });
 
             expect(html`<div a ...${{ foo: 'bar' }} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: true, foo: 'bar'},
                 children: [],
@@ -548,7 +548,7 @@ describe('html', () => {
             });
 
             expect(html`<div a b ...${{ foo: 'bar' }} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: true, b: true, foo: 'bar'},
                 children: [],
@@ -557,7 +557,7 @@ describe('html', () => {
             });
 
             expect(html`<div ...${{ foo: 'bar' }} a />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: true, foo: 'bar'},
                 children: [],
@@ -566,7 +566,7 @@ describe('html', () => {
             });
 
             expect(html`<div ...${{ foo: 'bar' }} a b />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: true, b: true, foo: 'bar'},
                 children: [],
@@ -575,7 +575,7 @@ describe('html', () => {
             });
 
             expect(html`<div a="1" ...${{ foo: 'bar' }} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: '1', foo: 'bar'},
                 children: [],
@@ -584,12 +584,12 @@ describe('html', () => {
             });
 
             expect(html`<div a="1"><span b="2" ...${{ c: 'bar' }}/></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: '1'},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {b: '2', c: 'bar'},
                         children: [],
@@ -602,17 +602,17 @@ describe('html', () => {
             });
 
             expect(html`<div a=${1} ...${{ b: 2 }}>c: ${3}</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: 1, b: 2},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'c: ',
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 3,
                         node: null
                     }
@@ -622,12 +622,12 @@ describe('html', () => {
             });
 
             expect(html`<div ...${{ c: 'bar' }}><span ...${{ d: 'baz' }}/></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {c: 'bar'},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {d: 'baz'},
                         children: [],
@@ -642,7 +642,7 @@ describe('html', () => {
 
         it('should support multiple spread attributes in one element', () => {
             expect(html`<div ...${{ foo: 'bar' }} ...${{ baz: 'qux' }} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 'bar', baz: 'qux'},
                 children: [],
@@ -659,12 +659,12 @@ describe('html', () => {
 
         it('should support a text child', () => {
             expect(html`<div>foo</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     }
@@ -674,12 +674,12 @@ describe('html', () => {
             });
 
             expect(html`<div>foo bar</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo bar',
                         node: null
                     }
@@ -689,17 +689,17 @@ describe('html', () => {
             });
 
             expect(html`<div>foo "<span /></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {   
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo "',
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -714,12 +714,12 @@ describe('html', () => {
 
         it('should support NUL characters in text children', () => {
             expect(html`<div>\0</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: '\0',
                         node: null
                     }
@@ -729,17 +729,17 @@ describe('html', () => {
             });
 
             expect(html`<div>\0${'foo'}</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: '\0',
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     }
@@ -751,12 +751,12 @@ describe('html', () => {
 
         it('should support an element child', () => {
             expect(html`<div><span /></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -769,12 +769,12 @@ describe('html', () => {
             });
 
             expect(html`<div><span></span></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -789,12 +789,12 @@ describe('html', () => {
 
         it('should support multiple element children', () => {
             expect(html`<div><span /><em /><a></a></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -802,7 +802,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'em',
                         attributes: {},
                         children: [],
@@ -810,7 +810,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'a',
                         attributes: {},
                         children: [],
@@ -823,12 +823,12 @@ describe('html', () => {
             });
 
             expect(html`<div a><span b /><em c /></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {a: true},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {b: true},
                         children: [],
@@ -836,7 +836,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'em',
                         attributes: {c: true},
                         children: [],
@@ -849,12 +849,12 @@ describe('html', () => {
             });
 
             expect(html`<div x=1><span y=2 /><em z=3 /></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {x: '1'},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {y: '2'},
                         children: [],
@@ -862,7 +862,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'em',
                         attributes: {z: '3'},
                         children: [],
@@ -875,12 +875,12 @@ describe('html', () => {
             });
 
             expect(html`<div x=${1}><span y=${2} /><em z=${3} /></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {x: 1},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {y: 2},
                         children: [],
@@ -888,7 +888,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'em',
                         attributes: {z: 3},
                         children: [],
@@ -903,12 +903,12 @@ describe('html', () => {
 
         it('should support a dynamic child', () => {
             expect(html`<div>${'foo'}</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     }
@@ -920,17 +920,17 @@ describe('html', () => {
 
         it('should support mixed type children', () => {
             expect(html`<div>${'foo'}bar</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'bar',
                         node: null
                     }
@@ -940,22 +940,22 @@ describe('html', () => {
             });
 
             expect(html`<div>before${'foo'}after</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'before',
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'after',
                         node: null
                     }
@@ -965,17 +965,17 @@ describe('html', () => {
             });
 
             expect(html`<div>foo<span /></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -988,12 +988,12 @@ describe('html', () => {
             });
 
             expect(html`<div><span />foo</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -1001,7 +1001,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     }
@@ -1011,17 +1011,17 @@ describe('html', () => {
             });
 
             expect(html`<div>foo<span />bar</div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -1029,7 +1029,7 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'bar',
                         node: null
                     }
@@ -1039,17 +1039,17 @@ describe('html', () => {
             });
 
             expect(html`<div>foo<span a="b" /></div>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {a: 'b'},
                         children: [],
@@ -1070,22 +1070,22 @@ describe('html', () => {
                     after
                 </div>
             `).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'before',
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -1093,12 +1093,12 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'bar',
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'after',
                         node: null
                     }
@@ -1112,12 +1112,12 @@ describe('html', () => {
             const Component = sinon.spy((attributes, children) => html`<div ...${attributes}>${children[0]}</div>`);
 
             expect(html`<${Component} foo=${1} bar=${2}, baz=${3}>foo</${Component}>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {foo: 1, bar: 2, baz: 3},
                 children: [
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     }
@@ -1135,7 +1135,7 @@ describe('html', () => {
             const Component = sinon.spy(() => html`<div></div>`);
 
             expect(html`<${Component} />`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -1152,12 +1152,12 @@ describe('html', () => {
             const Component = sinon.spy((attributes, children) => html`<div>${children}</div>`);
 
             expect(html`<${Component}><div></div>foo<span></span><//>`).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'div',
                         attributes: {},
                         children: [],
@@ -1165,12 +1165,12 @@ describe('html', () => {
                         node: null
                     },
                     {
-                        type: 'text',
+                        type: TEXT_NODE,
                         text: 'foo',
                         node: null
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {},
                         children: [],
@@ -1194,7 +1194,7 @@ describe('html', () => {
             const text = document.createTextNode('foo');
 
             expect(recycle(text)).to.deep.equal({
-                type: 'text',
+                type: TEXT_NODE,
                 text: 'foo',
                 node: text
             });
@@ -1210,26 +1210,26 @@ describe('html', () => {
             const em = root.querySelector('em');
 
             expect(recycle(root.firstChild)).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {id: 'foo'},
                 children: [
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'span',
                         attributes: {class: 'bar'},
                         key: null,
                         node: span,
                         children: [
                             {
-                                type: 'text',
+                                type: TEXT_NODE,
                                 text: 'baz',
                                 node: text
                             }
                         ]
                     },
                     {
-                        type: 'element',
+                        type: ELEMENT_NODE,
                         nodeName: 'em',
                         attributes: {},
                         children: [],
@@ -1249,7 +1249,7 @@ describe('html', () => {
             const div = root.firstChild;
 
             expect(recycle(div)).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {},
                 children: [],
@@ -1265,7 +1265,7 @@ describe('html', () => {
             const div = root.firstChild;
 
             expect(recycle(div)).to.deep.equal({
-                type: 'element',
+                type: ELEMENT_NODE,
                 nodeName: 'div',
                 attributes: {key: 'foo'},
                 children: [],

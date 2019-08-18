@@ -1,6 +1,9 @@
 const cache = new Map();
 const newLineRe = /^\s*\n\s*|\s*\n\s*$/g;
 
+export const ELEMENT_NODE = 1;
+export const TEXT_NODE = 3;
+
 const TAG_SET = 1;
 const PROPS_SET = 2;
 const PROPS_ASSIGN = 3;
@@ -121,7 +124,7 @@ function createVNode(nodeName, attributes, ...children) {
     }
     children = flatten(children).map((vchild) => typeof vchild === 'object' ? vchild : createTextVNode(vchild));
     return {
-        type: 'element',
+        type: ELEMENT_NODE,
         node: null,
         nodeName,
         attributes,
@@ -132,7 +135,7 @@ function createVNode(nodeName, attributes, ...children) {
 
 function createTextVNode(text) {
     return {
-        type: 'text',
+        type: TEXT_NODE,
         node: null,
         text
     };

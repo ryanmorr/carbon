@@ -1,3 +1,5 @@
+import { TEXT_NODE } from './html';
+
 const events = [];
 for (const prop in document) {
     if (prop.substring(0,2) === 'on' && (document[prop] === null || typeof document[prop] === 'function')) {
@@ -21,7 +23,7 @@ function isSameNodeType(a, b) {
     if (a.type !== b.type) {
         return false;
     }
-    if (a.type === 'text' && a.text !== b.text) {
+    if (a.type === TEXT_NODE && a.text !== b.text) {
         return false;
     }
     if (a.nodeName !== b.nodeName) {
@@ -44,7 +46,7 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
 
 function createElement(vnode, refs, isSvg = false) {
     let node;
-    if (vnode.type === 'text') {
+    if (vnode.type === TEXT_NODE) {
         node = document.createTextNode(vnode.text);
     } else {
         const nodeName = vnode.nodeName;
@@ -176,7 +178,7 @@ export default function patch(parent, oldVNode, newVNode, refs, isSvg = false) {
         parent.removeChild(element);
         return null;
     }
-    if (oldVNode.type === 'text' && newVNode.type === 'text') {
+    if (oldVNode.type === TEXT_NODE && newVNode.type === TEXT_NODE) {
         if (oldVNode.text !== newVNode.text) {
             oldVNode.node.nodeValue = newVNode.text;
         }
@@ -184,7 +186,7 @@ export default function patch(parent, oldVNode, newVNode, refs, isSvg = false) {
         const newElement = createElement(newVNode, refs, isSvg);
         parent.replaceChild(newElement, element);
         element = newElement;
-    } else if (newVNode.type === 'element') {
+    } else {
         isSvg = isSvg || newVNode.nodeName === 'svg';
         const oldVAttrs = oldVNode.attributes;
         const newVAttrs = newVNode.attributes;
