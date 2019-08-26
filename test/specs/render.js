@@ -77,33 +77,6 @@ describe('render', () => {
             expect(circle).to.be.instanceof(SVGElement);
         });
 
-        it('should support refs', () => {
-            const { foo, bar, baz, qux } = render(root,
-                <div ref="foo">
-                    <span ref="bar"></span>
-                    <em ref="baz"></em>
-                    <section>
-                        <i ref="qux"></i>
-                    </section>
-                </div>
-            );
-
-            expectHTML(`
-                <div>
-                    <span></span>
-                    <em></em>
-                    <section>
-                        <i></i>
-                    </section>
-                </div>
-            `);
-
-            expect(foo).to.equal(root.querySelector('div'));
-            expect(bar).to.equal(root.querySelector('span'));
-            expect(baz).to.equal(root.querySelector('em'));
-            expect(qux).to.equal(root.querySelector('i'));
-        });
-
         it('should skip equal vnodes', () => {
             setHTML('');
 
