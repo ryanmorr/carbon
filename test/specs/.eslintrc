@@ -8,6 +8,6 @@
   },
   "rules": {
     "max-len": 0,
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^html$" }]
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^h$" }]
   }
 }

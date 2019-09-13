@@ -1,19 +1,11 @@
-import { html, render } from '../../src/velvet';
+import { h, render } from '../../src/velvet';
 
 describe('render', () => {
     const root = document.createElement('div');
     document.body.appendChild(root);
 
-    function compact(html) {
-        return html.replace(/\s{2,}/g, '');
-    }
-
-    function setHTML(html) {
-        root.innerHTML = compact(html);
-    }
-
     function expectHTML(html) {
-        expect(root.innerHTML).to.equal(compact(html));
+        expect(root.innerHTML).to.equal(html.replace(/\s{2,}/g, ''));
     }
 
     function keyedSpans(...elements) {
@@ -30,7 +22,7 @@ describe('render', () => {
     });
 
     describe('nodes', () => {
-        it('should append to an empty root', () => {
+        it('should append child to the root', () => {
             const el = render(root,
                 <div></div>
             );
@@ -39,17 +31,27 @@ describe('render', () => {
             expect(el).to.equal(root.firstChild);
         });
 
-        it('should remove all root children', () => {
-            setHTML('<span></span>');
+        it('should remove root child', () => {
+            render(root,
+                <span></span>
+            );
+
+            expectHTML('<span></span>');
             
-            const el = render(root, null);
+            const el = render(root,
+                null
+            );
 
             expectHTML('');
             expect(el).to.equal(null);
         });
 
-        it('should replace the first element', () => {
-            setHTML('<span></span>');
+        it('should replace the root child', () => {
+            render(root,
+                <span></span>
+            );
+
+            expectHTML('<span></span>');
             
             const el = render(root,
                 <div></div>
@@ -57,6 +59,14 @@ describe('render', () => {
 
             expectHTML('<div></div>');
             expect(el).to.equal(root.firstChild);
+        });
+
+        it('should append with attributes', () => {
+            render(root,
+                <div id="foo" class="bar"></div>
+            );
+
+            expectHTML('<div id="foo" class="bar"></div>');
         });
 
         it('should support SVG', () => {
@@ -78,8 +88,6 @@ describe('render', () => {
         });
 
         it('should skip equal vnodes', () => {
-            setHTML('');
-
             const vnode = <div></div>;
 
             render(root,
@@ -100,7 +108,11 @@ describe('render', () => {
 
     describe('attributes', () => {
         it('should add an attribute', () => {
-            setHTML('<div></div>');
+            render(root,
+                <div></div>
+            );
+
+            expectHTML('<div></div>');
 
             render(root,
                 <div id="foo"></div>
@@ -110,7 +122,11 @@ describe('render', () => {
         });
 
         it('should remove an attribute', () => {
-            setHTML('<div foo="bar"></div>');
+            render(root,
+                <div foo="bar"></div>
+            );
+
+            expectHTML('<div foo="bar"></div>');
 
             render(root,
                 <div></div>
@@ -120,7 +136,11 @@ describe('render', () => {
         });
 
         it('should remove an attribute if the value assigned is undefined, null, or false', () => {
-            setHTML('<div foo="1" bar="2" baz="3"></div>');
+            render(root,
+                <div foo="1" bar="2" baz="3"></div>
+            );
+
+            expectHTML('<div foo="1" bar="2" baz="3"></div>');
 
             render(root,
                 <div foo={void 0} bar={null} baz={false}></div>
@@ -130,7 +150,11 @@ describe('render', () => {
         });
 
         it('should update an attribute', () => {
-            setHTML('<div foo="bar"></div>');
+            render(root,
+                <div foo="bar"></div>
+            );
+
+            expectHTML('<div foo="bar"></div>');
 
             render(root,
                 <div foo="baz"></div>
@@ -140,14 +164,17 @@ describe('render', () => {
         });
 
         it('should not remove an element if only an attribute is changed', () => {
-            setHTML('<div foo="1" bar="2"></div>');
-            const div = root.firstChild;
-
-            render(root,
-                <div foo="1" bar="2" baz="3"></div>
+            const div = render(root,
+                <div foo="1" bar="2"></div>
             );
 
-            expect(root.children[0]).to.equal(div);
+            expectHTML('<div foo="1" bar="2"></div>');
+
+            const div2 = render(root,
+                <div foo="1" bar="2" baz="3"></div>,
+            );
+
+            expect(div).to.equal(div2);
             expectHTML('<div foo="1" bar="2" baz="3"></div>');
         });
 
@@ -261,7 +288,9 @@ describe('render', () => {
         });
 
         it('should add an event listener', () => {
-            const div = root.appendChild(document.createElement('div'));
+            const div = render(root,
+                <div></div>
+            );
 
             const callback = () => {};
             const addEventSpy = sinon.spy(div, 'addEventListener');
@@ -276,14 +305,13 @@ describe('render', () => {
         });
 
         it('should remove an event listener', () => {
-            const div = root.appendChild(document.createElement('div'));
-
             const callback = () => {};
-            const removeEventSpy = sinon.spy(div, 'removeEventListener');
 
-            render(root,
-                <div onclick={callback}></div>
+            const div = render(root,
+                <div onclick={callback}></div>,
             );
+
+            const removeEventSpy = sinon.spy(div, 'removeEventListener');
 
             render(root,
                 <div></div>
@@ -302,17 +330,16 @@ describe('render', () => {
             expectHTML('<div></div>');
         });
 
-        it('should not set an attribute for functions', () => {
+        it('should patch deeply nested attributes', () => {
             render(root,
-                <div oncreate={() => {}}></div>
+                <section>
+                    <div>
+                        <span foo="1" bar="2"></span>
+                    </div>
+                </section>
             );
 
-            expect(root.innerHTML).to.equal('<div></div>');
-            expect(root.oncreate).to.equal(undefined);
-        });
-
-        it('should patch deeply nested attributes', () => {
-            setHTML(`
+            expectHTML(`
                 <section>
                     <div>
                         <span foo="1" bar="2"></span>
@@ -339,8 +366,12 @@ describe('render', () => {
     });
     
     describe('non-keyed children', () => {
-        it('should append nodes', () => {            
-            setHTML('<div><span>Hello</span></div>');
+        it('should append nodes', () => {
+            render(root, 
+                <div><span>Hello</span></div>
+            );
+
+            expectHTML('<div><span>Hello</span></div>');
 
             render(root, 
                 <div><span>Hello</span><span>World</span></div>
@@ -349,8 +380,12 @@ describe('render', () => {
             expectHTML('<div><span>Hello</span><span>World</span></div>');
         });
 
-        it('should prepend nodes', () => {            
-            setHTML('<div><span>World</span></div>');
+        it('should prepend nodes', () => {
+            render(root, 
+                <div><span>World</span></div>
+            );
+
+            expectHTML('<div><span>World</span></div>');
 
             render(root, 
                 <div><span>Hello</span><span>World</span></div>
@@ -359,8 +394,12 @@ describe('render', () => {
             expectHTML('<div><span>Hello</span><span>World</span></div>');
         });
 
-        it('should change text nodes', () => {            
-            setHTML('<div><span>foo</span><span>bar</span></div>');
+        it('should change text nodes', () => {
+            render(root, 
+                <div><span>foo</span><span>bar</span></div>
+            );
+
+            expectHTML('<div><span>foo</span><span>bar</span></div>');
 
             render(root, 
                 <div><span>baz</span><span>qux</span></div>
@@ -386,7 +425,11 @@ describe('render', () => {
         });
 
         it('should replace a text node with an element node', () => {
-            setHTML('<div>foo</div>');
+            render(root,
+                <div>foo</div>
+            );
+
+            expectHTML('<div>foo</div>');
 
             render(root,
                 <div><span></span></div>
@@ -396,7 +439,11 @@ describe('render', () => {
         });
 
         it('should replace an element node with a text node', () => {
-            setHTML('<div><span></span></div>');
+            render(root,
+                <div><span></span></div>
+            );
+
+            expectHTML('<div><span></span></div>');
 
             render(root,
                 <div>foo</div>
@@ -406,7 +453,11 @@ describe('render', () => {
         });
 
         it('should replace an element node with a different element node', () => {
-            setHTML('<div><span></span></div>');
+            render(root,
+                <div><span></span></div>
+            );
+
+            expectHTML('<div><span></span></div>');
             
             render(root,
                 <div><em></em></div>

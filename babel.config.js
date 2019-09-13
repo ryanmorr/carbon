@@ -9,7 +9,7 @@ module.exports = (api) => {
 
     const plugins = [
         ['@babel/plugin-transform-react-jsx', {
-            pragma: 'html'
+            pragma: 'h'
         }]
     ];
 
