@@ -51,9 +51,6 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
 
 function createVNode(nodeName, attributes, ...children) {
     attributes = attributes || {};
-    if (typeof nodeName === 'function') {
-        return nodeName(attributes, children);
-    }
     return {
         type: ELEMENT_NODE,
         node: null,
