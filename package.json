@@ -1,6 +1,6 @@
 {
   "name": "velvet",
-  "description": "Silky smooth view layer for declarative web interfaces",
+  "description": "A thin, silky smooth view layer for declarative web interfaces",
   "version": "0.1.0",
   "license": "Unlicense",
   "author": "Ryan Morr",
