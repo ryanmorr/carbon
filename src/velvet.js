@@ -117,6 +117,9 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
     }
 }
 
+/**
+ * Courtesy of https://github.com/snabbdom/snabbdom/blob/v0.7.2/src/snabbdom.ts#L179
+ */
 function patchChildren(parent, oldChildren, newChildren, isSvg) {
     let oldStartIndex = 0;
     let oldEndIndex = oldChildren.length - 1;
