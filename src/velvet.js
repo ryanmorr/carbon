@@ -1,13 +1,6 @@
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
 
-const EVENTS = [];
-for (const prop in document) {
-    if (prop.substring(0,2) === 'on' && (document[prop] === null || typeof document[prop] === 'function')) {
-        EVENTS.push(prop);
-    }
-}
-
 function flatten(arr) {
     return [].concat.apply([], arr);
 }
@@ -108,7 +101,7 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
                 }
             }
         }
-    } else if (EVENTS.includes(name)) {
+    } else if (name.substring(0, 2) === 'on' && (typeof oldVal === 'function' || typeof newVal === 'function')) {
         name = name.slice(2).toLowerCase();
         if (newVal == null) {
             element.removeEventListener(name, oldVal);

@@ -322,6 +322,21 @@ describe('render', () => {
             removeEventSpy.restore();
         });
 
+        it('should support custom events', (done) => {
+            let event = new CustomEvent('foo');
+
+            const callback = sinon.spy((e) => {
+                expect(e).to.equal(event);
+                done();
+            });
+
+            const div = render(root,
+                <div onfoo={callback}></div>
+            );
+
+            div.dispatchEvent(event);
+        });
+
         it('should ignore keys', () => {
             render(root,
                 <div key="foo"></div>
