@@ -1,6 +1,10 @@
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
 
+function isDefined(obj) {
+    return obj != null;
+}
+
 function flatten(arr) {
     return [].concat.apply([], arr);
 }
@@ -118,9 +122,11 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
 }
 
 /**
- * Courtesy of https://github.com/snabbdom/snabbdom/blob/v0.7.2/src/snabbdom.ts#L179
+ * Adapted from: https://github.com/snabbdom/snabbdom/
  */
 function patchChildren(parent, oldChildren, newChildren, isSvg) {
+    oldChildren = oldChildren.filter(isDefined);
+    newChildren = newChildren.filter(isDefined);
     let oldStartIndex = 0;
     let oldEndIndex = oldChildren.length - 1;
     let oldStartChild = oldChildren[0];
@@ -136,20 +142,20 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
         } else if (!oldEndChild) {
             oldEndChild = oldChildren[--oldEndIndex];
         } else if (isSameNode(oldStartChild, newStartChild)) {
-            patch(parent, oldStartChild, newStartChild, isSvg);
+            patchElement(parent, oldStartChild, newStartChild, isSvg);
             oldStartChild = oldChildren[++oldStartIndex];
             newStartChild = newChildren[++newStartIndex];
         } else if (isSameNode(oldEndChild, newEndChild)) {
-            patch(parent, oldEndChild, newEndChild, isSvg);
+            patchElement(parent, oldEndChild, newEndChild, isSvg);
             oldEndChild = oldChildren[--oldEndIndex];
             newEndChild = newChildren[--newEndIndex];
         } else if (isSameNode(oldStartChild, newEndChild)) {
-            patch(parent, oldStartChild, newEndChild, isSvg);
+            patchElement(parent, oldStartChild, newEndChild, isSvg);
             parent.insertBefore(oldStartChild.node, oldEndChild.node.nextSibling);
             oldStartChild = oldChildren[++oldStartIndex];
             newEndChild = newChildren[--newEndIndex];
         } else if (isSameNode(oldEndChild, newStartChild)) {
-            patch(parent, oldEndChild, newStartChild, isSvg);
+            patchElement(parent, oldEndChild, newStartChild, isSvg);
             parent.insertBefore(oldEndChild.node, oldStartChild.node);
             oldEndChild = oldChildren[--oldEndIndex];
             newStartChild = newChildren[++newStartIndex];
@@ -164,7 +170,7 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
                 newStartChild = newChildren[++newStartIndex];
             } else {
                 let oldChildToMove = oldChildren[oldIndex];
-                patch(parent, oldChildToMove, newStartChild, isSvg);
+                patchElement(parent, oldChildToMove, newStartChild, isSvg);
                 oldChildren[oldIndex] = undefined;
                 parent.insertBefore(oldChildToMove.node, oldStartChild.node);
                 newStartChild = newChildren[++newStartIndex];
@@ -184,9 +190,10 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
             }
         }
     }
+    return newChildren;
 }
 
-function patch(parent, oldVNode, newVNode, isSvg = false) {
+function patchElement(parent, oldVNode, newVNode, isSvg = false) {
     if (oldVNode === newVNode) {
         return oldVNode.node;
     }
@@ -221,10 +228,18 @@ function patch(parent, oldVNode, newVNode, isSvg = false) {
 }
 
 export function render(parent, newVNode) {
-    const oldVNode = parent._prevVNode || null;
-    const element = patch(parent, oldVNode, newVNode);
+    let root;
+    let oldVNode = parent._prevVNode || null;
+    const oldIsArray = Array.isArray(oldVNode);
+    const newIsArray = Array.isArray(newVNode);
+    if (oldIsArray || newIsArray) {
+        root = patchChildren(parent, oldIsArray ? oldVNode : [oldVNode], newIsArray ? newVNode : [newVNode]);
+        root = root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
+    } else {
+        root = patchElement(parent, oldVNode, newVNode);
+    }
     parent._prevVNode = newVNode;
-    return element;
+    return root;
 }
 
 export function h(nodeName, attributes, ...children) {

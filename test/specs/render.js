@@ -87,22 +87,151 @@ describe('render', () => {
             expect(circle).to.be.instanceof(SVGElement);
         });
 
-        it('should skip equal vnodes', () => {
-            const vnode = <div></div>;
+        it('should render an array of multiple root nodes', () => {
+            const elements = render(root, [
+                <div></div>,
+                <span></span>,
+                <em></em>
+            ]);
 
-            render(root,
-                vnode
+            expectHTML('<div></div><span></span><em></em>');
+            expect(elements).to.deep.equal(Array.from(root.childNodes));
+        });
+
+        it('should render an array containing a root single node', () => {
+            const el = render(root, [
+                <div></div>
+            ]);
+
+            expectHTML('<div></div>');
+            expect(el).to.equal(root.firstChild);
+        });
+
+        it('should render an array of multiple mixed-type root nodes', () => {
+            const elements = render(root, [
+                {type: 3, text: 'foo'},
+                <span></span>,
+                {type: 3, text: 'bar'}
+            ]);
+
+            expectHTML('foo<span></span>bar');
+            expect(elements).to.deep.equal(Array.from(root.childNodes));
+        });
+
+        it('should remove multiple root nodes with null', () => {
+            render(root, [
+                <div></div>,
+                <span></span>,
+                <em></em>
+            ]);
+
+            expectHTML('<div></div><span></span><em></em>');
+
+            const el = render(root,
+                null
+            );
+
+            expectHTML('');
+            expect(el).to.equal(null);
+        });
+
+        it('should remove multiple root nodes with an empty array', () => {
+            render(root, [
+                <div></div>,
+                <span></span>
+            ]);
+
+            expectHTML('<div></div><span></span>');
+
+            const el = render(root,
+                null
+            );
+
+            expectHTML('');
+            expect(el).to.equal(null);
+        });
+
+        it('should replace a single root node with multiple root nodes', () => {
+            render(root, 
+                <div></div>
             );
 
             expectHTML('<div></div>');
 
-            vnode.nodeName = 'span';
+            render(root, [
+                <span></span>,
+                <em></em>,
+                <i></i>
+            ]);
 
-            render(root,
-                vnode
+            expectHTML('<span></span><em></em><i></i>');
+        });
+
+        it('should replace multiple root nodes with a root single node', () => {
+            render(root, [
+                <span></span>,
+                <em></em>,
+                <i></i>
+            ]);
+
+            expectHTML('<span></span><em></em><i></i>');
+
+            render(root, 
+                <div></div>
             );
 
             expectHTML('<div></div>');
+        });
+
+        it('should replace multiple root nodes with greater multiple root nodes', () => {
+            render(root, [
+                <span></span>,
+                <em></em>
+
+            ]);
+
+            expectHTML('<span></span><em></em>');
+
+            render(root, [
+                <div></div>,
+                <i></i>,
+                <section></section>,
+                <span></span>
+            ]);
+
+            expectHTML('<div></div><i></i><section></section><span></span>');
+        });
+
+        it('should replace multiple root nodes with lesser multiple root nodes', () => {
+            render(root, [
+                <div></div>,
+                <i></i>,
+                <section></section>,
+                <span></span>,
+                <article></article>
+            ]);
+
+            expectHTML('<div></div><i></i><section></section><span></span><article></article>');
+
+            render(root, [
+                <span></span>,
+                <em></em>
+
+            ]);
+
+            expectHTML('<span></span><em></em>');
+        });
+
+        it('should filter out null and undefined values from an array of root vnodes', () => {
+            render(root, [
+                <div></div>,
+                null,
+                <section></section>,
+                <span></span>,
+                void 0
+            ]);
+
+            expectHTML('<div></div><section></section><span></span>');
         });
     });
 
@@ -1203,6 +1332,62 @@ describe('render', () => {
                     <span></span>
                     <div></div>
                 </section>
+            `);
+        });
+
+        it('should support root keyed nodes', () => {
+            render(root, [
+                <div key="a"></div>,
+                <div key="b"></div>,
+                <span></span>,
+                <div key="c"></div>,
+                <span></span>,
+                <span></span>,
+                <div key="d"></div>
+            ]);
+
+            expectHTML(`
+                <div></div>
+                <div></div>
+                <span></span>
+                <div></div>
+                <span></span>
+                <span></span>
+                <div></div>
+            `);
+
+            const keyed1 = Array.from(root.getElementsByTagName('div'));
+            const a1 = keyed1[0];
+            const c1 = keyed1[2];
+            const d1 = keyed1[3];
+
+            render(root, [
+                <span></span>,
+                <div key="c"></div>,
+                <span></span>,
+                <div key="d"></div>,
+                <div key="a"></div>,
+                <span></span>,
+                <em></em>
+            ]);
+
+            const keyed2 = Array.from(root.getElementsByTagName('div'));
+            const a2 = keyed2[2];
+            const c2 = keyed2[0];
+            const d2 = keyed2[1];
+
+            expect(a1).to.equal(a2);
+            expect(c1).to.equal(c2);
+            expect(d1).to.equal(d2);
+
+            expectHTML(`
+                <span></span>
+                <div></div>
+                <span></span>
+                <div></div>
+                <div></div>
+                <span></span>
+                <em></em>
             `);
         });
     });
