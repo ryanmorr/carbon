@@ -1,8 +1,15 @@
-import { h, render } from '../../src/velvet';
+import { h, patch } from '../../src/velvet';
 
-describe('render', () => {
+describe('patch', () => {
+    let prevVNode = null;
     const root = document.createElement('div');
     document.body.appendChild(root);
+
+    function render(el, vnode) {
+        const rootEl = patch(el, vnode, prevVNode);
+        prevVNode = vnode;
+        return rootEl;
+    }
 
     function expectHTML(html) {
         expect(root.innerHTML).to.equal(html.replace(/\s{2,}/g, ''));
@@ -13,8 +20,8 @@ describe('render', () => {
     }
 
     afterEach(() => {
+        prevVNode = null;
         root.innerHTML = '';
-        root._prevVNode = null;
     });
 
     after(() => {

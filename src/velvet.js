@@ -227,9 +227,8 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
     return element;
 }
 
-export function render(parent, newVNode) {
+export function patch(parent, newVNode, oldVNode = null) {
     let root;
-    let oldVNode = parent._prevVNode || null;
     const oldIsArray = Array.isArray(oldVNode);
     const newIsArray = Array.isArray(newVNode);
     if (oldIsArray || newIsArray) {
@@ -238,7 +237,6 @@ export function render(parent, newVNode) {
     } else {
         root = patchElement(parent, oldVNode, newVNode);
     }
-    parent._prevVNode = newVNode;
     return root;
 }
 
