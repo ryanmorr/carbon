@@ -6,7 +6,7 @@ function isDefined(obj) {
 }
 
 function flatten(arr) {
-    return [].concat.apply([], arr);
+    return arr.flat ? arr.flat() : [].concat.apply([], arr);
 }
 
 function merge(...objects) {
@@ -125,8 +125,8 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
  * Adapted from: https://github.com/snabbdom/snabbdom/
  */
 function patchChildren(parent, oldChildren, newChildren, isSvg) {
-    oldChildren = oldChildren.filter(isDefined);
-    newChildren = newChildren.filter(isDefined);
+    oldChildren = flatten(oldChildren).filter(isDefined);
+    newChildren = flatten(newChildren).filter(isDefined);
     let oldStartIndex = 0;
     let oldEndIndex = oldChildren.length - 1;
     let oldStartChild = oldChildren[0];
