@@ -1,9 +1,6 @@
-import { h } from '../../src/velvet';
+import { h, TEXT_NODE, ELEMENT_NODE } from '../../src/velvet';
 
 describe('h', () => {
-    const ELEMENT_NODE = 1;
-    const TEXT_NODE = 3;
-
     it('should create a virtual element', () => {
         expect(h('div')).to.deep.equal({
             type: ELEMENT_NODE,

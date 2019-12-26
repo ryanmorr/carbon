@@ -1,5 +1,5 @@
-const ELEMENT_NODE = 1;
-const TEXT_NODE = 3;
+export const ELEMENT_NODE = 1;
+export const TEXT_NODE = 3;
 
 function isDefined(obj) {
     return obj != null;
