@@ -228,16 +228,13 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
 }
 
 export function patch(parent, newVNode, oldVNode = null) {
-    let root;
     const oldIsArray = Array.isArray(oldVNode);
     const newIsArray = Array.isArray(newVNode);
     if (oldIsArray || newIsArray) {
-        root = patchChildren(parent, oldIsArray ? oldVNode : [oldVNode], newIsArray ? newVNode : [newVNode]);
-        root = root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
-    } else {
-        root = patchElement(parent, oldVNode, newVNode);
+        const root = patchChildren(parent, oldIsArray ? oldVNode : [oldVNode], newIsArray ? newVNode : [newVNode]);
+        return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
     }
-    return root;
+    return patchElement(parent, oldVNode, newVNode);
 }
 
 export function h(nodeName, attributes, ...children) {
