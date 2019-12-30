@@ -5,8 +5,22 @@ function isDefined(obj) {
     return obj != null;
 }
 
-function flatten(arr) {
-    return arr.flat ? arr.flat() : [].concat.apply([], arr);
+function flatten(array) {
+    for (let i = 0; i < array.length;) {
+        const value = array[i];
+        if (Array.isArray(value)) {
+            if (value.length > 0) {
+                value.unshift(i, 1);
+                array.splice.apply(array, value);
+                value.splice(0, 2);
+            } else {
+                array.splice(i, 1);
+            }
+        } else {
+            i++;
+        }
+    }
+    return array;
 }
 
 function merge(...objects) {
