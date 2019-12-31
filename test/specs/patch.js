@@ -240,6 +240,24 @@ describe('patch', () => {
 
             expectHTML('<div></div><section></section><span></span>');
         });
+
+        it('should skip equal vnodes', () => {
+            const vnode = <div></div>;
+
+            render(root,
+                vnode
+            );
+
+            expectHTML('<div></div>');
+
+            vnode.nodeName = 'span';
+
+            render(root,
+                vnode
+            );
+
+            expectHTML('<div></div>');
+        });
     });
 
     describe('attributes', () => {
