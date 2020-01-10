@@ -231,7 +231,7 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
         const oldVAttrs = oldVNode.attributes;
         const newVAttrs = newVNode.attributes;
         for (const name in merge(newVAttrs, oldVAttrs)) {
-            if ((name === 'value' || name === 'selected' || name === 'checked ' ? element[name] : oldVAttrs[name]) !== newVAttrs[name]) {
+            if ((name === 'value' || name === 'selected' || name === 'checked' ? element[name] : oldVAttrs[name]) !== newVAttrs[name]) {
                 patchAttribute(element, name, oldVAttrs[name], newVAttrs[name], isSvg);
             }
         }
