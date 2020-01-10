@@ -139,8 +139,6 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
  * Adapted from: https://github.com/snabbdom/snabbdom/
  */
 function patchChildren(parent, oldChildren, newChildren, isSvg) {
-    oldChildren = flatten(oldChildren).filter(isDefined);
-    newChildren = flatten(newChildren).filter(isDefined);
     let oldStartIndex = 0;
     let oldEndIndex = oldChildren.length - 1;
     let oldStartChild = oldChildren[0];
@@ -245,7 +243,9 @@ export function patch(parent, newVNode, oldVNode = null) {
     const oldIsArray = Array.isArray(oldVNode);
     const newIsArray = Array.isArray(newVNode);
     if (oldIsArray || newIsArray) {
-        const root = patchChildren(parent, oldIsArray ? oldVNode : [oldVNode], newIsArray ? newVNode : [newVNode]);
+        oldVNode = (oldIsArray ? flatten(oldVNode) : [oldVNode]).filter(isDefined);
+        newVNode = (newIsArray ? flatten(newVNode) : [newVNode]).filter(isDefined);
+        const root = patchChildren(parent, oldVNode, newVNode);
         return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
     }
     return patchElement(parent, oldVNode, newVNode);
