@@ -28,7 +28,7 @@ function merge(...objects) {
 }
 
 function getKey(vnode) {
-    return vnode.attributes ? vnode.attributes.key : null;
+    return vnode.key || null;
 }
 
 function isSameNode(a, b) {
