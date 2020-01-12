@@ -119,7 +119,7 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
                 }
             }
         }
-    } else if (name.substring(0, 2) === 'on' && (typeof oldVal === 'function' || typeof newVal === 'function')) {
+    } else if (name.startsWith('on') && (typeof oldVal === 'function' || typeof newVal === 'function')) {
         name = name.slice(2).toLowerCase();
         if (newVal == null) {
             element.removeEventListener(name, oldVal);
