@@ -273,4 +273,20 @@ describe('patch attributes', () => {
             </section>
         `);
     });
+
+    it('should support the input list attribute', () => {
+        render(root,
+            <input list="foo" />
+        );
+
+        expectHTML('<input list="foo">');
+    });
+
+    it('should support the input form attribute', () => {
+        render(root,
+            <input form="foo" />
+        );
+
+        expectHTML('<input form="foo">');
+    });
 });

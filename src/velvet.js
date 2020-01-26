@@ -126,7 +126,7 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
         } else if (oldVal == null) {
             element.addEventListener(name, newVal);
         }
-    } else if (!isSvg && name in element) {
+    } else if (!isSvg && name !== 'list' && name !== 'form' && name in element) {
         element[name] = newVal == null ? '' : newVal;
     } else if (newVal == null || newVal === false) {
         element.removeAttribute(name);
