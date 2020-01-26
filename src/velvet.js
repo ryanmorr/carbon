@@ -226,6 +226,7 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
         element = newElement;
     } else {
         isSvg = isSvg || newVNode.nodeName === 'svg';
+        const activeElement = document.activeElement;
         const oldVAttrs = oldVNode.attributes;
         const newVAttrs = newVNode.attributes;
         for (const name in merge(newVAttrs, oldVAttrs)) {
@@ -234,6 +235,7 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
             }
         }
         patchChildren(element, oldVNode.children, newVNode.children, isSvg);
+        activeElement.focus();
     }
     newVNode.node = element;
     return element;

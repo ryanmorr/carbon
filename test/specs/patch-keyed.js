@@ -771,4 +771,58 @@ describe('patch keyed', () => {
             <em></em>
         `);
     });
+
+    it('should maintain focus when moving the input around', () => {
+        const div = render(root,
+            <div>
+                <input type="text" key="focused" />
+                <span></span>
+                <span></span>
+            </div>
+        );
+
+        const input = div.querySelector('input');
+        input.value = 'foo bar baz';
+		input.focus();
+		input.setSelectionRange(2, 5);
+
+        render(root, 
+            <div>
+                <span></span>
+                <span></span>
+                <input type="text" key="focused" />
+            </div>
+        );
+        
+        expect(document.activeElement).to.equal(input);
+		expect(input.selectionStart).to.equal(2);
+		expect(input.selectionEnd).to.equal(5);
+    });
+
+    it('should maintain focus when adding sibling nodes around the input', () => {
+        const div = render(root,
+            <div>
+                <input type="text" key="focused" />
+            </div>
+        );
+
+        const input = div.querySelector('input');
+        input.value = 'foo bar baz';
+		input.focus();
+		input.setSelectionRange(2, 5);
+
+        render(root, 
+            <div>
+                <span></span>
+                <span></span>
+                <input type="text" key="focused" />
+                <span></span>
+                <span></span>
+            </div>
+        );
+        
+        expect(document.activeElement).to.equal(input);
+		expect(input.selectionStart).to.equal(2);
+		expect(input.selectionEnd).to.equal(5);
+    });
 });
