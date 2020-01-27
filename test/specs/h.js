@@ -117,6 +117,53 @@ describe('h', () => {
         });
     });
 
+    it('should allow skipping attribute definition', () => {
+        expect(h('div', h('span', 'foo'), h('em', ['bar', 'baz', 'qux']))).to.deep.equal({
+            type: ELEMENT_NODE,
+            nodeName: 'div',
+            node: null,
+            attributes: {},
+            children: [
+                {
+                    type: ELEMENT_NODE,
+                    nodeName: 'span',
+                    node: null,
+                    attributes: {},
+                    children: [
+                        {
+                            type: TEXT_NODE,
+                            node: null,
+                            text: 'foo'
+                        }
+                    ]
+                },
+                {
+                    type: ELEMENT_NODE,
+                    nodeName: 'em',
+                    node: null,
+                    attributes: {},
+                    children: [
+                        {
+                            type: TEXT_NODE,
+                            node: null,
+                            text: 'bar'
+                        },
+                        {
+                            type: TEXT_NODE,
+                            node: null,
+                            text: 'baz'
+                        },
+                        {
+                            type: TEXT_NODE,
+                            node: null,
+                            text: 'qux'
+                        }
+                    ]
+                }
+            ]
+        });
+    });
+
     it('should support keys', () => {
         expect(h('div', {key: 'foo'})).to.deep.equal({
             type: ELEMENT_NODE,

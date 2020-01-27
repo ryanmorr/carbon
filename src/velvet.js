@@ -1,3 +1,4 @@
+const VNODE = Symbol('vnode');
 export const ELEMENT_NODE = 1;
 export const TEXT_NODE = 3;
 
@@ -25,16 +26,6 @@ function flatten(array) {
 
 function merge(...objects) {
     return Object.assign({}, ...objects);
-}
-
-function getAttributes(element) {
-    return Array.from(element.attributes).reduce((map, attr) => {
-        const name = attr.name, value = attr.value;
-        if (name !== 'style') {
-            map[name] = value;
-        }
-        return map;
-    }, {});
 }
 
 function getKey(vnode) {
@@ -76,7 +67,8 @@ function createVNode(nodeName, attributes, children, node = null) {
         node,
         nodeName,
         attributes,
-        children: children
+        children: children,
+        [VNODE]: true
     };
 }
 
@@ -84,7 +76,8 @@ function createTextVNode(text, node = null) {
     return {
         type: TEXT_NODE,
         node,
-        text
+        text,
+        [VNODE]: true
     };
 }
 
@@ -260,7 +253,18 @@ export function recycle(node) {
         return createTextVNode(node.nodeValue, node);
     }
     if (node.nodeType === 1) {
-        return createVNode(node.nodeName.toLowerCase(), getAttributes(node), recycle(node.childNodes) || [], node);
+        return createVNode(
+            node.nodeName.toLowerCase(),
+            Array.from(node.attributes).reduce((map, attr) => {
+                const name = attr.name, value = attr.value;
+                if (name !== 'style') {
+                    map[name] = value;
+                }
+                return map;
+            }, {}),
+            recycle(node.childNodes) || [],
+            node
+        );
     }
     if (typeof node === 'object' && typeof node.length === 'number' && node.length > 0) {
         return Array.from(node).map(recycle);
@@ -269,6 +273,10 @@ export function recycle(node) {
 }
 
 export function h(nodeName, attributes, ...children) {
+    if (!attributes || attributes[VNODE] === true || typeof attributes.concat === 'function') {
+        children = [].concat(attributes || [], ...children);
+        attributes = {};
+    }
     return createVNode(nodeName, attributes || {}, flatten(children).reduce((vnodes, vchild) => {
         if (vchild != null) {
             vnodes.push(typeof vchild === 'object' ? vchild : createTextVNode(vchild));
