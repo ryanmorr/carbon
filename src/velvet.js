@@ -70,28 +70,21 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
     return map;
 }
 
-function createVNode(nodeName, attributes, ...children) {
-    attributes = attributes || {};
+function createVNode(nodeName, attributes, children, node = null) {
     return {
         type: ELEMENT_NODE,
-        node: null,
+        node,
         nodeName,
         attributes,
         key: attributes.key || null,
-        children: flatten(children).reduce((vnodes, vchild) => {
-            if (vchild == null) {
-                return vnodes;
-            }
-            vnodes.push(typeof vchild === 'object' ? vchild : createTextVNode(vchild));
-            return vnodes;
-        }, [])
+        children: children
     };
 }
 
-function createTextVNode(text) {
+function createTextVNode(text, node = null) {
     return {
         type: TEXT_NODE,
-        node: null,
+        node,
         text
     };
 }
@@ -265,14 +258,10 @@ export function patch(parent, newVNode, oldVNode = null) {
 
 export function recycle(node) {
     if (node.nodeType === 3) {
-        const vnode = createTextVNode(node.nodeValue);
-        vnode.node = node;
-        return vnode;
+        return createTextVNode(node.nodeValue, node);
     }
     if (node.nodeType === 1) {
-        const vnode = createVNode(node.nodeName.toLowerCase(), getAttributes(node), recycle(node.childNodes));
-        vnode.node = node;
-        return vnode;
+        return createVNode(node.nodeName.toLowerCase(), getAttributes(node), recycle(node.childNodes) || [], node);
     }
     if (typeof node === 'object' && typeof node.length === 'number' && node.length > 0) {
         return Array.from(node).map(recycle);
@@ -281,5 +270,10 @@ export function recycle(node) {
 }
 
 export function h(nodeName, attributes, ...children) {
-    return createVNode(nodeName, attributes, ...children);
+    return createVNode(nodeName, attributes || {}, flatten(children).reduce((vnodes, vchild) => {
+        if (vchild != null) {
+            vnodes.push(typeof vchild === 'object' ? vchild : createTextVNode(vchild));
+        }
+        return vnodes;
+    }, []));
 }
