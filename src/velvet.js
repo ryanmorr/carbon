@@ -38,7 +38,7 @@ function getAttributes(element) {
 }
 
 function getKey(vnode) {
-    return vnode.key || null;
+    return vnode.attributes && vnode.attributes.key || null;
 }
 
 function isSameNode(a, b) {
@@ -62,7 +62,7 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
     const map = {};
     for (let i = beginIdx; i <= endIdx; ++i) {
         const child = children[i];
-        const key = child && child.key;
+        const key = child && getKey(child);
         if (key != null) {
             map[key] = i;
         }
@@ -76,7 +76,6 @@ function createVNode(nodeName, attributes, children, node = null) {
         node,
         nodeName,
         attributes,
-        key: attributes.key || null,
         children: children
     };
 }

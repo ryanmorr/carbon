@@ -17,10 +17,9 @@ describe('recycle', () => {
         expect(recycle(div)).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: div,
             attributes: {},
-            children: [],
-            key: null,
-            node: div
+            children: []
         });
     });
 
@@ -32,26 +31,23 @@ describe('recycle', () => {
             {
                 type: ELEMENT_NODE,
                 nodeName: 'div',
+                node: div.childNodes[0],
                 attributes: {},
-                children: [],
-                key: null,
-                node: div.childNodes[0]
+                children: []
             },
             {
                 type: ELEMENT_NODE,
                 nodeName: 'span',
+                node: div.childNodes[1],
                 attributes: {},
-                children: [],
-                key: null,
-                node: div.childNodes[1]
+                children: []
             },
             {
                 type: ELEMENT_NODE,
                 nodeName: 'em',
+                node: div.childNodes[2],
                 attributes: {},
-                children: [],
-                key: null,
-                node: div.childNodes[2]
+                children: []
             }
         ]);
     });
@@ -69,13 +65,12 @@ describe('recycle', () => {
         expect(recycle(div.firstChild)).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: div.firstChild,
             attributes: {
                 id: 'foo',
                 class: 'bar'
             },
-            children: [],
-            key: null,
-            node: div.firstChild
+            children: []
         });
     });
 
@@ -93,6 +88,7 @@ describe('recycle', () => {
         expect(recycle(div)).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: div,
             attributes: {},
             children: [
                 {
@@ -103,6 +99,7 @@ describe('recycle', () => {
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'em',
+                    node: em,
                     attributes: {},
                     children: [
                         {
@@ -110,13 +107,12 @@ describe('recycle', () => {
                             node: bar,
                             text: 'bar'
                         }
-                    ],
-                    key: null,
-                    node: em
+                    ]
                 },
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'span',
+                    node: span,
                     attributes: {
                         id: 'abc'
                     },
@@ -124,6 +120,7 @@ describe('recycle', () => {
                         {
                             type: ELEMENT_NODE,
                             nodeName: 'i',
+                            node: i,
                             attributes: {
                                 class: '123'
                             },
@@ -133,17 +130,11 @@ describe('recycle', () => {
                                     node: qux,
                                     text: 'qux'
                                 }
-                            ],
-                            key: null,
-                            node: i
+                            ]
                         }
-                    ],
-                    key: null,
-                    node: span
+                    ]
                 }
-            ],
-            key: null,
-            node: div
+            ]
         });
     });
 
@@ -154,10 +145,9 @@ describe('recycle', () => {
         expect(recycle(div.firstChild)).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: div.firstChild,
             attributes: {},
-            children: [],
-            key: null,
-            node: div.firstChild
+            children: []
         });
     });
 
@@ -168,12 +158,11 @@ describe('recycle', () => {
         expect(recycle(div.firstChild)).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: div.firstChild,
             attributes: {
                 key: 'foo'
             },
-            children: [],
-            key: 'foo',
-            node: div.firstChild
+            children: []
         });
     });
 });

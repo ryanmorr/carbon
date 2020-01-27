@@ -5,10 +5,9 @@ describe('h', () => {
         expect(h('div')).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {},
-            children: [],
-            key: null,
-            node: null
+            children: []
         });
     });
 
@@ -16,10 +15,9 @@ describe('h', () => {
         expect(h('div', {id: 'foo', class: 'bar'})).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {id: 'foo', class: 'bar'},
-            children: [],
-            key: null,
-            node: null
+            children: []
         });
     });
 
@@ -27,16 +25,15 @@ describe('h', () => {
         expect(h('div', null, 'foo')).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {},
             children: [
                 {
                     type: TEXT_NODE,
-                    text: 'foo',
-                    node: null
+                    node: null,
+                    text: 'foo'
                 }
-            ],
-            key: null,
-            node: null
+            ]
         });
     });
 
@@ -44,19 +41,17 @@ describe('h', () => {
         expect(h('div', null, h('span'))).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {},
             children: [
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'span',
+                    node: null,
                     attributes: {},
                     children: [],
-                    key: null,
-                    node: null
                 }
-            ],
-            key: null,
-            node: null
+            ]
         });
     });
 
@@ -64,32 +59,29 @@ describe('h', () => {
         expect(h('div', null, h('i'), 'foo', h('em'))).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {},
             children: [
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'i',
+                    node: null,
                     attributes: {},
                     children: [],
-                    key: null,
-                    node: null
                 },
                 {
                     type: TEXT_NODE,
-                    text: 'foo',
-                    node: null
+                    node: null,
+                    text: 'foo'
                 },
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'em',
+                    node: null,
                     attributes: {},
-                    children: [],
-                    key: null,
-                    node: null
+                    children: []
                 }
-            ],
-            key: null,
-            node: null
+            ]
         });
     });
 
@@ -97,35 +89,31 @@ describe('h', () => {
         expect(h('div', null, [h('i'), h('em')], h('span'))).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {},
             children: [
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'i',
+                    node: null,
                     attributes: {},
-                    children: [],
-                    key: null,
-                    node: null
+                    children: []
                 },
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'em',
+                    node: null,
                     attributes: {},
-                    children: [],
-                    key: null,
-                    node: null
+                    children: []
                 },
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'span',
+                    node: null,
                     attributes: {},
-                    children: [],
-                    key: null,
-                    node: null
+                    children: []
                 }
-            ],
-            key: null,
-            node: null
+            ]
         });
     });
 
@@ -133,10 +121,9 @@ describe('h', () => {
         expect(h('div', {key: 'foo'})).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {key: 'foo'},
-            children: [],
-            key: 'foo',
-            node: null
+            children: []
         });
     });
 
@@ -144,21 +131,20 @@ describe('h', () => {
         expect(h('div', {}, [null, 'foo', undefined, 'bar'])).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {},
             children: [
                 {
                     type: TEXT_NODE,
-                    text: 'foo',
-                    node: null
+                    node: null,
+                    text: 'foo'
                 },
                 {
                     type: TEXT_NODE,
-                    text: 'bar',
-                    node: null
+                    node: null,
+                    text: 'bar'
                 }
-            ],
-            key: null,
-            node: null
+            ]
         });
     });
 
@@ -174,39 +160,36 @@ describe('h', () => {
         )).to.deep.equal({
             type: ELEMENT_NODE,
             nodeName: 'div',
+            node: null,
             attributes: {},
             children: [
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'h1',
+                    node: null,
                     attributes: {},
                     children: [
                         {
                             type: TEXT_NODE,
-                            text: 'Hello World',
-                            node: null
+                            node: null,
+                            text: 'Hello World'
                         }
-                    ],
-                    key: null,
-                    node: null
+                    ]
                 },
                 {
                     type: ELEMENT_NODE,
                     nodeName: 'section',
+                    node: null,
                     attributes: {class: 'content'},
                     children: [
                         {
                             type: TEXT_NODE,
-                            text: 'Lorem ipsum dolor sit amet',
-                            node: null
+                            node: null,
+                            text: 'Lorem ipsum dolor sit amet'
                         }
-                    ],
-                    key: null,
-                    node: null
+                    ]
                 }
-            ],
-            key: null,
-            node: null
+            ]
         });
     });
 });
