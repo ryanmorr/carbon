@@ -27,6 +27,16 @@ function merge(...objects) {
     return Object.assign({}, ...objects);
 }
 
+function getAttributes(element) {
+    return Array.from(element.attributes).reduce((map, attr) => {
+        const name = attr.name, value = attr.value;
+        if (name !== 'style') {
+            map[name] = value;
+        }
+        return map;
+    }, {});
+}
+
 function getKey(vnode) {
     return vnode.key || null;
 }
@@ -251,6 +261,23 @@ export function patch(parent, newVNode, oldVNode = null) {
         return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
     }
     return patchElement(parent, oldVNode, newVNode);
+}
+
+export function recycle(node) {
+    if (node.nodeType === 3) {
+        const vnode = createTextVNode(node.nodeValue);
+        vnode.node = node;
+        return vnode;
+    }
+    if (node.nodeType === 1) {
+        const vnode = createVNode(node.nodeName.toLowerCase(), getAttributes(node), recycle(node.childNodes));
+        vnode.node = node;
+        return vnode;
+    }
+    if (typeof node === 'object' && typeof node.length === 'number' && node.length > 0) {
+        return Array.from(node).map(recycle);
+    }
+    return null;
 }
 
 export function h(nodeName, attributes, ...children) {
