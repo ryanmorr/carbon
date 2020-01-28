@@ -236,19 +236,7 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
     return element;
 }
 
-export function patch(parent, newVNode, oldVNode = null) {
-    const oldIsArray = Array.isArray(oldVNode);
-    const newIsArray = Array.isArray(newVNode);
-    if (oldIsArray || newIsArray) {
-        oldVNode = (oldIsArray ? flatten(oldVNode) : [oldVNode]).filter(isDefined);
-        newVNode = (newIsArray ? flatten(newVNode) : [newVNode]).filter(isDefined);
-        const root = patchChildren(parent, oldVNode, newVNode);
-        return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
-    }
-    return patchElement(parent, oldVNode, newVNode);
-}
-
-export function recycle(node) {
+function recycleNode(node) {
     if (node.nodeType === 3) {
         return createTextVNode(node.nodeValue, node);
     }
@@ -262,12 +250,18 @@ export function recycle(node) {
                 }
                 return map;
             }, {}),
-            recycle(node.childNodes) || [],
+            Array.from(node.childNodes).map(recycleNode),
             node
         );
     }
+}
+
+export function recycle(node) {
+    if (node.nodeType) {
+        return recycleNode(node);
+    }
     if (typeof node === 'object' && typeof node.length === 'number' && node.length > 0) {
-        return Array.from(node).map(recycle);
+        return Array.from(node).map(recycleNode);
     }
     return null;
 }
@@ -283,4 +277,18 @@ export function h(nodeName, attributes, ...children) {
         }
         return vnodes;
     }, []));
+}
+
+export function render(parent, newVNode) {
+    let oldVNode = parent.vdom || recycle(parent.childNodes);
+    const oldIsArray = Array.isArray(oldVNode);
+    const newIsArray = Array.isArray(newVNode);
+    parent.vdom = newVNode;
+    if (oldIsArray || newIsArray) {
+        oldVNode = (oldIsArray ? flatten(oldVNode) : [oldVNode]).filter(isDefined);
+        newVNode = (newIsArray ? flatten(newVNode) : [newVNode]).filter(isDefined);
+        const root = patchChildren(parent, oldVNode, newVNode);
+        return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
+    }
+    return patchElement(parent, oldVNode, newVNode);
 }

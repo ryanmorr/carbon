@@ -1,7 +1,7 @@
-import { h } from '../../src/velvet';
-import { root, render, expectHTML } from '../setup';
+import { h, render } from '../../src/velvet';
+import { root, expectHTML } from '../setup';
 
-describe('patch keyed', () => {
+describe('keyed', () => {
     function keyedSpans(...elements) {
         return elements.map((element) => <span key={element}>{element}</span>);
     }

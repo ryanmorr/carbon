@@ -1,6 +1,5 @@
 import './h';
 import './recycle';
-import './patch-attributes';
-import './patch-nodes';
-import './patch-children';
-import './patch-keyed';
+import './nodes';
+import './attributes';
+import './keyed';
