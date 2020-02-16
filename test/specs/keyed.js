@@ -1,4 +1,4 @@
-import { h, render } from '../../src/velvet';
+import { h, render } from '../../src/carbon';
 import { root, expectHTML } from '../setup';
 
 describe('keyed', () => {

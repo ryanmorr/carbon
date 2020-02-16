@@ -1,18 +1,18 @@
 {
-  "name": "velvet",
-  "description": "A thin, silky smooth view layer for declarative web interfaces",
+  "name": "carbon",
+  "description": "The building blocks of UI",
   "version": "0.1.0",
   "license": "Unlicense",
   "author": "Ryan Morr",
-  "homepage": "https://github.com/ryanmorr/velvet",
-  "repository": "github:ryanmorr/velvet",
-  "bugs": "https://github.com/ryanmorr/velvet/issues",
+  "homepage": "https://github.com/ryanmorr/carbon",
+  "repository": "github:ryanmorr/carbon",
+  "bugs": "https://github.com/ryanmorr/carbon/issues",
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/velvet.cjs.js",
-  "module": "dist/velvet.esm.js",
-  "browser": "dist/velvet.umd.js",
+  "main": "dist/carbon.cjs.js",
+  "module": "dist/carbon.esm.js",
+  "browser": "dist/carbon.umd.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint src/** test/specs/**",
     "test": "karma start karma.config.js",

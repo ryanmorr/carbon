@@ -1,44 +1,49 @@
-# velvet
+# carbon
 
 [![Version Badge][version-image]][project-url]
 [![Build Status][build-image]][build-url]
 [![License][license-image]][license-url]
 
-> A thin, silky smooth view layer for declarative web interfaces
+> The building blocks of UI
 
 ## Install
 
-Download the [CJS](https://github.com/ryanmorr/velvet/raw/master/dist/velvet.cjs.js), [ESM](https://github.com/ryanmorr/velvet/raw/master/dist/velvet.esm.js), [UMD](https://github.com/ryanmorr/velvet/raw/master/dist/velvet.umd.js) versions or install via NPM:
+Download the [CJS](https://github.com/ryanmorr/carbon/raw/master/dist/carbon.cjs.js), [ESM](https://github.com/ryanmorr/carbon/raw/master/dist/carbon.esm.js), [UMD](https://github.com/ryanmorr/carbon/raw/master/dist/carbon.umd.js) versions or install via NPM:
 
 ``` sh
-npm install @ryanmorr/velvet
+npm install @ryanmorr/carbon
 ```
 
 ## Usage
 
-Create a virtual DOM tree using the hyperscript standard:
+Create a virtual DOM node:
 
 ``` javascript
-import { h } from '@ryanmorr/velvet';
+import { h } from '@ryanmorr/carbon';
 
-const vtree = h('div', {id: 'foo', class: 'bar'},
-    h('h1', null, 'Hello World'),
-    h('p', null, 'Here is some content')
+const vnode = h('div', {id: 'foo', class: 'bar'},
+    h('h1', 'Hello World'),
+    h('p', 'nisl suscipit adipiscing bibendum est ultricies integer quis auctor elit')
 );
 ```
 
-
-Render an element's content by providing the parent DOM element as the first argument and a virtual DOM tree as the second argument. The root DOM element of the newly patched DOM tree is returned:
+Render an element's content by providing the parent DOM element as the first argument and ethier a virtual DOM node or an array of virtual DOM nodes as the second argument. The root DOM node(s) of the newly created DOM tree is returned:
 
 ``` javascript
-import { render } from '@ryanmorr/velvet';
+import { render } from '@ryanmorr/carbon';
 
 const element = render(parentElement,
-    h('div', null, 
-        h('h1', null, 'Hello World'),
-        h('p', null, 'Here is some content')
+    h('div', 
+        h('h1', 'Hello World'),
+        h('p', 'mi bibendum neque egestas congue quisque egestas diam in arcu')
     )
 );
+
+const elements = render(parentElement, [
+    h('div', 'foo'),
+    h('div', 'bar'),
+    h('div', 'baz')
+]);
 ```
 
 Supports patching of attributes and properties, including CSS styles as a string or object and event listeners indicated by a prefix of "on":
@@ -53,15 +58,15 @@ render(parentElement,
 );
 ```
 
-Supports keyed child nodes to efficiently move an element instead of destroying and re-creating it:
+Supports keyed nodes to efficiently move elements instead of re-creating them:
 
 ``` javascript
 render(parentElement,
-    h('section', null, 
-        h('div', {key: 'foo'}, 'foo'),
-        h('div', {key: 'bar'}, 'bar'),
-        h('div', {key: 'baz'}, 'baz'),
-        h('div', {key: 'qux'}, 'qux')
+    h('ul', null, 
+        h('li', {key: 'foo'}, 'foo'),
+        h('li', {key: 'bar'}, 'bar'),
+        h('li', {key: 'baz'}, 'baz'),
+        h('li', {key: 'qux'}, 'qux')
     )
 );
 ```
@@ -91,9 +96,9 @@ render(parentElement,
 
 This project is dedicated to the public domain as described by the [Unlicense](http://unlicense.org/).
 
-[project-url]: https://github.com/ryanmorr/velvet
-[version-image]: https://badge.fury.io/gh/ryanmorr%2Fvelvet.svg
-[build-url]: https://travis-ci.org/ryanmorr/velvet
-[build-image]: https://travis-ci.org/ryanmorr/velvet.svg
+[project-url]: https://github.com/ryanmorr/carbon
+[version-image]: https://badge.fury.io/gh/ryanmorr%2Fcarbon.svg
+[build-url]: https://travis-ci.org/ryanmorr/carbon
+[build-image]: https://travis-ci.org/ryanmorr/carbon.svg
 [license-image]: https://img.shields.io/badge/license-Unlicense-blue.svg
 [license-url]: UNLICENSE

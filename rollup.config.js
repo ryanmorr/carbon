@@ -7,11 +7,11 @@ import minify from 'rollup-plugin-babel-minify';
 const banner = `/*! ${pkg.name} v${pkg.version} | ${pkg.homepage} */`;
 
 export default {
-    input: 'src/velvet.js',
+    input: 'src/carbon.js',
     output: [
         {
             banner,
-            name: 'velvet',
+            name: 'carbon',
             file: pkg.browser,
             format: 'umd',
             sourcemap: 'inline'

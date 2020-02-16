@@ -1,4 +1,4 @@
-import { h } from '../../src/velvet';
+import { h } from '../../src/carbon';
 
 describe('h', () => {
     const TEXT_NODE = 3;
