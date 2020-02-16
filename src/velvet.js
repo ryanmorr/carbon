@@ -1,6 +1,6 @@
 const VNODE = Symbol('vnode');
-export const ELEMENT_NODE = 1;
-export const TEXT_NODE = 3;
+const ELEMENT_NODE = 1;
+const TEXT_NODE = 3;
 
 function isDefined(obj) {
     return obj != null;
@@ -33,7 +33,7 @@ function getKey(vnode) {
 }
 
 function isSameNode(a, b) {
-    return getKey(a) === getKey(b) && a.nodeName === b.nodeName;
+    return a.nodeName === b.nodeName && getKey(a) === getKey(b);
 }
 
 function isSameNodeType(a, b) {
@@ -61,23 +61,62 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
     return map;
 }
 
+function getVNode(vnode) {
+    const type = typeof vnode;
+    if (type === 'string' || type === 'number' || type === 'boolean') {
+        return createTextVNode(vnode);
+    }
+    if (Array.isArray(vnode)) {
+        return flatten(vnode).reduce((vnodes, vn) => {
+            if (isDefined(vn)) {
+                vnodes.push(getVNode(vn));
+            }
+            return vnodes;
+        }, []);
+    }
+    return vnode;
+}
+
+function recycle(node) {
+    if (node.nodeType === 3) {
+        return createTextVNode(node.nodeValue, node);
+    }
+    if (node.nodeType === 1) {
+        return createVNode(
+            node.nodeName.toLowerCase(),
+            Array.from(node.attributes).reduce((map, attr) => {
+                const name = attr.name, value = attr.value;
+                if (name !== 'style') {
+                    map[name] = value;
+                }
+                if (name === 'key') {
+                    node.removeAttribute('key');
+                }
+                return map;
+            }, {}),
+            Array.from(node.childNodes).map(recycle),
+            node
+        );
+    }
+}
+
 function createVNode(nodeName, attributes, children, node = null) {
     return {
+        [VNODE]: true,
         type: ELEMENT_NODE,
         node,
         nodeName,
         attributes,
-        children: children,
-        [VNODE]: true
+        children
     };
 }
 
 function createTextVNode(text, node = null) {
     return {
+        [VNODE]: true,
         type: TEXT_NODE,
         node,
-        text,
-        [VNODE]: true
+        text
     };
 }
 
@@ -98,16 +137,23 @@ function createElement(vnode, isSvg = false) {
 }
 
 function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
-    if (name === 'key') {
+    if (name === 'key' || name === 'children') {
         return;
     }
+    if (isSvg) {
+		if (name === 'className') {
+			name = 'class';
+		}
+	} else if (name === 'class') {
+		name = 'className';
+	}
     if (name === 'style') {
         if (typeof newVal === 'string') {
             element.style.cssText = newVal;
         } else {
             for (const key in merge(newVal, oldVal)) {
                 const style = newVal == null || newVal[key] == null ? '' : newVal[key];
-                if (key[0] === '-') {
+                if (key.includes('-')) {
                     element.style.setProperty(key, style);
                 } else {
                     element.style[key] = style;
@@ -116,23 +162,21 @@ function patchAttribute(element, name, oldVal, newVal, isSvg = false) {
         }
     } else if (name.startsWith('on') && (typeof oldVal === 'function' || typeof newVal === 'function')) {
         name = name.slice(2).toLowerCase();
-        if (newVal == null) {
-            element.removeEventListener(name, oldVal);
-        } else if (oldVal == null) {
+        if (newVal) {
             element.addEventListener(name, newVal);
+        }
+        if (oldVal) {
+            element.removeEventListener(name, oldVal);
         }
     } else if (!isSvg && name !== 'list' && name !== 'form' && name in element) {
         element[name] = newVal == null ? '' : newVal;
     } else if (newVal == null || newVal === false) {
         element.removeAttribute(name);
-    } else {
+    } else if (typeof newVal !== 'function') {
         element.setAttribute(name, newVal);
     }
 }
 
-/**
- * Adapted from: https://github.com/snabbdom/snabbdom/
- */
 function patchChildren(parent, oldChildren, newChildren, isSvg) {
     let oldStartIndex = 0;
     let oldEndIndex = oldChildren.length - 1;
@@ -193,7 +237,7 @@ function patchChildren(parent, oldChildren, newChildren, isSvg) {
         for (let i = oldStartIndex; i <= oldEndIndex; i++) {
             let child = oldChildren[i];
             if (child && child.node) {
-                child.node.remove();
+                parent.removeChild(child.node);
             }
         }
     }
@@ -236,57 +280,23 @@ function patchElement(parent, oldVNode, newVNode, isSvg = false) {
     return element;
 }
 
-function recycleNode(node) {
-    if (node.nodeType === 3) {
-        return createTextVNode(node.nodeValue, node);
-    }
-    if (node.nodeType === 1) {
-        return createVNode(
-            node.nodeName.toLowerCase(),
-            Array.from(node.attributes).reduce((map, attr) => {
-                const name = attr.name, value = attr.value;
-                if (name !== 'style') {
-                    map[name] = value;
-                }
-                return map;
-            }, {}),
-            Array.from(node.childNodes).map(recycleNode),
-            node
-        );
-    }
-}
-
-export function recycle(node) {
-    if (node.nodeType) {
-        return recycleNode(node);
-    }
-    if (typeof node === 'object' && typeof node.length === 'number' && node.length > 0) {
-        return Array.from(node).map(recycleNode);
-    }
-    return null;
-}
-
 export function h(nodeName, attributes, ...children) {
     if (!attributes || attributes[VNODE] === true || typeof attributes.concat === 'function') {
         children = [].concat(attributes || [], ...children);
         attributes = {};
     }
-    return createVNode(nodeName, attributes || {}, flatten(children).reduce((vnodes, vchild) => {
-        if (vchild != null) {
-            vnodes.push(typeof vchild === 'object' ? vchild : createTextVNode(vchild));
-        }
-        return vnodes;
-    }, []));
+    return createVNode(nodeName, attributes || {}, getVNode(children));
 }
 
 export function render(parent, newVNode) {
-    let oldVNode = parent.vdom || recycle(parent.childNodes);
+    newVNode = getVNode(newVNode);
+    let oldVNode = parent.vdom || (parent.childNodes.length > 0 ? Array.from(parent.childNodes).map(recycle) : null);
     const oldIsArray = Array.isArray(oldVNode);
     const newIsArray = Array.isArray(newVNode);
     parent.vdom = newVNode;
     if (oldIsArray || newIsArray) {
-        oldVNode = (oldIsArray ? flatten(oldVNode) : [oldVNode]).filter(isDefined);
-        newVNode = (newIsArray ? flatten(newVNode) : [newVNode]).filter(isDefined);
+        oldVNode = (oldIsArray ? oldVNode : [oldVNode]).filter(isDefined);
+        newVNode = (newIsArray ? newVNode : [newVNode]).filter(isDefined);
         const root = patchChildren(parent, oldVNode, newVNode);
         return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
     }

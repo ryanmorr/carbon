@@ -2,96 +2,250 @@ import { h, render } from '../../src/velvet';
 import { root, expectHTML } from '../setup';
 
 describe('attributes', () => {
-    it('should add an attribute', () => {
-        render(root,
-            <div></div>
+    it('should render an element with attributes', () => {
+        const div = render(root,
+            <div id="foo" class="bar" data-baz="qux" />
         );
 
+        expect(div.attributes.length).to.equal(3);
+        expectHTML('<div id="foo" class="bar" data-baz="qux"></div>');
+    });
+    
+    it('should add an attribute', () => {
+        const div = render(root,
+            <div />
+        );
+
+        expect(div.attributes.length).to.equal(0);
         expectHTML('<div></div>');
 
         render(root,
-            <div id="foo"></div>
+            <div id="foo" />
         );
-
+        
+        expect(div.attributes.length).to.equal(1);
         expectHTML('<div id="foo"></div>');
     });
 
     it('should remove an attribute', () => {
-        render(root,
-            <div foo="bar"></div>
+        const div = render(root,
+            <div foo="bar" />
         );
 
+        expect(div.attributes.length).to.equal(1);
         expectHTML('<div foo="bar"></div>');
 
         render(root,
-            <div></div>
+            <div />
         );
 
+        expect(div.attributes.length).to.equal(0);
         expectHTML('<div></div>');
     });
 
     it('should remove an attribute if the value assigned is undefined, null, or false', () => {
-        render(root,
-            <div foo="1" bar="2" baz="3"></div>
+        const div = render(root,
+            <div foo="1" bar="2" baz="3" />
         );
-
+        
+        expect(div.attributes.length).to.equal(3);
         expectHTML('<div foo="1" bar="2" baz="3"></div>');
 
         render(root,
-            <div foo={void 0} bar={null} baz={false}></div>
+            <div foo={void 0} bar={null} baz={false} />
         );
-
+        
+        expect(div.attributes.length).to.equal(0);
         expectHTML('<div></div>');
     });
 
     it('should update an attribute', () => {
         render(root,
-            <div foo="bar"></div>
+            <div foo="bar" />
         );
 
         expectHTML('<div foo="bar"></div>');
 
         render(root,
-            <div foo="baz"></div>
+            <div foo="baz" />
         );
 
         expectHTML('<div foo="baz"></div>');
     });
 
+    it('should not remove an attribute node if only the value has changed', () => {
+        const div1 = render(root,
+            <div foo="bar" />
+        );
+        
+        const attrNode1 = div1.attributes[0];
+        expectHTML('<div foo="bar"></div>');
+
+        const div2 = render(root,
+            <div foo="baz" />
+        );
+        
+        const attrNode2 = div2.attributes[0];
+        expect(attrNode1).to.equal(attrNode2);
+        expectHTML('<div foo="baz"></div>');
+    });
+
     it('should not remove an element if only an attribute is changed', () => {
         const div = render(root,
-            <div foo="1" bar="2"></div>
+            <div foo="1" bar="2" />
         );
-
+        
         expectHTML('<div foo="1" bar="2"></div>');
 
         const div2 = render(root,
-            <div foo="1" bar="2" baz="3"></div>,
+            <div foo="1" bar="2" baz="3" />
         );
 
         expect(div).to.equal(div2);
         expectHTML('<div foo="1" bar="2" baz="3"></div>');
     });
 
-    it('should add CSS styles as a string', () => {
+    it('should patch deeply nested attributes', () => {
         render(root,
-            <div style={'background-color: rgb(20, 20, 20); position: static;'}></div>
+            <section>
+                <div>
+                    <span foo="1" bar="2" />
+                </div>
+            </section>
         );
 
-        expectHTML('<div style="background-color: rgb(20, 20, 20); position: static;"></div>');
+        expectHTML(`
+            <section>
+                <div>
+                    <span foo="1" bar="2"></span>
+                </div>
+            </section>
+        `);
+
+        render(root,
+            <section>
+                <div qux="4">
+                    <span foo="2" baz="3" />
+                </div>
+            </section>
+        );
+
+        expectHTML(`
+            <section>
+                <div qux="4">
+                    <span foo="2" baz="3"></span>
+                </div>
+            </section>
+        `);
+    });
+
+    it('should set the class attribute', () => {
+        const div = render(root,
+            <div class="foo" />
+        );
+        
+        expect(div.className).to.equal('foo');
+        expect(div.getAttribute('class')).to.equal('foo');
+        expectHTML('<div class="foo"></div>');
+
+        render(root,
+            <div class="bar" />
+        );
+        
+        expect(div.className).to.equal('bar');
+        expect(div.getAttribute('class')).to.equal('bar');
+        expectHTML('<div class="bar"></div>');
+    });
+
+    it('should alias className to class', () => {
+        const div = render(root,
+            <div className="foo" />
+        );
+        
+        expect(div.className).to.equal('foo');
+        expect(div.getAttribute('class')).to.equal('foo');
+        expectHTML('<div class="foo"></div>');
+
+        render(root,
+            <div className="bar" />
+        );
+        
+        expect(div.className).to.equal('bar');
+        expect(div.getAttribute('class')).to.equal('bar');
+        expectHTML('<div class="bar"></div>');
+    });
+
+    it('should remove the class attribute by providing null or undefined as the value', () => {
+        const div = render(root,
+            <div class="foo" />
+        );
+
+        expectHTML('<div class="foo"></div>');
+
+        render(root,
+            <div class={null} />
+        );
+
+        expect(div.className).to.equal('');
+        expect(div.getAttribute('class')).to.equal('');
+        expectHTML('<div class=""></div>');
+
+        render(root,
+            <div class="bar" />
+        );
+
+        expectHTML('<div class="bar"></div>');
+
+        render(root,
+            <div class={undefined} />
+        );
+
+        expect(div.className).to.equal('');
+        expect(div.getAttribute('class')).to.equal('');
+        expectHTML('<div class=""></div>');
+    });
+
+    it('should add CSS styles as a string', () => {
+        const styles = `
+            color: rgb(255, 255, 255);
+            background: rgb(255, 100, 0);
+            background-position: 10px 10px;
+            background-size: cover;
+        `;
+
+        const div = render(root,
+            <div style={styles} />
+        );
+
+        const style = div.style;
+        expect(style.color).to.equal('rgb(255, 255, 255)');
+        expect(style.background).to.contain('rgb(255, 100, 0)');
+        expect(style.backgroundPosition).to.equal('10px 10px');
+        expect(style.backgroundSize).to.equal('cover');
     });
 
     it('should add CSS styles as a key/value map', () => {
-        render(root,
-            <div style={{display: 'inline', position: 'absolute'}}></div>
+        const styles = {
+            color: 'rgb(255, 255, 255)',
+            background: 'rgb(255, 100, 0)',
+            backgroundPosition: '10px 10px',
+            'background-size': 'cover'
+        };
+
+        const div = render(root,
+            <div style={styles} />
         );
 
-        expectHTML('<div style="display: inline; position: absolute;"></div>');
+        const style = div.style;
+        expect(style.color).to.equal('rgb(255, 255, 255)');
+        expect(style.background).to.contain('rgb(255, 100, 0)');
+        expect(style.backgroundPosition).to.equal('10px 10px');
+        expect(style.backgroundSize).to.equal('cover');
     });
 
     it('should support CSS variables', () => {
         render(root,
-            <div style={{color: 'var(--color)', '--color': 'red'}}></div>
+            <div style={{color: 'var(--color)', '--color': 'red'}} />
         );
 
         const div = root.firstChild;
@@ -100,22 +254,72 @@ describe('attributes', () => {
         expect(window.getComputedStyle(div).getPropertyValue('--color')).to.equal('red');
     });
 
-    it('should remove CSS styles', () => {
-        render(root,
-            <div style={{zIndex: 2, display: 'inline', position: 'absolute'}}></div>
+    it('should support opacity 0', () => {
+        const div = render(root,
+            <div style={{opacity: 1}} />
         );
 
-        const div = root.firstChild;
+        expect(div.style.opacity).to.equal('1');
+
+        render(root,
+            <div style={{opacity: 0}} />
+        );
+
+        expect(div.style.opacity).to.equal('0');
+    });
+
+    it('should remove old CSS styles', () => {
+        const div = render(root,
+            <div style={{color: 'red'}} />
+        );
+
+        expect(div.style.color).to.equal('red');
+
+        render(root,
+            <div style={{backgroundColor: 'blue'}} />
+        );
+
+        expect(div.style.color).to.equal('');
+        expect(div.style.backgroundColor).to.equal('blue');
+    });
+
+    it('should remove empty CSS styles', () => {
+        const div = render(root,
+            <div style={{color: 'red', backgroundColor: 'blue'}} />
+        );
+
+        expect(div.style.color).to.equal('red');
+        expect(div.style.backgroundColor).to.equal('blue');
+
+        render(root,
+            <div style={{color: null, backgroundColor: undefined}} />
+        );
+
+        expect(div.style.color).to.equal('');
+        expect(div.style.backgroundColor).to.equal('');
+    });
+
+    it('should replace CSS styles', () => {
+        const div = render(root,
+            <div style={{display: 'inline'}} />
+        );
+
+        expect(div.style.display).to.equal('inline');
+
+        render(root,
+            <div style={{zIndex: 1, position: 'absolute'}} />
+        );
+
+        expect(div.style.zIndex).to.equal('1');
+        expect(div.style.position).to.equal('absolute');
+        expect(div.style.display).to.equal('');
+
+        render(root,
+            <div style={{zIndex: 2, display: 'inline'}} />
+        );
+
         expect(div.style.zIndex).to.equal('2');
         expect(div.style.display).to.equal('inline');
-        expect(div.style.position).to.equal('absolute');
-
-        render(root,
-            <div style={{zIndex: 3}}></div>
-        );
-
-        expect(div.style.zIndex).to.equal('3');
-        expect(div.style.display).to.equal('');
         expect(div.style.position).to.equal('');
     });
 
@@ -160,7 +364,23 @@ describe('attributes', () => {
         expect(option3.selected).to.equal(true);
     });
 
-    it('should support dynamic properties', () => {
+    it('should support the input list attribute', () => {
+        render(root,
+            <input list="foo" />
+        );
+
+        expectHTML('<input list="foo">');
+    });
+
+    it('should support the input form attribute', () => {
+        render(root,
+            <input form="foo" />
+        );
+
+        expectHTML('<input form="foo">');
+    });
+
+    it('should support DOM properties', () => {
         render(root,
             <input type="text" value="foo" />
         );
@@ -182,29 +402,60 @@ describe('attributes', () => {
         expect(root.firstChild.value).to.equal('bar');
     });
 
+    it('should reconcile mutated DOM properties', () => {
+		const check = (val) => render(root, <input type="checkbox" checked={val} />);
+		const getValue = () => root.firstChild.checked;
+        const setValue = (val) => (root.firstChild.checked = val);
+        
+		check(true);
+        expect(getValue()).to.equal(true);
+        
+		check(false);
+        expect(getValue()).to.equal(false);
+        
+		check(true);
+        expect(getValue()).to.equal(true);
+        
+		setValue(true);
+		check(false);
+        expect(getValue()).to.equal(false);
+        
+		setValue(false);
+		check(true);
+		expect(getValue()).to.equal(true);
+	});
+
     it('should add an event listener', () => {
         const div = render(root,
-            <div></div>
+            <div />
         );
 
-        const callback = () => {};
+        const event = new CustomEvent('click');
+        const onClick = sinon.spy();
         const addEventSpy = sinon.spy(div, 'addEventListener');
 
         render(root,
-            <div onclick={callback}></div>
+            <div onClick={onClick} />
         );
 
-        expect(addEventSpy.called).to.equal(true);
-        expect(addEventSpy.calledWith('click', callback)).to.equal(true);
-        addEventSpy.restore();
+        expect(onClick.callCount).to.equal(0);
+        div.dispatchEvent(event);
+        expect(addEventSpy.callCount).to.equal(1);
+        expect(onClick.callCount).to.equal(1);
+        const call = onClick.getCall(0);
+        expect(call.thisValue).to.equal(div);
+        expect(call.args[0]).to.equal(event);
     });
 
     it('should remove an event listener', () => {
-        const callback = () => {};
+        const onClick = sinon.spy();
 
         const div = render(root,
-            <div onclick={callback}></div>,
+            <div onclick={onClick} />
         );
+
+        div.dispatchEvent(new CustomEvent('click'));
+        expect(onClick.callCount).to.equal(1);
 
         const removeEventSpy = sinon.spy(div, 'removeEventListener');
 
@@ -212,81 +463,193 @@ describe('attributes', () => {
             <div></div>
         );
 
-        expect(removeEventSpy.called).to.equal(true);
-        expect(removeEventSpy.calledWith('click', callback)).to.equal(true);
-        removeEventSpy.restore();
+        div.dispatchEvent(new CustomEvent('click'));
+        expect(onClick.callCount).to.equal(1);
+        expect(removeEventSpy.callCount).to.equal(1);
+    });
+
+    it('should update event listeners', () => {
+        const div = render(root,
+            <div />
+        );
+
+        const event1 = new CustomEvent('click');
+        const onClick1 = sinon.spy();
+        const addEventSpy = sinon.spy(div, 'addEventListener');
+        const removeEventSpy = sinon.spy(div, 'removeEventListener');
+
+        render(root,
+            <div onClick={onClick1} />
+        );
+
+        div.dispatchEvent(event1);
+        expect(onClick1.callCount).to.equal(1);
+        expect(addEventSpy.callCount).to.equal(1);
+        expect(removeEventSpy.callCount).to.equal(0);
+
+        const event2 = new CustomEvent('click');
+        const onClick2 = sinon.spy();
+
+        render(root,
+            <div onClick={onClick2} />
+        );
+
+        div.dispatchEvent(event2);
+        expect(onClick1.callCount).to.equal(1);
+        expect(onClick2.callCount).to.equal(1);
+        expect(addEventSpy.callCount).to.equal(2);
+        expect(removeEventSpy.callCount).to.equal(1);
+
+        const call = onClick2.getCall(0);
+        expect(call.thisValue).to.equal(div);
+        expect(call.args[0]).to.equal(event2);
     });
 
     it('should support custom events', (done) => {
         let event = new CustomEvent('foo');
 
-        const callback = sinon.spy((e) => {
+        const callback = (e) => {
             expect(e).to.equal(event);
             done();
-        });
+        };
 
         const div = render(root,
-            <div onfoo={callback}></div>
+            <div onfoo={callback} />
         );
 
         div.dispatchEvent(event);
     });
 
+    it('should support camel-cased event names', (done) => {
+        const event = new MouseEvent('mouseover');
+
+        const onMouseOver = (e) => {
+            expect(e).to.equal(event);
+            done();
+        };
+
+        const div = render(root,
+            <div onMouseOver={onMouseOver} />
+        );
+
+        div.dispatchEvent(event);
+    });
+
+    it('should allow attributes with a prefix of "on" if the value is not a function', () => {
+        render(root,
+            <div onfoo="bar" />
+        );
+
+        expectHTML('<div onfoo="bar"></div>');
+    });
+
     it('should ignore keys', () => {
         render(root,
-            <div key="foo"></div>
+            <div key="foo" />
         );
 
         expectHTML('<div></div>');
     });
 
-    it('should patch deeply nested attributes', () => {
+    it('should ignore a children attribute if it exists', () => {
         render(root,
-            <section>
-                <div>
-                    <span foo="1" bar="2"></span>
-                </div>
-            </section>
+            <div children="foo" />
         );
 
-        expectHTML(`
-            <section>
-                <div>
-                    <span foo="1" bar="2"></span>
-                </div>
-            </section>
-        `);
-
-        render(root,
-            <section>
-                <div qux="4">
-                    <span foo="2" baz="3"></span>
-                </div>
-            </section>
-        );
-
-        expectHTML(`
-            <section>
-                <div qux="4">
-                    <span foo="2" baz="3"></span>
-                </div>
-            </section>
-        `);
+        expectHTML('<div></div>');
     });
 
-    it('should support the input list attribute', () => {
-        render(root,
-            <input list="foo" />
+    it('should not render falsy attributes', () => {
+        render(root, 
+            <div
+                a={null}
+                b={undefined}
+                c={false}
+                d={NaN}
+                e={0}
+			/>
         );
 
-        expectHTML('<input list="foo">');
+        expectHTML('<div d="NaN" e="0"></div>');
     });
 
-    it('should support the input form attribute', () => {
-        render(root,
-            <input form="foo" />
+    it('should remove falsy attributes', () => {
+        render(root, 
+            <div
+                a="null"
+                b="undefined"
+                c="false"
+                d="NaN"
+                e="0"
+			/>
         );
 
-        expectHTML('<input form="foo">');
+        expectHTML('<div a="null" b="undefined" c="false" d="NaN" e="0"></div>');
+
+        render(root, 
+            <div
+                a={null}
+                b={undefined}
+                c={false}
+                d={NaN}
+                e={0}
+			/>
+        );
+
+        expectHTML('<div d="NaN" e="0"></div>');
+    });
+
+    it('should clear falsy input values', () => {
+		const inputs = render(root, [
+            <input value={0} />,
+            <input value={false} />,
+            <input value={null} />,
+            <input value={undefined} />
+        ]);
+
+        expect(inputs[0].value).to.equal('0');
+        expect(inputs[1].value).to.equal('false');
+        expect(inputs[2].value).to.equal('');
+        expect(inputs[3].value).to.equal('');
+    });
+    
+    it('should set enumerable boolean attribute', () => {
+		const input = render(root,
+            <input spellcheck={false} />
+        );
+
+		expect(input.spellcheck).to.equal(false);
+    });
+    
+    it('should not serialize functions as attributes', () => {
+		const div = render(root,
+            <div foo={() => {}} />
+        );
+
+		expect(div.attributes.length).to.equal(0);
+    });
+    
+    it('should serialize object properties as attributes', () => {
+		const div = render(root,
+			<div
+				foo={{ a: 'b' }}
+				bar={{
+					toString() {
+						return 'abc';
+					}
+				}}
+			/>
+		);
+
+        expect(div.attributes.length).to.equal(2);
+        expectHTML('<div foo="[object Object]" bar="abc"></div>');
+    });
+    
+    it('should support innerHTML', () => {
+        render(root,
+			<div innerHTML="<span>foo</span>" />
+		);
+
+        expectHTML('<div><span>foo</span></div>');
     });
 });

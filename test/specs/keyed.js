@@ -645,15 +645,15 @@ describe('keyed', () => {
     it('should support reordering, addition, and removal of mixed keyed/non-keyed nodes', () => {
         render(root,
             <section>
-                <div key="a"></div>
-                <span></span>
-                <div key="b"></div>
-                <span></span>
-                <div key="c"></div>
-                <span></span>
-                <span></span>
-                <div key="d"></div>
-                <div key="e"></div>
+                <div key="a" />
+                <span />
+                <div key="b" />
+                <span />
+                <div key="c" />
+                <span />
+                <span />
+                <div key="d" />
+                <div key="e" />
             </section>
         );
 
@@ -678,16 +678,16 @@ describe('keyed', () => {
 
         render(root,
             <section>
-                <span></span>
-                <div key="d"></div>
-                <span></span>
-                <div key="f"></div>
-                <span></span>
-                <div key="a"></div>
-                <div key="b"></div>
-                <em></em>
-                <span></span>
-                <div key="g"></div>
+                <span />
+                <div key="d" />
+                <span />
+                <div key="f" />
+                <span />
+                <div key="a" />
+                <div key="b" />
+                <em />
+                <span />
+                <div key="g" />
             </section>
         );
 
@@ -718,13 +718,13 @@ describe('keyed', () => {
 
     it('should support root keyed nodes', () => {
         render(root, [
-            <div key="a"></div>,
-            <div key="b"></div>,
-            <span></span>,
-            <div key="c"></div>,
-            <span></span>,
-            <span></span>,
-            <div key="d"></div>
+            <div key="a" />,
+            <div key="b" />,
+            <span />,
+            <div key="c" />,
+            <span />,
+            <span />,
+            <div key="d" />
         ]);
 
         expectHTML(`
@@ -743,13 +743,13 @@ describe('keyed', () => {
         const d1 = keyed1[3];
 
         render(root, [
-            <span></span>,
-            <div key="c"></div>,
-            <span></span>,
-            <div key="d"></div>,
-            <div key="a"></div>,
-            <span></span>,
-            <em></em>
+            <span />,
+            <div key="c" />,
+            <span />,
+            <div key="d" />,
+            <div key="a" />,
+            <span />,
+            <em />
         ]);
 
         const keyed2 = Array.from(root.getElementsByTagName('div'));
@@ -772,12 +772,12 @@ describe('keyed', () => {
         `);
     });
 
-    it('should maintain focus when moving the input around', () => {
+    it('should maintain focus when moving a keyed input', () => {
         const div = render(root,
             <div>
                 <input type="text" key="focused" />
-                <span></span>
-                <span></span>
+                <span />
+                <span />
             </div>
         );
 
@@ -788,8 +788,8 @@ describe('keyed', () => {
 
         render(root, 
             <div>
-                <span></span>
-                <span></span>
+                <span />
+                <span />
                 <input type="text" key="focused" />
             </div>
         );
@@ -799,7 +799,7 @@ describe('keyed', () => {
 		expect(input.selectionEnd).to.equal(5);
     });
 
-    it('should maintain focus when adding sibling nodes around the input', () => {
+    it('should maintain focus when adding sibling nodes around a keyed input', () => {
         const div = render(root,
             <div>
                 <input type="text" key="focused" />
@@ -813,11 +813,11 @@ describe('keyed', () => {
 
         render(root, 
             <div>
-                <span></span>
-                <span></span>
+                <span />
+                <span />
                 <input type="text" key="focused" />
-                <span></span>
-                <span></span>
+                <span />
+                <span />
             </div>
         );
         

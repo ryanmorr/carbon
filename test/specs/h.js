@@ -1,6 +1,9 @@
-import { h, TEXT_NODE, ELEMENT_NODE } from '../../src/velvet';
+import { h } from '../../src/velvet';
 
 describe('h', () => {
+    const TEXT_NODE = 3;
+    const ELEMENT_NODE = 1;
+    
     it('should create a virtual element', () => {
         expect(h('div')).to.deep.equal({
             type: ELEMENT_NODE,
@@ -203,6 +206,7 @@ describe('h', () => {
             <div>
                 <h1>{title}</h1>
                 <section class="content">{content}</section>
+                <span />
             </div>
         )).to.deep.equal({
             type: ELEMENT_NODE,
@@ -235,6 +239,13 @@ describe('h', () => {
                             text: 'Lorem ipsum dolor sit amet'
                         }
                     ]
+                },
+                {
+                    type: ELEMENT_NODE,
+                    nodeName: 'span',
+                    node: null,
+                    attributes: {},
+                    children: []
                 }
             ]
         });
