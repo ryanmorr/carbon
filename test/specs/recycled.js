@@ -37,17 +37,31 @@ describe('recycled', () => {
     });
 
     it('should recycle pre-existing DOM properties', () => {
-        root.innerHTML = '<input type="checkbox" />';
-        const checkbox = root.firstChild;
-        checkbox.checked = false;
-
+        root.innerHTML = '<input type="text" value="foo" />';
+        const input = root.firstChild;
+        input.value = 'bar';
+        
         const element = render(root,
-            <input type="checkbox" checked={true} />
+            <input type="text" value="baz" />
         );
 
-        expect(element).to.equal(checkbox);
+        expect(element).to.equal(input);
+        expectHTML('<input type="text" value="foo">');
+        expect(input.value).to.equal('baz');
+    });
+
+    it('should recycle pre-existing boolean attributes', () => {
+        root.innerHTML = '<input type="checkbox" />';
+        const input = root.firstChild;
+        input.checked = true;
+        
+        const element = render(root,
+            <input type="checkbox" checked={false} />
+        );
+        
+        expect(element).to.equal(input);
         expectHTML('<input type="checkbox">');
-        expect(checkbox.checked).to.equal(true);
+        expect(input.checked).to.equal(false);
     });
 
     it('should recycle multiple pre-existing child nodes', () => {
