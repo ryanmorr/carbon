@@ -79,7 +79,7 @@ function getVNode(vnode) {
 
 function recycle(node) {
     if (node.nodeType === 3) {
-        return createTextVNode(node.nodeValue, node);
+        return createTextVNode(node.data, node);
     }
     if (node.nodeType === 1) {
         return createVNode(
@@ -257,7 +257,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg = false) {
     }
     if (prevVNode.type === TEXT_NODE && nextVNode.type === TEXT_NODE) {
         if (prevVNode.text !== nextVNode.text) {
-            element.nodeValue = nextVNode.text;
+            element.data = nextVNode.text;
         }
     } else if (!isSameNodeType(nextVNode, prevVNode)) {
         const nextElement = createElement(nextVNode, isSvg);
