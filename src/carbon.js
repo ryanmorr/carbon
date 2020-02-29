@@ -1,4 +1,3 @@
-const VNODE = Symbol('vnode');
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
 
@@ -37,10 +36,10 @@ function isSameNode(a, b) {
 }
 
 function isSameNodeType(a, b) {
-    if (a.type !== b.type) {
+    if (a.nodeType !== b.nodeType) {
         return false;
     }
-    if (a.type === TEXT_NODE && a.text !== b.text) {
+    if (a.nodeType === TEXT_NODE && a.text !== b.text) {
         return false;
     }
     if (a.nodeName !== b.nodeName) {
@@ -102,8 +101,7 @@ function recycle(node) {
 
 function createVNode(nodeName, attributes, children, node = null) {
     return {
-        [VNODE]: true,
-        type: ELEMENT_NODE,
+        nodeType: ELEMENT_NODE,
         node,
         nodeName,
         attributes,
@@ -113,8 +111,7 @@ function createVNode(nodeName, attributes, children, node = null) {
 
 function createTextVNode(text, node = null) {
     return {
-        [VNODE]: true,
-        type: TEXT_NODE,
+        nodeType: TEXT_NODE,
         node,
         text
     };
@@ -122,7 +119,7 @@ function createTextVNode(text, node = null) {
 
 function createElement(vnode, isSvg = false) {
     let node;
-    if (vnode.type === TEXT_NODE) {
+    if (vnode.nodeType === TEXT_NODE) {
         node = document.createTextNode(vnode.text);
     } else {
         const nodeName = vnode.nodeName;
@@ -255,7 +252,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg = false) {
     if (nextVNode == null) {
         return parent.removeChild(element) && null;
     }
-    if (prevVNode.type === TEXT_NODE && nextVNode.type === TEXT_NODE) {
+    if (prevVNode.nodeType === TEXT_NODE && nextVNode.nodeType === TEXT_NODE) {
         if (prevVNode.text !== nextVNode.text) {
             element.data = nextVNode.text;
         }
@@ -281,7 +278,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg = false) {
 }
 
 export function h(nodeName, attributes, ...children) {
-    if (!attributes || attributes[VNODE] === true || typeof attributes.concat === 'function') {
+    if (!attributes || attributes.nodeType || typeof attributes.concat === 'function') {
         children = [].concat(attributes || [], ...children);
         attributes = {};
     }

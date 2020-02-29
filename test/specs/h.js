@@ -6,7 +6,7 @@ describe('h', () => {
     
     it('should create a virtual element', () => {
         expect(h('div')).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
@@ -16,7 +16,7 @@ describe('h', () => {
 
     it('should create a virtual element with attributes', () => {
         expect(h('div', {id: 'foo', class: 'bar'})).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {id: 'foo', class: 'bar'},
@@ -26,13 +26,13 @@ describe('h', () => {
 
     it('should create a virtual element with a single text child', () => {
         expect(h('div', null, 'foo')).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
             children: [
                 {
-                    type: TEXT_NODE,
+                    nodeType: TEXT_NODE,
                     node: null,
                     text: 'foo'
                 }
@@ -42,13 +42,13 @@ describe('h', () => {
 
     it('should create a virtual element with a single element child', () => {
         expect(h('div', null, h('span'))).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
             children: [
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
                     attributes: {},
@@ -60,25 +60,25 @@ describe('h', () => {
 
     it('should create a virtual element with multiple children', () => {
         expect(h('div', null, h('i'), 'foo', h('em'))).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
             children: [
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'i',
                     node: null,
                     attributes: {},
                     children: [],
                 },
                 {
-                    type: TEXT_NODE,
+                    nodeType: TEXT_NODE,
                     node: null,
                     text: 'foo'
                 },
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
                     attributes: {},
@@ -90,27 +90,27 @@ describe('h', () => {
 
     it('should accept an array as children', () => {
         expect(h('div', null, [h('i'), h('em')], h('span'))).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
             children: [
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'i',
                     node: null,
                     attributes: {},
                     children: []
                 },
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
                     attributes: {},
                     children: []
                 },
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
                     attributes: {},
@@ -122,42 +122,42 @@ describe('h', () => {
 
     it('should allow skipping attribute definition', () => {
         expect(h('div', h('span', 'foo'), h('em', ['bar', 'baz', 'qux']))).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
             children: [
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
                     attributes: {},
                     children: [
                         {
-                            type: TEXT_NODE,
+                            nodeType: TEXT_NODE,
                             node: null,
                             text: 'foo'
                         }
                     ]
                 },
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
                     attributes: {},
                     children: [
                         {
-                            type: TEXT_NODE,
+                            nodeType: TEXT_NODE,
                             node: null,
                             text: 'bar'
                         },
                         {
-                            type: TEXT_NODE,
+                            nodeType: TEXT_NODE,
                             node: null,
                             text: 'baz'
                         },
                         {
-                            type: TEXT_NODE,
+                            nodeType: TEXT_NODE,
                             node: null,
                             text: 'qux'
                         }
@@ -169,7 +169,7 @@ describe('h', () => {
 
     it('should support keys', () => {
         expect(h('div', {key: 'foo'})).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {key: 'foo'},
@@ -179,18 +179,18 @@ describe('h', () => {
 
     it('should remove null and undefined children', () => {
         expect(h('div', {}, [null, 'foo', undefined, 'bar'])).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
             children: [
                 {
-                    type: TEXT_NODE,
+                    nodeType: TEXT_NODE,
                     node: null,
                     text: 'foo'
                 },
                 {
-                    type: TEXT_NODE,
+                    nodeType: TEXT_NODE,
                     node: null,
                     text: 'bar'
                 }
@@ -209,39 +209,39 @@ describe('h', () => {
                 <span />
             </div>
         )).to.deep.equal({
-            type: ELEMENT_NODE,
+            nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
             attributes: {},
             children: [
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'h1',
                     node: null,
                     attributes: {},
                     children: [
                         {
-                            type: TEXT_NODE,
+                            nodeType: TEXT_NODE,
                             node: null,
                             text: 'Hello World'
                         }
                     ]
                 },
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'section',
                     node: null,
                     attributes: {class: 'content'},
                     children: [
                         {
-                            type: TEXT_NODE,
+                            nodeType: TEXT_NODE,
                             node: null,
                             text: 'Lorem ipsum dolor sit amet'
                         }
                     ]
                 },
                 {
-                    type: ELEMENT_NODE,
+                    nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
                     attributes: {},
