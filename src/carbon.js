@@ -19,6 +19,27 @@ function flatten(array) {
     return array;
 }
 
+function createClass(obj) {
+    let output = '';
+    if (typeof obj === 'string') {
+        return obj;
+    }
+    if (Array.isArray(obj) && obj.length > 0) {
+        for (let i = 0, len = obj.length, tmp; i < len; i++) {
+            if ((tmp = createClass(obj[i])) !== '') {
+                output += (output && ' ') + tmp;
+            }
+        }
+    } else {
+        for (const cls in obj) {
+            if (obj[cls]) {
+                output += (output && ' ') + cls;
+            }
+        }
+    }
+    return output;
+}
+
 function merge(...objects) {
     return Object.assign({}, ...objects);
 }
@@ -146,6 +167,9 @@ function patchAttribute(element, name, prevVal, nextVal, isSvg = false) {
 		}
 	} else if (name === 'class') {
 		name = 'className';
+    }
+    if (name === 'class' || name === 'className') {
+        nextVal = createClass(nextVal);
     }
     if (name === 'style') {
         if (typeof nextVal === 'string') {

@@ -157,6 +157,42 @@ describe('attributes', () => {
         expectHTML('<div class="bar"></div>');
     });
 
+    it('should support the class attribute as an array', () => {
+        const div = render(root,
+            <div class={['foo', 'bar', 'baz']} />
+        );
+        
+        expect(div.className).to.equal('foo bar baz');
+        expect(div.getAttribute('class')).to.equal('foo bar baz');
+        expectHTML('<div class="foo bar baz"></div>');
+
+        render(root,
+            <div class={['foo', 'baz']} />
+        );
+        
+        expect(div.className).to.equal('foo baz');
+        expect(div.getAttribute('class')).to.equal('foo baz');
+        expectHTML('<div class="foo baz"></div>');
+    });
+
+    it('should support the class attribute as an object', () => {
+        const div = render(root,
+            <div class={{foo: true, bar: true, baz: true}} />
+        );
+        
+        expect(div.className).to.equal('foo bar baz');
+        expect(div.getAttribute('class')).to.equal('foo bar baz');
+        expectHTML('<div class="foo bar baz"></div>');
+
+        render(root,
+            <div class={{foo: false, bar: true, baz: true}} />
+        );
+        
+        expect(div.className).to.equal('bar baz');
+        expect(div.getAttribute('class')).to.equal('bar baz');
+        expectHTML('<div class="bar baz"></div>');
+    });
+
     it('should alias className to class', () => {
         const div = render(root,
             <div className="foo" />
