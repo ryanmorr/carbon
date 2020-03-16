@@ -1,10 +1,6 @@
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
 
-function isDefined(obj) {
-    return obj != null;
-}
-
 function flatten(array) {
     for (let i = 0; i < array.length;) {
         const value = array[i];
@@ -29,6 +25,10 @@ function merge(...objects) {
 
 function getKey(vnode) {
     return vnode.attributes && vnode.attributes.key || null;
+}
+
+function isValidNodeType(obj) {
+    return obj != null && typeof obj !== 'boolean';
 }
 
 function isSameNode(a, b) {
@@ -62,12 +62,15 @@ function createKeyToIndexMap(children, beginIdx, endIdx) {
 
 function getVNode(vnode) {
     const type = typeof vnode;
-    if (type === 'string' || type === 'number' || type === 'boolean') {
+    if (type === 'boolean') {
+        return null;
+    }
+    if (type === 'string' || type === 'number') {
         return createTextVNode(vnode);
     }
     if (Array.isArray(vnode)) {
         return flatten(vnode).reduce((vnodes, vn) => {
-            if (isDefined(vn)) {
+            if (isValidNodeType(vn)) {
                 vnodes.push(getVNode(vn));
             }
             return vnodes;
@@ -143,7 +146,7 @@ function patchAttribute(element, name, prevVal, nextVal, isSvg = false) {
 		}
 	} else if (name === 'class') {
 		name = 'className';
-	}
+    }
     if (name === 'style') {
         if (typeof nextVal === 'string') {
             element.style.cssText = nextVal;
@@ -243,6 +246,9 @@ function patchChildren(parent, prevChildren, nextChildren, isSvg) {
 
 function patchElement(parent, prevVNode, nextVNode, isSvg = false) {
     if (prevVNode === nextVNode) {
+        if (prevVNode == null) {
+            return null;
+        }
         return prevVNode.node;
     }
     if (prevVNode == null) {
@@ -292,8 +298,8 @@ export function render(parent, nextVNode) {
     const nextIsArray = Array.isArray(nextVNode);
     parent.vdom = nextVNode;
     if (prevIsArray || nextIsArray) {
-        prevVNode = (prevIsArray ? prevVNode : [prevVNode]).filter(isDefined);
-        nextVNode = (nextIsArray ? nextVNode : [nextVNode]).filter(isDefined);
+        prevVNode = (prevIsArray ? prevVNode : [prevVNode]).filter(isValidNodeType);
+        nextVNode = (nextIsArray ? nextVNode : [nextVNode]).filter(isValidNodeType);
         const root = patchChildren(parent, prevVNode, nextVNode);
         return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
     }

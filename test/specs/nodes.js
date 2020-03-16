@@ -34,20 +34,26 @@ describe('nodes', () => {
         expect(root.firstChild).to.equal(node);
     });
     
-    it('should render a text node given a boolean true', () => {
-        const node = render(root, true);
-        
-        expectHTML('true');
-        expect(root.childNodes).to.have.length(1);
-        expect(root.firstChild).to.equal(node);
+    it('should not render boolean true', () => {
+        render(root, true);
+        expectHTML('');
     });
-    
-    it('should render a text node given a boolean false', () => {
-        const node = render(root, false);
-        
-        expectHTML('false');
-        expect(root.childNodes).to.have.length(1);
-        expect(root.firstChild).to.equal(node);
+
+    it('should not render boolean false', () => {
+        render(root, false);
+        expectHTML('');
+    });
+
+    it('should support conditional rendering', () => {
+        let doRender = false;
+
+        render(root, doRender && <div />);
+        expectHTML('');
+
+        doRender = true;
+
+        render(root, doRender && <div />);
+        expectHTML('<div></div>');
     });
     
     it('should render an element', () => {
@@ -311,14 +317,14 @@ describe('nodes', () => {
         expectHTML('<span></span><em></em>');
     });
 
-    it('should not render null and undefined', () => {
+    it('should not render null, undefined, true, or false', () => {
         render(root, 
             <div>
 				{null},{undefined},{true},{false},{0},{NaN}
 			</div>
         );
 
-        expectHTML('<div>,,true,false,0,NaN</div>');
+        expectHTML('<div>,,,,0,NaN</div>');
     });
 
     it('should render deep node changes', () => {
