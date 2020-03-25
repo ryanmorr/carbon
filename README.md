@@ -16,21 +16,10 @@ npm install @ryanmorr/carbon
 
 ## Usage
 
-Create a virtual DOM node:
+Carbon is a tiny, low-level, no-nonsense, virtual DOM implementation. No components, no hooks, no special functionality, just efficient DOM rendering:
 
 ``` javascript
-import { h } from '@ryanmorr/carbon';
-
-const vnode = h('div', {id: 'foo', class: 'bar'},
-    h('h1', 'Hello World'),
-    h('p', 'nisl suscipit adipiscing bibendum est ultricies integer quis auctor elit')
-);
-```
-
-Render an element's content by providing the parent DOM element as the first argument and ethier a virtual DOM node or an array of virtual DOM nodes as the second argument. The root DOM node(s) of the newly created DOM tree is returned:
-
-``` javascript
-import { render } from '@ryanmorr/carbon';
+import { h, render } from '@ryanmorr/carbon';
 
 const element = render(parentElement,
     h('div', 
@@ -38,12 +27,6 @@ const element = render(parentElement,
         h('p', 'mi bibendum neque egestas congue quisque egestas diam in arcu')
     )
 );
-
-const elements = render(parentElement, [
-    h('div', 'foo'),
-    h('div', 'bar'),
-    h('div', 'baz')
-]);
 ```
 
 Supports patching of attributes and properties, including CSS styles as a string or object and event listeners indicated by a prefix of "on":
@@ -53,12 +36,12 @@ render(parentElement,
     h('div', {
         class: 'foo bar',
         style: 'width: 100px; height: 100px; background-color: red',
-        onClick: (e) => handleEvent(e)
+        onClick: (e) => console.log('clicked')
     })
 );
 ```
 
-Supports keyed nodes to efficiently move elements instead of re-creating them:
+Supports keyed nodes to efficiently move elements instead of unnecessarily destroying and re-creating them:
 
 ``` javascript
 render(parentElement,
@@ -76,18 +59,18 @@ Supports SVG elements:
 ``` javascript
 render(parentElement,
     h('svg', {width: 200, height: 200}, 
-        h('circle', {cx: 50, cy: 50, r: 40, stroke: "green" stroke-width: 4, fill: "yellow"})
+        h('circle', {cx: 50, cy: 50, r: 40, fill: "yellow"})
     )
 );
 ```
 
-Supports basic [JSX](https://reactjs.org/docs/introducing-jsx.html) syntax (not components):
+Supports [JSX](https://reactjs.org/docs/introducing-jsx.html) syntax:
 
 ``` javascript
 render(parentElement,
     <div>
         <h1>{title}</h1>
-        <button onClick={handleEvent}>Submit</button>
+        <button onClick={handleEvent}>Click Me</button>
     </div>
 );
 ```
