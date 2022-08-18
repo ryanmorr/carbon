@@ -1,17 +1,14 @@
-const VDOM = Symbol.for('vdom');
-
-export const root = document.createElement('div');
-document.body.appendChild(root);
+export let root;
 
 export function expectHTML(html) {
     expect(root.innerHTML).to.equal(html.replace(/\s{2,}/g, ''));
 }
 
-afterEach(() => {
-    root[VDOM] = null;
-    root.innerHTML = '';
+beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
 });
 
-after(() => {
+afterEach(() => {
     document.body.removeChild(root);
 });

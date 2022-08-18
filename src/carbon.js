@@ -1,6 +1,6 @@
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
-const VDOM = Symbol.for('vdom');
+const VDOM = Symbol('vdom');
 
 function flatten(array) {
     for (let i = 0; i < array.length;) {
@@ -20,20 +20,20 @@ function flatten(array) {
     return array;
 }
 
-function createClass(obj) {
-    let output = '';
-    if (typeof obj === 'string') {
-        return obj;
+function createClass(value) {
+    if (typeof value === 'string') {
+        return value;
     }
-    if (Array.isArray(obj) && obj.length > 0) {
-        for (let i = 0, len = obj.length, tmp; i < len; i++) {
-            if ((tmp = createClass(obj[i])) !== '') {
+    let output = '';
+    if (Array.isArray(value) && value.length > 0) {
+        for (let i = 0, len = value.length, tmp; i < len; i++) {
+            if ((tmp = createClass(value[i])) !== '') {
                 output += (output && ' ') + tmp;
             }
         }
     } else {
-        for (const cls in obj) {
-            if (obj[cls]) {
+        for (const cls in value) {
+            if (value[cls]) {
                 output += (output && ' ') + cls;
             }
         }
