@@ -1,5 +1,6 @@
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
+const VDOM = Symbol.for('vdom');
 
 function flatten(array) {
     for (let i = 0; i < array.length;) {
@@ -317,10 +318,10 @@ export function h(nodeName, attributes, ...children) {
 
 export function render(parent, nextVNode) {
     nextVNode = getVNode(nextVNode);
-    let prevVNode = parent.vdom || (parent.childNodes.length > 0 ? Array.from(parent.childNodes).map(recycle) : null);
+    let prevVNode = parent[VDOM] || (parent.childNodes.length > 0 ? Array.from(parent.childNodes).map(recycle) : null);
     const prevIsArray = Array.isArray(prevVNode);
     const nextIsArray = Array.isArray(nextVNode);
-    parent.vdom = nextVNode;
+    parent[VDOM] = nextVNode;
     if (prevIsArray || nextIsArray) {
         prevVNode = (prevIsArray ? prevVNode : [prevVNode]).filter(isValidNodeType);
         nextVNode = (nextIsArray ? nextVNode : [nextVNode]).filter(isValidNodeType);

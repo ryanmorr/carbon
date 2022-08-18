@@ -1,3 +1,5 @@
+const VDOM = Symbol.for('vdom');
+
 export const root = document.createElement('div');
 document.body.appendChild(root);
 
@@ -6,7 +8,7 @@ export function expectHTML(html) {
 }
 
 afterEach(() => {
-    root.vdom = null;
+    root[VDOM] = null;
     root.innerHTML = '';
 });
 
