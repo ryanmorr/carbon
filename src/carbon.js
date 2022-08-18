@@ -186,7 +186,7 @@ function patchAttribute(element, name, prevVal, nextVal, isSvg = false) {
             }
         }
     } else if (name.startsWith('on') && (typeof prevVal === 'function' || typeof nextVal === 'function')) {
-        name = name.slice(2).toLowerCase();
+        name = name.slice(2);
         if (nextVal) {
             element.addEventListener(name, nextVal);
         }

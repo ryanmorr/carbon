@@ -471,7 +471,7 @@ describe('attributes', () => {
         const addEventSpy = sinon.spy(div, 'addEventListener');
 
         render(root,
-            <div onClick={onClick} />
+            <div onclick={onClick} />
         );
 
         expect(onClick.callCount).to.equal(0);
@@ -515,7 +515,7 @@ describe('attributes', () => {
         const removeEventSpy = sinon.spy(div, 'removeEventListener');
 
         render(root,
-            <div onClick={onClick1} />
+            <div onclick={onClick1} />
         );
 
         div.dispatchEvent(event1);
@@ -527,7 +527,7 @@ describe('attributes', () => {
         const onClick2 = sinon.spy();
 
         render(root,
-            <div onClick={onClick2} />
+            <div onclick={onClick2} />
         );
 
         div.dispatchEvent(event2);
@@ -542,7 +542,7 @@ describe('attributes', () => {
     });
 
     it('should support custom events', (done) => {
-        let event = new CustomEvent('foo');
+        let event = new CustomEvent('Foo');
 
         const callback = (e) => {
             expect(e).to.equal(event);
@@ -550,22 +550,7 @@ describe('attributes', () => {
         };
 
         const div = render(root,
-            <div onfoo={callback} />
-        );
-
-        div.dispatchEvent(event);
-    });
-
-    it('should support camel-cased event names', (done) => {
-        const event = new MouseEvent('mouseover');
-
-        const onMouseOver = (e) => {
-            expect(e).to.equal(event);
-            done();
-        };
-
-        const div = render(root,
-            <div onMouseOver={onMouseOver} />
+            <div onFoo={callback} />
         );
 
         div.dispatchEvent(event);
