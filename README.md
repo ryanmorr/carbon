@@ -84,7 +84,7 @@ Supports [JSX](https://reactjs.org/docs/introducing-jsx.html) syntax:
 render(parentElement,
     <div>
         <h1>{title}</h1>
-        <button onClick={handleEvent}>Click Me</button>
+        <button onclick={handleEvent}>Click Me</button>
     </div>
 );
 ```
