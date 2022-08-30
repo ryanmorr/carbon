@@ -1,7 +1,7 @@
 {
   "name": "@ryanmorr/carbon",
   "description": "The building blocks of UI",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "Unlicense",
   "author": "Ryan Morr",
   "homepage": "https://github.com/ryanmorr/carbon",
@@ -39,6 +39,5 @@
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-node-resolve": "^4.2.3",
     "sinon": "^7.5.0"
-  },
-  "dependencies": {}
+  }
 }
