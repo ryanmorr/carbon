@@ -1,6 +1,6 @@
-const babel = require('rollup-plugin-babel');
-const resolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
+const babel = require('@rollup/plugin-babel');
+const resolve = require('@rollup/plugin-node-resolve');
+const commonjs = require('@rollup/plugin-commonjs');
 
 const specs = 'test/specs/index.js';
 
@@ -20,7 +20,14 @@ module.exports = function(config) {
             plugins: [
                 resolve(),
                 babel({
-                    exclude: 'node_modules/**'
+                    babelHelpers: 'bundled',
+                    exclude: 'node_modules/**',
+                    presets: ['@babel/preset-env'],
+                    plugins: [
+                        ['@babel/plugin-transform-react-jsx', {
+                            pragma: 'h'
+                        }]
+                    ]
                 }),
                 commonjs()
             ]

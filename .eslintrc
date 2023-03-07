@@ -1,8 +1,12 @@
 {
   "extends": "eslint:recommended",
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "sourceType": "module"
+    "sourceType": "module",
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": ["@babel/preset-react"]
+   }
   },
   "env": {
     "es6": true,
@@ -15,6 +19,10 @@
       "single"
     ],
     "semi": [
+      "error",
+      "always"
+    ],
+    "eol-last": [
       "error",
       "always"
     ]
