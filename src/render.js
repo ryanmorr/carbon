@@ -1,6 +1,8 @@
-import { TEXT_NODE, VDOM } from './constants';
+import { TEXT_NODE } from './constants';
 import { recycle, getVNode } from './h';
 import { isSameNode, isSameNodeType, isValidNodeType, merge, createClass, getKey, createKeyToIndexMap } from './util';
+
+const cache = new Map();
 
 function createElement(vnode, isSvg, middleware) {
     let node;
@@ -177,10 +179,13 @@ function patchElement(parent, prevVNode, nextVNode, isSvg, middleware) {
 
 export function render(parent, nextVNode, middleware) {
     nextVNode = getVNode(nextVNode);
-    let prevVNode = parent[VDOM] || (parent.childNodes.length > 0 ? Array.from(parent.childNodes).map((child) => recycle(child, middleware)) : null);
+    let prevVNode = cache.get(parent);
+    if (!prevVNode) {
+        prevVNode = (parent.childNodes.length > 0 ? Array.from(parent.childNodes).map((child) => recycle(child, middleware)) : null);
+    }
     const prevIsArray = Array.isArray(prevVNode);
     const nextIsArray = Array.isArray(nextVNode);
-    parent[VDOM] = nextVNode;
+    cache.set(parent, nextVNode);
     if (prevIsArray || nextIsArray) {
         prevVNode = (prevIsArray ? prevVNode : [prevVNode]).filter(isValidNodeType);
         nextVNode = (nextIsArray ? nextVNode : [nextVNode]).filter(isValidNodeType);
