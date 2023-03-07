@@ -8,9 +8,9 @@
 
 ## Install
 
-Download the [CJS](https://github.com/ryanmorr/carbon/raw/master/dist/carbon.cjs.js), [ESM](https://github.com/ryanmorr/carbon/raw/master/dist/carbon.esm.js), [UMD](https://github.com/ryanmorr/carbon/raw/master/dist/carbon.umd.js) versions or install via NPM:
+Download the [CJS](https://github.com/ryanmorr/carbon/raw/master/dist/cjs/carbon.js), [ESM](https://github.com/ryanmorr/carbon/raw/master/dist/esm/carbon.js), [UMD](https://github.com/ryanmorr/carbon/raw/master/dist/umd/carbon.js) versions or install via NPM:
 
-``` sh
+```sh
 npm install @ryanmorr/carbon
 ```
 
@@ -18,7 +18,7 @@ npm install @ryanmorr/carbon
 
 Carbon is a tiny, low-level, no-nonsense, but extendable virtual DOM implementation. It provides only efficient DOM rendering, but with the ability to add middleware to expand functionality:
 
-``` javascript
+```javascript
 import { h, render } from '@ryanmorr/carbon';
 
 const element = render(parentElement,
@@ -31,7 +31,7 @@ const element = render(parentElement,
 
 Supports patching of attributes and properties, including CSS styles as a string or object and event listeners indicated by a prefix of "on":
 
-``` javascript
+```javascript
 render(parentElement,
     h('div', {
         class: ['foo, bar'],
@@ -43,7 +43,7 @@ render(parentElement,
 
 Supports keyed nodes to efficiently move elements instead of unnecessarily destroying and re-creating them:
 
-``` javascript
+```javascript
 render(parentElement,
     h('ul', null, 
         h('li', {key: 'foo'}, 'foo'),
@@ -56,7 +56,7 @@ render(parentElement,
 
 Supports element middleware for adding functionality, such as components or refs:
 
-``` javascript
+```javascript
 const middleware = (vnode) => {
     // Alter the virtual node before element creation
 
@@ -70,7 +70,7 @@ render(parentElement, h('div'), [middleware]);
 
 Supports SVG elements:
 
-``` javascript
+```javascript
 render(parentElement,
     h('svg', {width: 200, height: 200}, 
         h('circle', {cx: 50, cy: 50, r: 40, fill: "yellow"})
@@ -80,7 +80,7 @@ render(parentElement,
 
 Supports [JSX](https://reactjs.org/docs/introducing-jsx.html) syntax:
 
-``` javascript
+```javascript
 render(parentElement,
     <div>
         <h1>{title}</h1>
@@ -95,7 +95,7 @@ This project is dedicated to the public domain as described by the [Unlicense](h
 
 [project-url]: https://github.com/ryanmorr/carbon
 [version-image]: https://img.shields.io/github/package-json/v/ryanmorr/carbon?color=blue&style=flat-square
-[build-url]: https://travis-ci.com/github/ryanmorr/carbon
-[build-image]: https://img.shields.io/travis/com/ryanmorr/carbon?style=flat-square
+[build-url]: https://github.com/ryanmorr/carbon/actions
+[build-image]: https://img.shields.io/github/actions/workflow/status/ryanmorr/carbon/node.js.yml?style=flat-square
 [license-image]: https://img.shields.io/github/license/ryanmorr/carbon?color=blue&style=flat-square
 [license-url]: UNLICENSE
