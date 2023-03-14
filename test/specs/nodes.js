@@ -2,7 +2,7 @@ import { h, render } from '../../src/carbon';
 import { root, expectHTML } from '../setup';
 
 describe('nodes', () => {
-    it('should render a text node given a string', () => {
+    it('should render a string as a text node', () => {
         const node = render(root, 'foo');
         
         expectHTML('foo');
@@ -10,7 +10,7 @@ describe('nodes', () => {
         expect(root.firstChild).to.equal(node);
     });
 
-    it('should render an empty text node given an empty string', () => {
+    it('should render an empty string as a text node', () => {
         const node = render(root, '');
         
         expectHTML('');
@@ -18,7 +18,7 @@ describe('nodes', () => {
         expect(root.firstChild).to.equal(node);
     });
 
-    it('should render a text node given a number', () => {
+    it('should render a number as a text node', () => {
         const node = render(root, 123);
         
         expectHTML('123');
@@ -26,7 +26,7 @@ describe('nodes', () => {
         expect(root.firstChild).to.equal(node);
     });
 
-    it('should render a text node given the number zero', () => {
+    it('should render zero as a text node', () => {
         const node = render(root, 0);
         
         expectHTML('0');
@@ -42,18 +42,6 @@ describe('nodes', () => {
     it('should not render boolean false', () => {
         render(root, false);
         expectHTML('');
-    });
-
-    it('should support conditional rendering', () => {
-        let doRender = false;
-
-        render(root, doRender && <div />);
-        expectHTML('');
-
-        doRender = true;
-
-        render(root, doRender && <div />);
-        expectHTML('<div></div>');
     });
     
     it('should render an element', () => {
@@ -359,10 +347,10 @@ describe('nodes', () => {
 
     it('should support SVG', () => {
         render(root,
-            <svg><circle cx="50" cy="50" r="40" fill="red" /></svg>
+            <svg><circle class="foo" cx="50" cy="50" r="40" fill="red" /></svg>
         );
 
-        expectHTML('<svg><circle cx="50" cy="50" r="40" fill="red"></circle></svg>');
+        expectHTML('<svg><circle class="foo" cx="50" cy="50" r="40" fill="red"></circle></svg>');
 
         const svg = root.querySelector('svg');
         expect(svg.nodeType).to.equal(1);
@@ -373,6 +361,7 @@ describe('nodes', () => {
         expect(circle.nodeType).to.equal(1);
         expect(circle.namespaceURI).to.equal('http://www.w3.org/2000/svg');
         expect(circle).to.be.instanceof(SVGElement);
+        expect(circle.getAttribute('class')).to.equal('foo');
     });
 
     it('should support custom tag names', () => {

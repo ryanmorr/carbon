@@ -27,48 +27,68 @@ function createElement(vnode, isSvg, middleware) {
     return node;
 }
 
+function setStyle(element, name, value) {
+    if (name.startsWith('--')) {
+        element.style.setProperty(name, value == null ? '' : value);
+    } else if (value == null) {
+        element.style[name] = '';
+    } else {
+        element.style[name] = value;
+    }
+}
+
 function patchAttribute(element, name, prevVal, nextVal, isSvg) {
     if (name === 'key' || name === 'children') {
         return;
-    }
-    if (isSvg) {
-		if (name === 'className') {
-			name = 'class';
-		}
-	} else if (name === 'class') {
-		name = 'className';
-    }
-    if (name === 'class' || name === 'className') {
-        nextVal = createClass(nextVal);
     }
     if (name === 'style') {
         if (typeof nextVal === 'string') {
             element.style.cssText = nextVal;
         } else {
+            if (typeof prevVal === 'string') {
+				element.style.cssText = prevVal = '';
+			}
             for (const key in merge(nextVal, prevVal)) {
-                const style = nextVal == null || nextVal[key] == null ? '' : nextVal[key];
-                if (key.includes('-')) {
-                    element.style.setProperty(key, style);
-                } else {
-                    element.style[key] = style;
-                }
+                setStyle(element, key, nextVal == null ? '' : nextVal[key]);
             }
         }
     } else if (name.startsWith('on') && (typeof prevVal === 'function' || typeof nextVal === 'function')) {
-        name = name.slice(2);
+        name = (name.toLowerCase() in element) ? name.toLowerCase().slice(2) : name.slice(2);
         if (nextVal) {
             element.addEventListener(name, nextVal);
         }
         if (prevVal) {
             element.removeEventListener(name, prevVal);
         }
-    } else if (!isSvg && name !== 'list' && name !== 'form' && name in element) {
-        element[name] = nextVal == null ? '' : nextVal;
-    } else if (nextVal == null || nextVal === false) {
-        element.removeAttribute(name);
     } else if (typeof nextVal !== 'function') {
-        element.setAttribute(name, nextVal);
-    }
+        if (nextVal != null && (name === 'class' || name === 'className')) {
+            nextVal = createClass(nextVal);
+        }
+        if (!isSvg && name === 'class') {
+            name = 'className';
+        }
+        if (
+            !isSvg &&
+            name !== 'width' &&
+            name !== 'height' &&
+            name !== 'href' &&
+            name !== 'list' &&
+            name !== 'form' &&
+            name !== 'tabIndex' &&
+            name !== 'download' &&
+            name in element
+        ) {
+            try {
+                element[name] = nextVal == null ? '' : nextVal;
+                return;
+            } catch (e) {} // eslint-disable-line no-empty
+        }
+        if (nextVal != null && (nextVal !== false || name.indexOf('-') != -1)) {
+            element.setAttribute(name, nextVal);
+        } else {
+            element.removeAttribute(name);
+        }
+    } 
 }
 
 function patchChildren(parent, prevChildren, nextChildren, isSvg, middleware) {

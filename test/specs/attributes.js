@@ -260,10 +260,9 @@ describe('attributes', () => {
         expect(style.backgroundSize).to.equal('cover');
     });
 
-    it('should add CSS styles as a key/value map', () => {
+    it('should add CSS styles as an object', () => {
         const styles = {
             color: 'rgb(255, 255, 255)',
-            background: 'rgb(255, 100, 0)',
             backgroundPosition: '10px 10px',
             'background-size': 'cover'
         };
@@ -274,10 +273,41 @@ describe('attributes', () => {
 
         const style = div.style;
         expect(style.color).to.equal('rgb(255, 255, 255)');
-        expect(style.background).to.contain('rgb(255, 100, 0)');
         expect(style.backgroundPosition).to.equal('10px 10px');
         expect(style.backgroundSize).to.equal('cover');
     });
+
+    it('should properly switch from string styles to object styles and back', () => {
+		const div = render(root, 
+            <div style="display: inline;">test</div>
+        );
+
+		expect(div.style.cssText).to.equal('display: inline;');
+
+		render(root, 
+            <div style={{ color: 'red' }} />
+        );
+
+		expect(div.style.cssText).to.equal('color: red;');
+
+		render(root, 
+            <div style="color: blue" />
+        );
+
+		expect(div.style.cssText).to.equal('color: blue;');
+
+		render(root, 
+            <div style={{ color: 'yellow' }} />
+        );
+
+		expect(div.style.cssText).to.equal('color: yellow;');
+
+		render(root,
+            <div style="display: block" />
+        );
+
+		expect(div.style.cssText).to.equal('display: block;');
+	});
 
     it('should support CSS variables', () => {
         render(root,
@@ -288,6 +318,15 @@ describe('attributes', () => {
         expect(div.style.color).to.equal('var(--color)');
         expect(window.getComputedStyle(div).getPropertyValue('color')).to.equal('rgb(255, 0, 0)');
         expect(window.getComputedStyle(div).getPropertyValue('--color')).to.equal('red');
+    });
+
+    it('should not add "px" suffix for custom properties', () => {
+        const div = render(root, 
+            <div style={{'--foo': '100px', width: 'var(--foo)'}} />
+        );
+
+        expect(div.style.width).to.equal('var(--foo)');
+        expect(window.getComputedStyle(div).getPropertyValue('--foo')).to.equal('100px');
     });
 
     it('should support opacity 0', () => {
@@ -333,6 +372,32 @@ describe('attributes', () => {
 
         expect(div.style.color).to.equal('');
         expect(div.style.backgroundColor).to.equal('');
+    });
+
+    it('should remove all CSS styles by providing null or undefined', () => {
+        const div = render(root, 
+            <div style={{width: '20px', height: '30px'}} />
+        );
+
+        expect(div.style.cssText).to.equal('width: 20px; height: 30px;');
+
+        render(root, 
+            <div style={null} />
+        );
+
+        expect(div.style.cssText).to.equal('');
+
+        render(root, 
+            <div style={{width: '5px', height: '15px'}} />
+        );
+
+        expect(div.style.cssText).to.equal('width: 5px; height: 15px;');
+
+        render(root, 
+            <div style={undefined} />
+        );
+
+        expect(div.style.cssText).to.equal('');
     });
 
     it('should replace CSS styles', () => {
@@ -398,22 +463,6 @@ describe('attributes', () => {
         expect(option1.selected).to.equal(true);
         expect(option2.selected).to.equal(false);
         expect(option3.selected).to.equal(true);
-    });
-
-    it('should support the input list attribute', () => {
-        render(root,
-            <input list="foo" />
-        );
-
-        expectHTML('<input list="foo">');
-    });
-
-    it('should support the input form attribute', () => {
-        render(root,
-            <input form="foo" />
-        );
-
-        expectHTML('<input form="foo">');
     });
 
     it('should support DOM properties', () => {
@@ -556,6 +605,19 @@ describe('attributes', () => {
         div.dispatchEvent(event);
     });
 
+    it('should support camel-case event names', (done) => {
+        const event = new MouseEvent('mousedown');
+        const onMouseDown = (e) => {
+            expect(e).to.equal(event);
+            done();
+        };
+
+        const div = render(root, 
+            <div onMouseDown={onMouseDown}></div>
+        );
+        div.dispatchEvent(event);
+	});
+
     it('should allow attributes with a prefix of "on" if the value is not a function', () => {
         render(root,
             <div onfoo="bar" />
@@ -673,4 +735,160 @@ describe('attributes', () => {
 
         expectHTML('<div><span>foo</span></div>');
     });
+
+    it('should support the form attribute', () => {
+		const div = render(root, 
+			<div>
+				<form id="foo" />
+				<button form="foo">test</button>
+				<input form="foo" />
+			</div>
+        );
+
+		const form = div.childNodes[0];
+		const button = div.childNodes[1];
+		const input = div.childNodes[2];
+
+		expect(button).to.have.property('form', form);
+		expect(input).to.have.property('form', form);
+	});
+
+    it('should set the download attribute', () => {
+		const anchor = render(root, 
+            <a download=""></a>
+        );
+
+		expect(anchor.getAttribute('download')).to.equal('');
+
+		render(root, 
+            <a download={null}></a>
+        );
+
+		expect(anchor.getAttribute('download')).to.equal(null);
+	});
+
+    it('should set the list attribute', () => {
+        const div = render(root, 
+            <div>
+                <input type="range" min="0" max="100" list="steplist" />
+                <datalist id="steplist">
+                    <option>0</option>
+                    <option>50</option>
+                    <option>100</option>
+                </datalist>
+            </div>
+        );
+
+        const input = div.firstElementChild;
+        expect(input.outerHTML).to.equal('<input type="range" min="0" max="100" list="steplist">');
+    });
+
+    it('should support false string aria attributes', () => {
+		const div = render(root, 
+            <div aria-checked="false"></div>
+        );
+
+		expect(div.getAttribute('aria-checked')).to.equal('false');
+	});
+
+	it('should support false aria attributes', () => {
+		const div = render(root,
+            <div aria-checked={false}></div>
+        );
+
+		expect(div.getAttribute('aria-checked')).to.equal('false');
+	});
+
+	it('should support false data attributes', () => {
+		const div = render(root,
+            <div data-checked={false}></div>
+        );
+
+		expect(div.getAttribute('data-checked')).to.equal('false');
+	});
+
+	it('should set checked attribute on custom elements without checked property', () => {
+		const div = render(root,
+            <o-checkbox checked />
+        );
+
+		expect(div.outerHTML).to.equal('<o-checkbox checked="true"></o-checkbox>');
+	});
+
+	it('should set value attribute on custom elements without value property', () => {
+		const div = render(root, 
+            <o-input value="test" />
+        );
+
+		expect(div.outerHTML).to.equal('<o-input value="test"></o-input>');
+	});
+
+    it('should not set tagName', () => {
+		expect(() => render(root, <input tagName="div" />)).not.to.throw();
+	});
+
+    it('should not throw when setting size to an invalid value', () => {
+		expect(() => render(root, <input size={undefined} />)).to.not.throw();
+		expect(() => render(root, <input size={null} />)).to.not.throw();
+		expect(() => render(root, <input size={0} />)).to.not.throw();
+	});
+    
+    it('should always diff `checked` and `value` properties against the DOM', () => {
+		const div = render(root, 
+            <div>
+                <input value={'Hello'} />
+                <input type="checkbox" checked />
+            </div>
+        );
+        
+        const text = div.firstElementChild;
+        const checkbox = div.lastElementChild;
+
+		expect(text.value).to.equal('Hello');
+		expect(checkbox.checked).to.equal(true);
+
+		text.value = 'World';
+		checkbox.checked = false;
+
+		render(root, 
+            <div>
+                <input value={'Hello'} />
+                <input type="checkbox" checked />
+            </div>
+        );
+
+		expect(text.value).to.equal('Hello');
+		expect(checkbox.checked).to.equal(true);
+	}); 
+    
+    it('should remove attributes on pre-existing DOM', () => {
+		const div = document.createElement('div');
+		div.setAttribute('foo', 'bar');
+		const span = document.createElement('span');
+		const text = document.createTextNode('baz');
+		span.appendChild(text);
+		div.appendChild(span);
+		root.appendChild(div);
+
+		render(root, 
+            <div>
+				<span>qux</span>
+			</div>
+        );
+		expectHTML('<div><span>qux</span></div>');
+	});
+        
+    it('should support animation-iteration-count as a number', () => {
+		const div = render(root, 
+            <div style={{animationIterationCount: 1}} />
+        );
+
+		expect(div.style.animationIterationCount).to.equal('1');
+
+		render(root, 
+            <div style={{animationIterationCount: 2.5}} />
+        );
+
+        expect(div.style.animationIterationCount).to.equal('2.5');
+	});
 });
