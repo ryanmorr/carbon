@@ -5,8 +5,11 @@
   "license": "Unlicense",
   "author": "Ryan Morr",
   "homepage": "https://github.com/ryanmorr/carbon",
-  "repository": "github:ryanmorr/carbon",
   "bugs": "https://github.com/ryanmorr/carbon/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanmorr/carbon.git"
+  },
   "keywords": [
     "javascript",
     "ui",
