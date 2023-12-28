@@ -4,24 +4,17 @@ import { isSameNode, isSameNodeType, isValidNodeType, merge, createClass, getKey
 
 const cache = new Map();
 
-function createElement(vnode, isSvg, middleware) {
+function createElement(vnode, isSvg) {
     let node;
     if (vnode.nodeType === TEXT_NODE) {
         node = document.createTextNode(vnode.text);
     } else {
-        let callbacks;
-        if (middleware) {
-            callbacks = middleware.map((callback) => callback(vnode));
-        }
         const nodeName = vnode.nodeName;
         isSvg = (isSvg || nodeName === 'svg');
         node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
         const attributes = vnode.attributes;
         Object.keys(attributes).forEach((name) => patchAttribute(node, name, null, attributes[name], isSvg));
-        vnode.children.forEach((vchild) => node.appendChild(createElement(vchild, isSvg, middleware)));
-        if (callbacks) {
-            callbacks.forEach((callback) => callback && callback(node));
-        }
+        vnode.children.forEach((vchild) => node.appendChild(createElement(vchild, isSvg)));
     }
     vnode.node = node;
     return node;
@@ -91,7 +84,7 @@ function patchAttribute(element, name, prevVal, nextVal, isSvg) {
     } 
 }
 
-function patchChildren(parent, prevChildren, nextChildren, isSvg, middleware) {
+function patchChildren(parent, prevChildren, nextChildren, isSvg) {
     let prevStartIndex = 0;
     let prevEndIndex = prevChildren.length - 1;
     let prevStartChild = prevChildren[0];
@@ -107,20 +100,20 @@ function patchChildren(parent, prevChildren, nextChildren, isSvg, middleware) {
         } else if (!prevEndChild) {
             prevEndChild = prevChildren[--prevEndIndex];
         } else if (isSameNode(prevStartChild, nextStartChild)) {
-            patchElement(parent, prevStartChild, nextStartChild, isSvg, middleware);
+            patchElement(parent, prevStartChild, nextStartChild, isSvg);
             prevStartChild = prevChildren[++prevStartIndex];
             nextStartChild = nextChildren[++nextStartIndex];
         } else if (isSameNode(prevEndChild, nextEndChild)) {
-            patchElement(parent, prevEndChild, nextEndChild, isSvg, middleware);
+            patchElement(parent, prevEndChild, nextEndChild, isSvg);
             prevEndChild = prevChildren[--prevEndIndex];
             nextEndChild = nextChildren[--nextEndIndex];
         } else if (isSameNode(prevStartChild, nextEndChild)) {
-            patchElement(parent, prevStartChild, nextEndChild, isSvg, middleware);
+            patchElement(parent, prevStartChild, nextEndChild, isSvg);
             parent.insertBefore(prevStartChild.node, prevEndChild.node.nextSibling);
             prevStartChild = prevChildren[++prevStartIndex];
             nextEndChild = nextChildren[--nextEndIndex];
         } else if (isSameNode(prevEndChild, nextStartChild)) {
-            patchElement(parent, prevEndChild, nextStartChild, isSvg, middleware);
+            patchElement(parent, prevEndChild, nextStartChild, isSvg);
             parent.insertBefore(prevEndChild.node, prevStartChild.node);
             prevEndChild = prevChildren[--prevEndIndex];
             nextStartChild = nextChildren[++nextStartIndex];
@@ -131,11 +124,11 @@ function patchChildren(parent, prevChildren, nextChildren, isSvg, middleware) {
             let key = getKey(nextStartChild);
             let prevIndex = key ? prevKeyToIdx[key] : null;
             if (prevIndex == null) {
-                parent.insertBefore(createElement(nextStartChild, isSvg, middleware), prevStartChild.node);
+                parent.insertBefore(createElement(nextStartChild, isSvg), prevStartChild.node);
                 nextStartChild = nextChildren[++nextStartIndex];
             } else {
                 let prevChildToMove = prevChildren[prevIndex];
-                patchElement(parent, prevChildToMove, nextStartChild, isSvg, middleware);
+                patchElement(parent, prevChildToMove, nextStartChild, isSvg);
                 prevChildren[prevIndex] = undefined;
                 parent.insertBefore(prevChildToMove.node, prevStartChild.node);
                 nextStartChild = nextChildren[++nextStartIndex];
@@ -145,7 +138,7 @@ function patchChildren(parent, prevChildren, nextChildren, isSvg, middleware) {
     if (prevStartIndex > prevEndIndex) {
         let subsequentElement = nextChildren[nextEndIndex + 1] ? nextChildren[nextEndIndex + 1].node : null;
         for (let i = nextStartIndex; i <= nextEndIndex; i++) {
-            parent.insertBefore(createElement(nextChildren[i], isSvg, middleware), subsequentElement);
+            parent.insertBefore(createElement(nextChildren[i], isSvg), subsequentElement);
         }
     } else if (nextStartIndex > nextEndIndex) {
         for (let i = prevStartIndex; i <= prevEndIndex; i++) {
@@ -158,7 +151,7 @@ function patchChildren(parent, prevChildren, nextChildren, isSvg, middleware) {
     return nextChildren;
 }
 
-function patchElement(parent, prevVNode, nextVNode, isSvg, middleware) {
+function patchElement(parent, prevVNode, nextVNode, isSvg) {
     if (prevVNode === nextVNode) {
         if (prevVNode == null) {
             return null;
@@ -166,7 +159,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg, middleware) {
         return prevVNode.node;
     }
     if (prevVNode == null) {
-        return parent.appendChild(createElement(nextVNode, isSvg, middleware));
+        return parent.appendChild(createElement(nextVNode, isSvg));
     }
     let element = prevVNode.node;
     if (nextVNode == null) {
@@ -177,7 +170,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg, middleware) {
             element.data = nextVNode.text;
         }
     } else if (!isSameNodeType(nextVNode, prevVNode)) {
-        const nextElement = createElement(nextVNode, isSvg, middleware);
+        const nextElement = createElement(nextVNode, isSvg);
         parent.replaceChild(nextElement, element);
         element = nextElement;
     } else {
@@ -190,18 +183,18 @@ function patchElement(parent, prevVNode, nextVNode, isSvg, middleware) {
                 patchAttribute(element, name, prevVAttrs[name], nextVAttrs[name], isSvg);
             }
         }
-        patchChildren(element, prevVNode.children, nextVNode.children, isSvg, middleware);
+        patchChildren(element, prevVNode.children, nextVNode.children, isSvg);
         activeElement.focus();
     }
     nextVNode.node = element;
     return element;
 }
 
-export function render(parent, nextVNode, middleware) {
+export function render(parent, nextVNode) {
     nextVNode = getVNode(nextVNode);
     let prevVNode = cache.get(parent);
     if (!prevVNode) {
-        prevVNode = (parent.childNodes.length > 0 ? Array.from(parent.childNodes).map((child) => recycle(child, middleware)) : null);
+        prevVNode = (parent.childNodes.length > 0 ? Array.from(parent.childNodes).map(recycle) : null);
     }
     const prevIsArray = Array.isArray(prevVNode);
     const nextIsArray = Array.isArray(nextVNode);
@@ -209,8 +202,8 @@ export function render(parent, nextVNode, middleware) {
     if (prevIsArray || nextIsArray) {
         prevVNode = (prevIsArray ? prevVNode : [prevVNode]).filter(isValidNodeType);
         nextVNode = (nextIsArray ? nextVNode : [nextVNode]).filter(isValidNodeType);
-        const root = patchChildren(parent, prevVNode, nextVNode, null, middleware);
+        const root = patchChildren(parent, prevVNode, nextVNode);
         return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
     }
-    return patchElement(parent, prevVNode, nextVNode, null, middleware);
+    return patchElement(parent, prevVNode, nextVNode);
 }

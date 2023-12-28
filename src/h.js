@@ -38,17 +38,11 @@ export function getVNode(vnode) {
     return vnode;
 }
 
-export function recycle(node, middleware) {
+export function recycle(node) {
     if (node.nodeType === 3) {
         return createTextVNode(node.data, node);
     }
     if (node.nodeType === 1) {
-        if (middleware) {
-            const callbacks = middleware.map((callback) => callback(null));
-            if (callbacks) {
-                callbacks.forEach((callback) => callback && callback(node));
-            }
-        }
         return createVNode(
             node.nodeName.toLowerCase(),
             Array.from(node.attributes).reduce((map, attr) => {
@@ -61,7 +55,7 @@ export function recycle(node, middleware) {
                 }
                 return map;
             }, {}),
-            Array.from(node.childNodes).map((child) => recycle(child, middleware)),
+            Array.from(node.childNodes).map(recycle),
             node
         );
     }
