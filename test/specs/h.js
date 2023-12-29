@@ -198,14 +198,243 @@ describe('h', () => {
         });
     });
 
+    it('should support stateless functional components', () => {
+        const Component = () => h('div');
+        
+        expect(h(Component)).to.deep.equal({
+            nodeType: ELEMENT_NODE,
+            nodeName: 'div',
+            node: null,
+            attributes: {},
+            children: []
+        });
+    });
+
+    it('should provide properties as a parameter to components', () => {
+        const Component = (props) => h('div', props);
+        
+        expect(h(Component, {foo: 'bar'})).to.deep.equal({
+            nodeType: ELEMENT_NODE,
+            nodeName: 'div',
+            node: null,
+            attributes: {
+                foo: 'bar',
+                children: []
+            },
+            children: []
+        });
+    });
+
+    it('should provide children as a property to components', () => {
+        const Component = ({children}) => h('div', null, children);
+        
+        expect(h(Component, 'foo')).to.deep.equal({
+            nodeType: ELEMENT_NODE,
+            nodeName: 'div',
+            node: null,
+            attributes: {},
+            children: [
+                {
+                    nodeType: TEXT_NODE,
+                    node: null,
+                    text: 'foo'
+                }
+            ]
+        });
+    });
+
+    it('should support sibling components', () => {
+        const Foo = () => h('div', 'foo');
+        const Bar = () => h('span', {class: 'abc'}, 'bar');
+        
+        expect(h('section', null, [h(Foo), h(Bar)])).to.deep.equal({
+            nodeType: ELEMENT_NODE,
+            nodeName: 'section',
+            node: null,
+            attributes: {},
+            children: [
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'div',
+                    node: null,
+                    attributes: {},
+                    children: [
+                        {
+                            nodeType: TEXT_NODE,
+                            node: null,
+                            text: 'foo'
+                        }
+                    ]
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'span',
+                    node: null,
+                    attributes: {
+                        class: 'abc'
+                    },
+                    children: [
+                        {
+                            nodeType: TEXT_NODE,
+                            node: null,
+                            text: 'bar'
+                        }
+                    ]
+                }
+            ]
+        });
+    });
+
+    it('should support deeply nested components', () => {
+        const Foo = () => h('p', 'foo');
+        const Bar = () => h('span', h(Foo));
+        const Baz = () => h('div', h(Bar), h(Bar));
+        
+        expect(h(Baz)).to.deep.equal({
+            nodeType: ELEMENT_NODE,
+            nodeName: 'div',
+            node: null,
+            attributes: {},
+            children: [
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'span',
+                    node: null,
+                    attributes: {},
+                    children: [
+                        {
+                            nodeType: ELEMENT_NODE,
+                            nodeName: 'p',
+                            node: null,
+                            attributes: {},
+                            children: [
+                                {
+                                    nodeType: TEXT_NODE,
+                                    node: null,
+                                    text: 'foo'
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'span',
+                    node: null,
+                    attributes: {},
+                    children: [
+                        {
+                            nodeType: ELEMENT_NODE,
+                            nodeName: 'p',
+                            node: null,
+                            attributes: {},
+                            children: [
+                                {
+                                    nodeType: TEXT_NODE,
+                                    node: null,
+                                    text: 'foo'
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+    });
+
+    it('should support components that return multiple root virtual elements', () => {
+        const Foo = () => [h('div'), h('span'), h('em')];
+        
+        expect(h('section', h(Foo))).to.deep.equal({
+            nodeType: ELEMENT_NODE,
+            nodeName: 'section',
+            node: null,
+            attributes: {},
+            children: [
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'div',
+                    node: null,
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'span',
+                    node: null,
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'em',
+                    node: null,
+                    attributes: {},
+                    children: []
+                }
+            ]
+        });
+    });
+
+    it('should support sibling components that return multiple root virtual elements', () => {
+        const Foo = () => [h('div'), h('span'), h('em')];
+        const Bar = () => [h('p'), h('h1')];
+        
+        expect(h('section', h(Foo), h(Bar))).to.deep.equal({
+            nodeType: ELEMENT_NODE,
+            nodeName: 'section',
+            node: null,
+            attributes: {},
+            children: [
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'div',
+                    node: null,
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'span',
+                    node: null,
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'em',
+                    node: null,
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'p',
+                    node: null,
+                    attributes: {},
+                    children: []
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'h1',
+                    node: null,
+                    attributes: {},
+                    children: []
+                }
+            ]
+        });
+    });
+
     it('should support JSX', () => {
         const title = 'Hello World';
         const content = 'Lorem ipsum dolor sit amet';
+        const Component = ({foo, children}) => <div foo={foo}>{children}</div>;
 
         expect((
             <div>
                 <h1>{title}</h1>
                 <section class="content">{content}</section>
+                <Component foo="bar"><em>Component Child</em></Component>
                 <span />
             </div>
         )).to.deep.equal({
@@ -237,6 +466,29 @@ describe('h', () => {
                             nodeType: TEXT_NODE,
                             node: null,
                             text: 'Lorem ipsum dolor sit amet'
+                        }
+                    ]
+                },
+                {
+                    nodeType: ELEMENT_NODE,
+                    nodeName: 'div',
+                    node: null,
+                    attributes: {
+                        foo: 'bar'
+                    },
+                    children: [
+                        {
+                            nodeType: ELEMENT_NODE,
+                            nodeName: 'em',
+                            node: null,
+                            attributes: {},
+                            children: [
+                                {
+                                    nodeType: TEXT_NODE,
+                                    node: null,
+                                    text: 'Component Child'
+                                }
+                            ]
                         }
                     ]
                 },

@@ -66,5 +66,10 @@ export function h(nodeName, attributes, ...children) {
         children = [].concat(attributes || [], ...children);
         attributes = {};
     }
-    return createVNode(nodeName, attributes || {}, getVNode(children));
+    attributes = attributes || {};
+    children = getVNode(children);
+    if (typeof nodeName === 'function') {
+        return nodeName({children: children, ...attributes});
+    }
+    return createVNode(nodeName, attributes, children);
 }
