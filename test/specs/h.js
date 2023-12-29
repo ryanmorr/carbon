@@ -9,7 +9,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: []
         });
     });
@@ -19,7 +19,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {id: 'foo', class: 'bar'},
+            props: {id: 'foo', class: 'bar'},
             children: []
         });
     });
@@ -29,7 +29,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: TEXT_NODE,
@@ -45,13 +45,13 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [],
                 }
             ]
@@ -63,13 +63,13 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'i',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [],
                 },
                 {
@@ -81,7 +81,7 @@ describe('h', () => {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 }
             ]
@@ -93,27 +93,27 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'i',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 }
             ]
@@ -125,13 +125,13 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [
                         {
                             nodeType: TEXT_NODE,
@@ -144,7 +144,7 @@ describe('h', () => {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [
                         {
                             nodeType: TEXT_NODE,
@@ -172,7 +172,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {key: 'foo'},
+            props: {key: 'foo'},
             children: []
         });
     });
@@ -182,7 +182,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: TEXT_NODE,
@@ -205,7 +205,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: []
         });
     });
@@ -217,7 +217,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {
+            props: {
                 foo: 'bar',
                 children: []
             },
@@ -232,7 +232,7 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: TEXT_NODE,
@@ -251,13 +251,13 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'section',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'div',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [
                         {
                             nodeType: TEXT_NODE,
@@ -270,7 +270,7 @@ describe('h', () => {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {
+                    props: {
                         class: 'abc'
                     },
                     children: [
@@ -294,19 +294,19 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [
                         {
                             nodeType: ELEMENT_NODE,
                             nodeName: 'p',
                             node: null,
-                            attributes: {},
+                            props: {},
                             children: [
                                 {
                                     nodeType: TEXT_NODE,
@@ -321,13 +321,13 @@ describe('h', () => {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [
                         {
                             nodeType: ELEMENT_NODE,
                             nodeName: 'p',
                             node: null,
-                            attributes: {},
+                            props: {},
                             children: [
                                 {
                                     nodeType: TEXT_NODE,
@@ -349,27 +349,27 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'section',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'div',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 }
             ]
@@ -384,41 +384,41 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'section',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'div',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'em',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'p',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 },
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'h1',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 }
             ]
@@ -441,13 +441,13 @@ describe('h', () => {
             nodeType: ELEMENT_NODE,
             nodeName: 'div',
             node: null,
-            attributes: {},
+            props: {},
             children: [
                 {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'h1',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: [
                         {
                             nodeType: TEXT_NODE,
@@ -460,7 +460,7 @@ describe('h', () => {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'section',
                     node: null,
-                    attributes: {class: 'content'},
+                    props: {class: 'content'},
                     children: [
                         {
                             nodeType: TEXT_NODE,
@@ -473,7 +473,7 @@ describe('h', () => {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'div',
                     node: null,
-                    attributes: {
+                    props: {
                         foo: 'bar'
                     },
                     children: [
@@ -481,7 +481,7 @@ describe('h', () => {
                             nodeType: ELEMENT_NODE,
                             nodeName: 'em',
                             node: null,
-                            attributes: {},
+                            props: {},
                             children: [
                                 {
                                     nodeType: TEXT_NODE,
@@ -496,7 +496,7 @@ describe('h', () => {
                     nodeType: ELEMENT_NODE,
                     nodeName: 'span',
                     node: null,
-                    attributes: {},
+                    props: {},
                     children: []
                 }
             ]

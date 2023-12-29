@@ -5,7 +5,7 @@ export function merge(...objects) {
 }
 
 export function getKey(vnode) {
-    return vnode.attributes && vnode.attributes.key || null;
+    return vnode.props && vnode.props.key || null;
 }
 
 export function isValidNodeType(obj) {

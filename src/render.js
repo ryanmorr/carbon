@@ -12,8 +12,8 @@ function createElement(vnode, isSvg) {
         const nodeName = vnode.nodeName;
         isSvg = (isSvg || nodeName === 'svg');
         node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
-        const attributes = vnode.attributes;
-        Object.keys(attributes).forEach((name) => patchAttribute(node, name, null, attributes[name], isSvg));
+        const props = vnode.props;
+        Object.keys(props).forEach((name) => patchProperty(node, name, null, props[name], isSvg));
         vnode.children.forEach((vchild) => node.appendChild(createElement(vchild, isSvg)));
     }
     vnode.node = node;
@@ -30,7 +30,7 @@ function setStyle(element, name, value) {
     }
 }
 
-function patchAttribute(element, name, prevVal, nextVal, isSvg) {
+function patchProperty(element, name, prevVal, nextVal, isSvg) {
     if (name === 'key' || name === 'children') {
         return;
     }
@@ -176,11 +176,11 @@ function patchElement(parent, prevVNode, nextVNode, isSvg) {
     } else {
         isSvg = isSvg || nextVNode.nodeName === 'svg';
         const activeElement = document.activeElement;
-        const prevVAttrs = prevVNode.attributes;
-        const nextVAttrs = nextVNode.attributes;
-        for (const name in merge(nextVAttrs, prevVAttrs)) {
-            if ((name === 'value' || name === 'selected' || name === 'checked' ? element[name] : prevVAttrs[name]) !== nextVAttrs[name]) {
-                patchAttribute(element, name, prevVAttrs[name], nextVAttrs[name], isSvg);
+        const prevVProps = prevVNode.props;
+        const nextVProps = nextVNode.props;
+        for (const name in merge(nextVProps, prevVProps)) {
+            if ((name === 'value' || name === 'selected' || name === 'checked' ? element[name] : prevVProps[name]) !== nextVProps[name]) {
+                patchProperty(element, name, prevVProps[name], nextVProps[name], isSvg);
             }
         }
         patchChildren(element, prevVNode.children, nextVNode.children, isSvg);

@@ -1,12 +1,12 @@
 import { ELEMENT_NODE, TEXT_NODE } from './constants';
 import { flatten, isValidNodeType } from './util';
 
-function createVNode(nodeName, attributes, children, node = null) {
+function createVNode(nodeName, props, children, node = null) {
     return {
         nodeType: ELEMENT_NODE,
         node,
         nodeName,
-        attributes,
+        props,
         children
     };
 }
@@ -61,15 +61,15 @@ export function recycle(node) {
     }
 }
 
-export function h(nodeName, attributes, ...children) {
-    if (!attributes || attributes.nodeType || typeof attributes.concat === 'function') {
-        children = [].concat(attributes || [], ...children);
-        attributes = {};
+export function h(nodeName, props, ...children) {
+    if (!props || props.nodeType || typeof props.concat === 'function') {
+        children = [].concat(props || [], ...children);
+        props = {};
     }
-    attributes = attributes || {};
+    props = props || {};
     children = getVNode(children);
     if (typeof nodeName === 'function') {
-        return nodeName({children: children, ...attributes});
+        return nodeName({children: children, ...props});
     }
-    return createVNode(nodeName, attributes, children);
+    return createVNode(nodeName, props, children);
 }
