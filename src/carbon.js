@@ -1,5 +1,6 @@
 const ELEMENT_NODE = 1;
 const TEXT_NODE = 3;
+const IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
 
 function merge(...objects) {
     return Object.assign({}, ...objects);
@@ -162,8 +163,10 @@ function setStyle(element, name, value) {
         element.style.setProperty(name, value == null ? '' : value);
     } else if (value == null) {
         element.style[name] = '';
-    } else {
+    } else if (typeof value != 'number' || IS_NON_DIMENSIONAL.test(name)) {
         element.style[name] = value;
+    } else {
+        element.style[name] = value + 'px';
     }
 }
 

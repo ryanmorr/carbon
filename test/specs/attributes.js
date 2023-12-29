@@ -263,8 +263,12 @@ describe('attributes', () => {
     it('should add CSS styles as an object', () => {
         const styles = {
             color: 'rgb(255, 255, 255)',
-            backgroundPosition: '10px 10px',
-            'background-size': 'cover'
+            width: '2em',
+            gridRowStart: 1,
+            'padding-top': 5,
+            'padding-bottom': '0.7ex',
+            top: 100,
+            left: '100%'
         };
 
         const div = render(root,
@@ -273,8 +277,12 @@ describe('attributes', () => {
 
         const style = div.style;
         expect(style.color).to.equal('rgb(255, 255, 255)');
-        expect(style.backgroundPosition).to.equal('10px 10px');
-        expect(style.backgroundSize).to.equal('cover');
+        expect(style.width).to.equal('2em');
+        expect(style.gridRowStart).to.equal('1');
+        expect(style.paddingTop).to.equal('5px');
+        expect(style.paddingBottom).to.equal('0.7ex');
+        expect(style.top).to.equal('100px');
+        expect(style.left).to.equal('100%');
     });
 
     it('should properly switch from string styles to object styles and back', () => {
