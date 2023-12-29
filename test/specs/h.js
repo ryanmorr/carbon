@@ -428,7 +428,7 @@ describe('h', () => {
     it('should support JSX', () => {
         const title = 'Hello World';
         const content = 'Lorem ipsum dolor sit amet';
-        const Component = ({foo, children}) => <div foo={foo}>{children}</div>;
+        const Component = ({foo, children}) => <div foo={foo}>{children}</div>; // eslint-disable-line no-unused-vars
 
         expect((
             <div>
