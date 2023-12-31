@@ -297,7 +297,9 @@ function patchElement(parent, prevVNode, nextVNode, isSvg) {
             }
         }
         patchChildren(element, prevVNode.children, nextVNode.children, isSvg);
-        activeElement.focus();
+        if (activeElement !== document.body) {
+            activeElement.focus();
+        }
     }
     nextVNode.node = element;
     return element;
