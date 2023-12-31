@@ -27,24 +27,6 @@ function isSameNodeType(a, b) {
     return true;
 }
 
-function flatten(array) {
-    for (let i = 0; i < array.length;) {
-        const value = array[i];
-        if (Array.isArray(value)) {
-            if (value.length > 0) {
-                value.unshift(i, 1);
-                array.splice.apply(array, value);
-                value.splice(0, 2);
-            } else {
-                array.splice(i, 1);
-            }
-        } else {
-            i++;
-        }
-    }
-    return array;
-}
-
 function createClass(value) {
     if (typeof value === 'string') {
         return value;
@@ -97,23 +79,17 @@ function createTextVNode(text, node = null) {
     };
 }
 
-function normalizeVNode(vnode) {
-    const type = typeof vnode;
-    if (type === 'boolean') {
-        return null;
-    }
-    if (type === 'string' || type === 'number') {
-        return createTextVNode(vnode);
-    }
-    if (Array.isArray(vnode)) {
-        return flatten(vnode).reduce((vnodes, vn) => {
-            if (isValidNodeType(vn)) {
-                vnodes.push(normalizeVNode(vn));
-            }
-            return vnodes;
-        }, []);
-    }
-    return vnode;
+function normalizeChildren(children) {
+    return children.flat(Infinity).reduce((vnodes, vnode) => {
+        if (isValidNodeType(vnode)) {
+            const type = typeof vnode;
+            if (type === 'string' || type === 'number') {
+                vnode = createTextVNode(vnode);
+            } 
+            vnodes.push(vnode);
+        }
+        return vnodes;
+    }, []);
 }
 
 function recycle(node) {
@@ -336,9 +312,9 @@ export function render(parent, nextVNode) {
     const nextIsArray = Array.isArray(nextVNode);
     parent._vnode = nextVNode;
     if (prevIsArray || nextIsArray) {
-        prevVNode = (prevIsArray ? prevVNode : [prevVNode]).filter(isValidNodeType);
-        nextVNode = (nextIsArray ? nextVNode : [nextVNode]).filter(isValidNodeType);
-        const root = patchChildren(parent, prevVNode, nextVNode);
+        const prevVChildren = (prevIsArray ? prevVNode : [prevVNode]).filter(isValidNodeType);
+        const nextVChildren = (nextIsArray ? nextVNode : [nextVNode]).filter(isValidNodeType);
+        const root = patchChildren(parent, prevVChildren, nextVChildren);
         return root.length === 0 ? null : root.length === 1 ? root[0].node : root.map((vnode) => vnode.node);
     }
     return patchElement(parent, prevVNode, nextVNode);
@@ -350,7 +326,7 @@ export function h(tag, props, ...children) {
         props = null;
     }
     props = props || {};
-    children = normalizeVNode(children);
+    children = normalizeChildren(children);
     if (typeof tag === 'function') {
         return tag({children, ...props});
     }

@@ -5,7 +5,9 @@ describe('h', () => {
     const ELEMENT_NODE = 1;
     
     it('should create a virtual element', () => {
-        expect(h('div')).to.deep.equal({
+        const vnode = h('div');
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -16,7 +18,12 @@ describe('h', () => {
     });
 
     it('should create a virtual element with attributes', () => {
-        expect(h('div', {id: 'foo', class: 'bar'})).to.deep.equal({
+        const vnode = h('div', {
+            id: 'foo', 
+            class: 'bar'
+        });
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -27,7 +34,9 @@ describe('h', () => {
     });
 
     it('should create a virtual element with a single text child', () => {
-        expect(h('div', null, 'foo')).to.deep.equal({
+        const vnode = h('div', null, 'foo');
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -43,8 +52,29 @@ describe('h', () => {
         });
     });
 
+    it('should convert a numeric text node into a string', () => {
+        const vnode = h('div', null, 123);
+
+        expect(vnode).to.deep.equal({
+            type: ELEMENT_NODE,
+            tag: 'div',
+            node: null,
+            key: null,
+            props: {},
+            children: [
+                {
+                    type: TEXT_NODE,
+                    node: null,
+                    text: '123'
+                }
+            ]
+        });
+    });
+
     it('should create a virtual element with a single element child', () => {
-        expect(h('div', null, h('span'))).to.deep.equal({
+        const vnode = h('div', null, h('span'));
+        
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -64,7 +94,13 @@ describe('h', () => {
     });
 
     it('should create a virtual element with multiple children', () => {
-        expect(h('div', null, h('i'), 'foo', h('em'))).to.deep.equal({
+        const vnode = h('div', null, 
+            h('i'), 
+            'foo', 
+            h('em')
+        );
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -97,7 +133,13 @@ describe('h', () => {
     });
 
     it('should accept an array as children', () => {
-        expect(h('div', null, [h('i'), h('em')], h('span'))).to.deep.equal({
+        const vnode = h('div', null, [
+            h('i'),
+            h('em'),
+            h('span')
+        ]);
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -132,8 +174,114 @@ describe('h', () => {
         });
     });
 
+    it('should support multiple levels of nested sub-arrays of children', () => {
+        const vnode = h('div',
+            h('h1'),
+            [
+                h('em', {foo: 'bar'}, 'abc'), 
+                [
+                    h('i'), 
+                    [
+                        [
+                            h('span', null)
+                        ]
+                    ], 
+                    h('p', undefined, 123)
+                ]
+            ],
+            [
+                h('section', {id: 'abc'})
+            ]
+        );
+
+        expect(vnode).to.deep.equal({
+            type: ELEMENT_NODE,
+            tag: 'div',
+            node: null,
+            key: null,
+            props: {},
+            children: [
+                {
+                    type: ELEMENT_NODE,
+                    tag: 'h1',
+                    node: null,
+                    key: null,
+                    props: {},
+                    children: []
+                },
+                {
+                    type: ELEMENT_NODE,
+                    tag: 'em',
+                    node: null,
+                    key: null,
+                    props: {
+                        foo: 'bar'
+                    },
+                    children: [
+                        {
+                            type: TEXT_NODE,
+                            node: null,
+                            text: 'abc'
+                        }
+                    ]
+                },
+                {
+                    type: ELEMENT_NODE,
+                    tag: 'i',
+                    node: null,
+                    key: null,
+                    props: {},
+                    children: []
+                },
+                {
+                    type: ELEMENT_NODE,
+                    tag: 'span',
+                    node: null,
+                    key: null,
+                    props: {},
+                    children: []
+                },
+                {
+                    type: ELEMENT_NODE,
+                    tag: 'p',
+                    node: null,
+                    key: null,
+                    props: {},
+                    children: [
+                        {
+                            type: TEXT_NODE,
+                            node: null,
+                            text: '123'
+                        }
+                    ]
+                },
+                {
+                    type: ELEMENT_NODE,
+                    tag: 'section',
+                    node: null,
+                    key: null,
+                    props: {
+                        id: 'abc'
+                    },
+                    children: []
+                }
+            ]
+        });
+    });
+
     it('should allow skipping attribute definition', () => {
-        expect(h('div', h('span', 'foo'), h('em', ['bar', 'baz', 'qux']))).to.deep.equal({
+        const vnode = h('div', 
+            h('span', 'foo'), 
+            h('em', 
+                [
+                    'bar',
+                    'baz',
+                    'qux'
+                ]
+            )
+        );
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -183,7 +331,11 @@ describe('h', () => {
     });
 
     it('should support keys', () => {
-        expect(h('div', {key: 'foo'})).to.deep.equal({
+        const vnode = h('div', {
+            key: 'foo'
+        });
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -193,8 +345,18 @@ describe('h', () => {
         });
     });
 
-    it('should remove null and undefined children', () => {
-        expect(h('div', {}, [null, 'foo', undefined, 'bar'])).to.deep.equal({
+    it('should remove null, undefined, and boolean children', () => {
+        const vnode = h('div', {}, [
+            null,
+            'foo',
+            undefined,
+            'bar',
+            true,
+            'baz',
+            false
+        ]);
+
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -210,6 +372,11 @@ describe('h', () => {
                     type: TEXT_NODE,
                     node: null,
                     text: 'bar'
+                },
+                {
+                    type: TEXT_NODE,
+                    node: null,
+                    text: 'baz'
                 }
             ]
         });
@@ -217,8 +384,10 @@ describe('h', () => {
 
     it('should support stateless functional components', () => {
         const Component = () => h('div');
+
+        const vnode = h(Component);
         
-        expect(h(Component)).to.deep.equal({
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -230,8 +399,12 @@ describe('h', () => {
 
     it('should provide properties as a parameter to components', () => {
         const Component = (props) => h('div', props);
+
+        const vnode = h(Component, {
+            foo: 'bar'
+        });
         
-        expect(h(Component, {foo: 'bar'})).to.deep.equal({
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -245,9 +418,11 @@ describe('h', () => {
     });
 
     it('should provide children as a property to components', () => {
-        const Component = ({children}) => h('div', null, children);
+        const Component = ({children}) => h('div', children);
+
+        const vnode = h(Component, 'foo');
         
-        expect(h(Component, 'foo')).to.deep.equal({
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -266,8 +441,13 @@ describe('h', () => {
     it('should support sibling components', () => {
         const Foo = () => h('div', 'foo');
         const Bar = () => h('span', {class: 'abc'}, 'bar');
+
+        const vnode = h('section', [
+            h(Foo),
+            h(Bar)
+        ]);
         
-        expect(h('section', null, [h(Foo), h(Bar)])).to.deep.equal({
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'section',
             node: null,
@@ -312,8 +492,10 @@ describe('h', () => {
         const Foo = () => h('p', 'foo');
         const Bar = () => h('span', h(Foo));
         const Baz = () => h('div', h(Bar), h(Bar));
+
+        const vnode = h(Baz);
         
-        expect(h(Baz)).to.deep.equal({
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'div',
             node: null,
@@ -371,9 +553,15 @@ describe('h', () => {
     });
 
     it('should support components that return multiple root virtual elements', () => {
-        const Foo = () => [h('div'), h('span'), h('em')];
+        const Foo = () => [
+            h('div'),
+            h('span'),
+            h('em')
+        ];
+
+        const vnode = h('section', h(Foo));
         
-        expect(h('section', h(Foo))).to.deep.equal({
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'section',
             node: null,
@@ -409,10 +597,23 @@ describe('h', () => {
     });
 
     it('should support sibling components that return multiple root virtual elements', () => {
-        const Foo = () => [h('div'), h('span'), h('em')];
-        const Bar = () => [h('p'), h('h1')];
+        const Foo = () => [
+            h('div'),
+            h('span'),
+            h('em')
+        ];
+
+        const Bar = () => [
+            h('p'), 
+            h('h1')
+        ];
+
+        const vnode = h('section',
+            h(Foo),
+            h(Bar)
+        );
         
-        expect(h('section', h(Foo), h(Bar))).to.deep.equal({
+        expect(vnode).to.deep.equal({
             type: ELEMENT_NODE,
             tag: 'section',
             node: null,
