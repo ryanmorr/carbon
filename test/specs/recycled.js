@@ -2,18 +2,6 @@ import { h, render } from '../../src/carbon';
 import { root, expectHTML } from '../setup';
 
 describe('recycled', () => {
-    it('should recycle a pre-existing text node', () => {
-        root.innerHTML = 'foo';
-        const text = root.firstChild;
-        
-        const node = render(root,
-            'bar'
-        );
-
-        expect(node).to.equal(text);
-        expectHTML('bar');
-    });
-
     it('should recycle a pre-existing element', () => {
         root.innerHTML = '<div></div>';
         
@@ -22,6 +10,18 @@ describe('recycled', () => {
         );
 
         expectHTML('<span></span>');
+    });
+
+    it('should recycle a pre-existing text node', () => {
+        root.innerHTML = '<div>foo</div>';
+        const text = root.firstChild.firstChild;
+        
+        const node = render(root,
+            <div>bar</div>
+        );
+
+        expect(node.firstChild).to.equal(text);
+        expectHTML('<div>bar</div>');
     });
 
     it('should recycle pre-existing attributes', () => {
@@ -65,19 +65,17 @@ describe('recycled', () => {
     });
 
     it('should recycle multiple pre-existing child nodes', () => {
-        root.innerHTML = 'foo<div id="bar"></div>baz<span></span>';
-        const text = root.childNodes[0];
-        const div = root.childNodes[1];
+        root.innerHTML = '<section>foo<div id="bar"></div>baz<span></span></section>';
+        const text = root.firstChild.childNodes[0];
+        const div = root.firstChild.childNodes[1];
         
-        const nodes = render(root, [
-            'baz',
-            <div id="qux" />,
-            <em />
-        ]);
+        const section = render(root,
+            <section>baz<div id="qux" /><em /></section>
+        );
 
-        expect(nodes[0]).to.equal(text);
-        expect(nodes[1]).to.equal(div);
-        expectHTML('baz<div id="qux"></div><em></em>');
+        expect(section.childNodes[0]).to.equal(text);
+        expect(section.childNodes[1]).to.equal(div);
+        expectHTML('<section>baz<div id="qux"></div><em></em></section>');
     });
 
     it('should recycle pre-existing keyed elements', () => {

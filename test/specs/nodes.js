@@ -1,49 +1,7 @@
 import { h, render } from '../../src/carbon';
 import { root, expectHTML } from '../setup';
 
-describe('nodes', () => {
-    it('should render a string as a text node', () => {
-        const node = render(root, 'foo');
-        
-        expectHTML('foo');
-        expect(root.childNodes).to.have.length(1);
-        expect(root.firstChild).to.equal(node);
-    });
-
-    it('should render an empty string as a text node', () => {
-        const node = render(root, '');
-        
-        expectHTML('');
-        expect(root.childNodes).to.have.length(1);
-        expect(root.firstChild).to.equal(node);
-    });
-
-    it('should render a number as a text node', () => {
-        const node = render(root, 123);
-        
-        expectHTML('123');
-        expect(root.childNodes).to.have.length(1);
-        expect(root.firstChild).to.equal(node);
-    });
-
-    it('should render zero as a text node', () => {
-        const node = render(root, 0);
-        
-        expectHTML('0');
-        expect(root.childNodes).to.have.length(1);
-        expect(root.firstChild).to.equal(node);
-    });
-    
-    it('should not render boolean true', () => {
-        render(root, true);
-        expectHTML('');
-    });
-
-    it('should not render boolean false', () => {
-        render(root, false);
-        expectHTML('');
-    });
-    
+describe('nodes', () => {    
     it('should render an element', () => {
         const element = render(root,
             <div />
@@ -52,17 +10,6 @@ describe('nodes', () => {
         expectHTML('<div></div>');
         expect(root.childNodes).to.have.length(1);
         expect(root.firstChild).to.equal(element);
-    });
-
-    it('should render an array of multiple text nodes', () => {
-        const elements = render(root, [
-            'foo',
-            'bar',
-            123
-        ]);
-
-        expectHTML('foobar123');
-        expect(elements).to.deep.equal(Array.from(root.childNodes));
     });
 
     it('should render an array of multiple elements', () => {
@@ -85,31 +32,92 @@ describe('nodes', () => {
         expect(el).to.equal(root.firstChild);
     });
 
-    it('should render an array of multiple mixed-type nodes', () => {
-        const elements = render(root, [
-            'foo',
-            <span />,
-            123,
-            <em />
-        ]);
-
-        expectHTML('foo<span></span>123<em></em>');
-        expect(elements).to.deep.equal(Array.from(root.childNodes));
+    it('should render a string as a text node', () => {
+        const el = render(root, 
+            <div>{'foo'}</div>    
+        );
+        
+        expectHTML('<div>foo</div>');
+        const textNode = el.firstChild;
+        expect(textNode.nodeType).to.equal(3);
+        expect(textNode.data).to.equal('foo');
     });
 
-    it('should remove a text node with null', () => {
-        render(root,
-            'foo'
+    it('should render an empty string as a text node', () => {
+        const el = render(root, 
+            <div>{''}</div>    
         );
-
-        expectHTML('foo');
         
-        const el = render(root,
-            null
+        expectHTML('<div></div>');
+        const textNode = el.firstChild;
+        expect(textNode.nodeType).to.equal(3);
+        expect(textNode.data).to.equal('');
+    });
+
+    it('should render a number as a text node', () => {
+        const el = render(root, 
+            <div>{123}</div>    
+        );
+        
+        expectHTML('<div>123</div>');
+        const textNode = el.firstChild;
+        expect(textNode.nodeType).to.equal(3);
+        expect(textNode.data).to.equal('123');
+    });
+
+    it('should render zero as a text node', () => {
+        const el = render(root, 
+            <div>{0}</div>    
+        );
+        
+        expectHTML('<div>0</div>');
+        const textNode = el.firstChild;
+        expect(textNode.nodeType).to.equal(3);
+        expect(textNode.data).to.equal('0');
+    });
+    
+    it('should not render boolean true', () => {
+        const el = render(root, 
+            <div>{true}</div>    
         );
 
-        expectHTML('');
-        expect(el).to.equal(null);
+        expectHTML('<div></div>');
+        expect(el.childNodes).to.have.length(0);
+    });
+
+    it('should not render boolean false', () => {
+        const el = render(root, 
+            <div>{false}</div>    
+        );
+
+        expectHTML('<div></div>');
+        expect(el.childNodes).to.have.length(0);
+    });
+
+
+    it('should render an array of multiple text nodes', () => {
+        const el = render(root,
+            <div>{['foo', 'bar', 123]}</div> 
+        );
+
+        expectHTML('<div>foobar123</div>');
+        expect(el.childNodes).to.have.length(3);
+    });
+
+    it('should render an array of multiple mixed-type nodes', () => {
+        const el = render(root, 
+            <div>
+                {[
+                    'foo',
+                    <span />,
+                    123,
+                    <em />
+                ]}
+            </div>
+        );
+
+        expectHTML('<div>foo<span></span>123<em></em></div>');
+        expect(el.childNodes).to.have.length(4);
     });
 
     it('should remove an element with null', () => {
@@ -127,79 +135,19 @@ describe('nodes', () => {
         expect(el).to.equal(null);
     });
 
-    it('should replace a text node with a text node', () => {
-        render(root,
-            'foo'
+    it('should remove a text node with null', () => {
+        const el1 = render(root,
+            <div>foo</div>
         );
 
-        expectHTML('foo');
+        expectHTML('<div>foo</div>');
         
-        const el = render(root,
-            'bar'
-        );
-
-        expectHTML('bar');
-        expect(el).to.equal(root.firstChild);
-    });
-
-    it('should use the same text node when updating its value', () => {
-        const foo = render(root,
-            'foo'
-        );
-
-        expectHTML('foo');
-        
-        const bar = render(root,
-            'bar'
-        );
-
-        expectHTML('bar');
-        expect(foo).to.equal(bar);
-    });
-
-    it('should replace an element with an element', () => {
-        render(root,
-            <span />
-        );
-
-        expectHTML('<span></span>');
-        
-        const el = render(root,
-            <div />
+        const el2 = render(root,
+            <div></div>
         );
 
         expectHTML('<div></div>');
-        expect(el).to.equal(root.firstChild);
-    });
-
-    it('should replace a text node with an element', () => {
-        render(root,
-            'foo'
-        );
-
-        expectHTML('foo');
-        
-        const el = render(root,
-            <div />
-        );
-
-        expectHTML('<div></div>');
-        expect(el).to.equal(root.firstChild);
-    });
-
-    it('should replace an element with a text node', () => {
-        render(root,
-            <span />
-        );
-
-        expectHTML('<span></span>');
-        
-        const el = render(root,
-            'foo'
-        );
-
-        expectHTML('foo');
-        expect(el).to.equal(root.firstChild);
+        expect(el1).to.equal(el2);
     });
 
     it('should remove multiple nodes with null', () => {
@@ -233,6 +181,78 @@ describe('nodes', () => {
 
         expectHTML('');
         expect(el).to.equal(null);
+    });
+
+    it('should replace an element with an element', () => {
+        render(root,
+            <span />
+        );
+
+        expectHTML('<span></span>');
+        
+        const el = render(root,
+            <div />
+        );
+
+        expectHTML('<div></div>');
+        expect(el).to.equal(root.firstChild);
+    });
+
+    it('should replace a text node with a text node', () => {
+        const el1 = render(root,
+            <div>foo</div>
+        );
+
+        expectHTML('<div>foo</div>');
+        
+        const el2 = render(root,
+            <div>bar</div>
+        );
+
+        expectHTML('<div>bar</div>');
+        expect(el1).to.equal(el2);
+    });
+
+    it('should use the same text node when updating its value', () => {
+        const el1 = render(root,
+            <div>foo</div>
+        );
+        
+        const el2 = render(root,
+            <div>bar</div>
+        );
+
+        const textNode1 = el1.firstChild;
+        const textNode2 = el2.firstChild;
+        expect(textNode1).to.equal(textNode2);
+    });
+
+    it('should replace a text node with an element', () => {
+        render(root,
+            <div>foo</div>
+        );
+
+        expectHTML('<div>foo</div>');
+        
+        render(root,
+            <div><span /></div>
+        );
+
+        expectHTML('<div><span></span></div>');
+    });
+
+    it('should replace an element with a text node', () => {
+        render(root,
+            <div><span /></div>
+        );
+
+        expectHTML('<div><span></span></div>');
+        
+        render(root,
+            <div>foo</div>
+        );
+
+        expectHTML('<div>foo</div>');
     });
 
     it('should replace a single node with multiple nodes', () => {
@@ -339,10 +359,11 @@ describe('nodes', () => {
                 </section>
                 qux
                 <em />
+                <i>{false}</i>
             </div>
         );
 
-        expectHTML('<div><section><p>123</p></section>qux<em></em></div>');
+        expectHTML('<div><section><p>123</p></section>qux<em></em><i></i></div>');
     });
 
     it('should support SVG', () => {

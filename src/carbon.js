@@ -92,7 +92,7 @@ function createVNode(tag, props, children, node = null) {
 function createTextVNode(text, node = null) {
     return {
         type: TEXT_NODE,
-        text,
+        text: String(text),
         node
     };
 }
@@ -328,7 +328,6 @@ function patchElement(parent, prevVNode, nextVNode, isSvg) {
 }
 
 export function render(parent, nextVNode) {
-    nextVNode = normalizeVNode(nextVNode);
     let prevVNode = parent._vnode || null;
     if (!prevVNode && parent.childNodes.length > 0) {
         prevVNode = Array.from(parent.childNodes).map(recycle);
