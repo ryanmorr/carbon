@@ -6,9 +6,10 @@ describe('h', () => {
     
     it('should create a virtual element', () => {
         expect(h('div')).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: []
         });
@@ -16,9 +17,10 @@ describe('h', () => {
 
     it('should create a virtual element with attributes', () => {
         expect(h('div', {id: 'foo', class: 'bar'})).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {id: 'foo', class: 'bar'},
             children: []
         });
@@ -26,13 +28,14 @@ describe('h', () => {
 
     it('should create a virtual element with a single text child', () => {
         expect(h('div', null, 'foo')).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: TEXT_NODE,
+                    type: TEXT_NODE,
                     node: null,
                     text: 'foo'
                 }
@@ -42,15 +45,17 @@ describe('h', () => {
 
     it('should create a virtual element with a single element child', () => {
         expect(h('div', null, h('span'))).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: [],
                 }
@@ -60,27 +65,30 @@ describe('h', () => {
 
     it('should create a virtual element with multiple children', () => {
         expect(h('div', null, h('i'), 'foo', h('em'))).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'i',
+                    type: ELEMENT_NODE,
+                    tag: 'i',
                     node: null,
+                    key: null,
                     props: {},
                     children: [],
                 },
                 {
-                    nodeType: TEXT_NODE,
+                    type: TEXT_NODE,
                     node: null,
                     text: 'foo'
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'em',
+                    type: ELEMENT_NODE,
+                    tag: 'em',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 }
@@ -90,29 +98,33 @@ describe('h', () => {
 
     it('should accept an array as children', () => {
         expect(h('div', null, [h('i'), h('em')], h('span'))).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'i',
+                    type: ELEMENT_NODE,
+                    tag: 'i',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'em',
+                    type: ELEMENT_NODE,
+                    tag: 'em',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 }
@@ -122,42 +134,45 @@ describe('h', () => {
 
     it('should allow skipping attribute definition', () => {
         expect(h('div', h('span', 'foo'), h('em', ['bar', 'baz', 'qux']))).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: [
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'foo'
                         }
                     ]
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'em',
+                    type: ELEMENT_NODE,
+                    tag: 'em',
                     node: null,
+                    key: null,
                     props: {},
                     children: [
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'bar'
                         },
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'baz'
                         },
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'qux'
                         }
@@ -169,9 +184,10 @@ describe('h', () => {
 
     it('should support keys', () => {
         expect(h('div', {key: 'foo'})).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: 'foo',
             props: {key: 'foo'},
             children: []
         });
@@ -179,18 +195,19 @@ describe('h', () => {
 
     it('should remove null and undefined children', () => {
         expect(h('div', {}, [null, 'foo', undefined, 'bar'])).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: TEXT_NODE,
+                    type: TEXT_NODE,
                     node: null,
                     text: 'foo'
                 },
                 {
-                    nodeType: TEXT_NODE,
+                    type: TEXT_NODE,
                     node: null,
                     text: 'bar'
                 }
@@ -202,9 +219,10 @@ describe('h', () => {
         const Component = () => h('div');
         
         expect(h(Component)).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: []
         });
@@ -214,9 +232,10 @@ describe('h', () => {
         const Component = (props) => h('div', props);
         
         expect(h(Component, {foo: 'bar'})).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {
                 foo: 'bar',
                 children: []
@@ -229,13 +248,14 @@ describe('h', () => {
         const Component = ({children}) => h('div', null, children);
         
         expect(h(Component, 'foo')).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: TEXT_NODE,
+                    type: TEXT_NODE,
                     node: null,
                     text: 'foo'
                 }
@@ -248,34 +268,37 @@ describe('h', () => {
         const Bar = () => h('span', {class: 'abc'}, 'bar');
         
         expect(h('section', null, [h(Foo), h(Bar)])).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'section',
+            type: ELEMENT_NODE,
+            tag: 'section',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'div',
+                    type: ELEMENT_NODE,
+                    tag: 'div',
                     node: null,
+                    key: null,
                     props: {},
                     children: [
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'foo'
                         }
                     ]
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {
                         class: 'abc'
                     },
                     children: [
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'bar'
                         }
@@ -291,25 +314,28 @@ describe('h', () => {
         const Baz = () => h('div', h(Bar), h(Bar));
         
         expect(h(Baz)).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: [
                         {
-                            nodeType: ELEMENT_NODE,
-                            nodeName: 'p',
+                            type: ELEMENT_NODE,
+                            tag: 'p',
                             node: null,
+                            key: null,
                             props: {},
                             children: [
                                 {
-                                    nodeType: TEXT_NODE,
+                                    type: TEXT_NODE,
                                     node: null,
                                     text: 'foo'
                                 }
@@ -318,19 +344,21 @@ describe('h', () => {
                     ]
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: [
                         {
-                            nodeType: ELEMENT_NODE,
-                            nodeName: 'p',
+                            type: ELEMENT_NODE,
+                            tag: 'p',
                             node: null,
+                            key: null,
                             props: {},
                             children: [
                                 {
-                                    nodeType: TEXT_NODE,
+                                    type: TEXT_NODE,
                                     node: null,
                                     text: 'foo'
                                 }
@@ -346,29 +374,33 @@ describe('h', () => {
         const Foo = () => [h('div'), h('span'), h('em')];
         
         expect(h('section', h(Foo))).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'section',
+            type: ELEMENT_NODE,
+            tag: 'section',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'div',
+                    type: ELEMENT_NODE,
+                    tag: 'div',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'em',
+                    type: ELEMENT_NODE,
+                    tag: 'em',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 }
@@ -381,43 +413,49 @@ describe('h', () => {
         const Bar = () => [h('p'), h('h1')];
         
         expect(h('section', h(Foo), h(Bar))).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'section',
+            type: ELEMENT_NODE,
+            tag: 'section',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'div',
+                    type: ELEMENT_NODE,
+                    tag: 'div',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'em',
+                    type: ELEMENT_NODE,
+                    tag: 'em',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'p',
+                    type: ELEMENT_NODE,
+                    tag: 'p',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'h1',
+                    type: ELEMENT_NODE,
+                    tag: 'h1',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 }
@@ -438,53 +476,58 @@ describe('h', () => {
                 <span />
             </div>
         )).to.deep.equal({
-            nodeType: ELEMENT_NODE,
-            nodeName: 'div',
+            type: ELEMENT_NODE,
+            tag: 'div',
             node: null,
+            key: null,
             props: {},
             children: [
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'h1',
+                    type: ELEMENT_NODE,
+                    tag: 'h1',
                     node: null,
+                    key: null,
                     props: {},
                     children: [
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'Hello World'
                         }
                     ]
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'section',
+                    type: ELEMENT_NODE,
+                    tag: 'section',
                     node: null,
+                    key: null,
                     props: {class: 'content'},
                     children: [
                         {
-                            nodeType: TEXT_NODE,
+                            type: TEXT_NODE,
                             node: null,
                             text: 'Lorem ipsum dolor sit amet'
                         }
                     ]
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'div',
+                    type: ELEMENT_NODE,
+                    tag: 'div',
                     node: null,
+                    key: null,
                     props: {
                         foo: 'bar'
                     },
                     children: [
                         {
-                            nodeType: ELEMENT_NODE,
-                            nodeName: 'em',
+                            type: ELEMENT_NODE,
+                            tag: 'em',
                             node: null,
+                            key: null,
                             props: {},
                             children: [
                                 {
-                                    nodeType: TEXT_NODE,
+                                    type: TEXT_NODE,
                                     node: null,
                                     text: 'Component Child'
                                 }
@@ -493,9 +536,10 @@ describe('h', () => {
                     ]
                 },
                 {
-                    nodeType: ELEMENT_NODE,
-                    nodeName: 'span',
+                    type: ELEMENT_NODE,
+                    tag: 'span',
                     node: null,
+                    key: null,
                     props: {},
                     children: []
                 }

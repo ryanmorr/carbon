@@ -6,26 +6,22 @@ function merge(...objects) {
     return Object.assign({}, ...objects);
 }
 
-function getKey(vnode) {
-    return vnode.props && vnode.props.key || null;
-}
-
 function isValidNodeType(obj) {
     return obj != null && typeof obj !== 'boolean';
 }
 
 function isSameNode(a, b) {
-    return a.nodeName === b.nodeName && getKey(a) === getKey(b);
+    return a.tag === b.tag && a.key === b.key;
 }
 
 function isSameNodeType(a, b) {
-    if (a.nodeType !== b.nodeType) {
+    if (a.type !== b.type) {
         return false;
     }
-    if (a.nodeType === TEXT_NODE && a.text !== b.text) {
+    if (a.type === TEXT_NODE && a.text !== b.text) {
         return false;
     }
-    if (a.nodeName !== b.nodeName) {
+    if (a.tag !== b.tag) {
         return false;
     }
     return true;
@@ -74,7 +70,7 @@ function createKeyToIndexMap(children, beginIndex, endIndex) {
     const map = {};
     for (let i = beginIndex; i <= endIndex; ++i) {
         const child = children[i];
-        const key = child && getKey(child);
+        const key = child && child.key;
         if (key != null) {
             map[key] = i;
         }
@@ -82,25 +78,26 @@ function createKeyToIndexMap(children, beginIndex, endIndex) {
     return map;
 }
 
-function createVNode(nodeName, props, children, node = null) {
+function createVNode(tag, props, children, node = null) {
     return {
-        nodeType: ELEMENT_NODE,
-        node,
-        nodeName,
+        type: ELEMENT_NODE,
+        tag,
         props,
-        children
+        children,
+        key: props.key || null,
+        node
     };
 }
 
 function createTextVNode(text, node = null) {
     return {
-        nodeType: TEXT_NODE,
-        node,
-        text
+        type: TEXT_NODE,
+        text,
+        node
     };
 }
 
-function resolveVTree(vnode) {
+function normalizeVNode(vnode) {
     const type = typeof vnode;
     if (type === 'boolean') {
         return null;
@@ -111,7 +108,7 @@ function resolveVTree(vnode) {
     if (Array.isArray(vnode)) {
         return flatten(vnode).reduce((vnodes, vn) => {
             if (isValidNodeType(vn)) {
-                vnodes.push(resolveVTree(vn));
+                vnodes.push(normalizeVNode(vn));
             }
             return vnodes;
         }, []);
@@ -144,12 +141,12 @@ function recycle(node) {
 
 function createElement(vnode, isSvg) {
     let node;
-    if (vnode.nodeType === TEXT_NODE) {
+    if (vnode.type === TEXT_NODE) {
         node = document.createTextNode(vnode.text);
     } else {
-        const nodeName = vnode.nodeName;
-        isSvg = (isSvg || nodeName === 'svg');
-        node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', nodeName) : document.createElement(nodeName);
+        const tag = vnode.tag;
+        isSvg = (isSvg || tag === 'svg');
+        node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
         const props = vnode.props;
         Object.keys(props).forEach((name) => patchProperty(node, name, null, props[name], isSvg));
         vnode.children.forEach((vchild) => node.appendChild(createElement(vchild, isSvg)));
@@ -261,8 +258,8 @@ function patchChildren(parent, prevChildren, nextChildren, isSvg) {
             if (!prevKeyToIdx) {
                 prevKeyToIdx = createKeyToIndexMap(prevChildren, prevStartIndex, prevEndIndex);
             }
-            let key = getKey(nextStartChild);
-            let prevIndex = key ? prevKeyToIdx[key] : null;
+            const key = nextStartChild.key;
+            const prevIndex = key ? prevKeyToIdx[key] : null;
             if (prevIndex == null) {
                 parent.insertBefore(createElement(nextStartChild, isSvg), prevStartChild.node);
                 nextStartChild = nextChildren[++nextStartIndex];
@@ -276,13 +273,13 @@ function patchChildren(parent, prevChildren, nextChildren, isSvg) {
         }
     }
     if (prevStartIndex > prevEndIndex) {
-        let subsequentElement = nextChildren[nextEndIndex + 1] ? nextChildren[nextEndIndex + 1].node : null;
+        const subsequentElement = nextChildren[nextEndIndex + 1] ? nextChildren[nextEndIndex + 1].node : null;
         for (let i = nextStartIndex; i <= nextEndIndex; i++) {
             parent.insertBefore(createElement(nextChildren[i], isSvg), subsequentElement);
         }
     } else if (nextStartIndex > nextEndIndex) {
         for (let i = prevStartIndex; i <= prevEndIndex; i++) {
-            let child = prevChildren[i];
+            const child = prevChildren[i];
             if (child && child.node) {
                 parent.removeChild(child.node);
             }
@@ -305,7 +302,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg) {
     if (nextVNode == null) {
         return parent.removeChild(element) && null;
     }
-    if (prevVNode.nodeType === TEXT_NODE && nextVNode.nodeType === TEXT_NODE) {
+    if (prevVNode.type === TEXT_NODE && nextVNode.type === TEXT_NODE) {
         if (prevVNode.text !== nextVNode.text) {
             element.data = nextVNode.text;
         }
@@ -314,7 +311,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg) {
         parent.replaceChild(nextElement, element);
         element = nextElement;
     } else {
-        isSvg = isSvg || nextVNode.nodeName === 'svg';
+        isSvg = isSvg || nextVNode.tag === 'svg';
         const activeElement = document.activeElement;
         const prevVProps = prevVNode.props;
         const nextVProps = nextVNode.props;
@@ -331,7 +328,7 @@ function patchElement(parent, prevVNode, nextVNode, isSvg) {
 }
 
 export function render(parent, nextVNode) {
-    nextVNode = resolveVTree(nextVNode);
+    nextVNode = normalizeVNode(nextVNode);
     let prevVNode = parent._vnode || null;
     if (!prevVNode && parent.childNodes.length > 0) {
         prevVNode = Array.from(parent.childNodes).map(recycle);
@@ -348,15 +345,15 @@ export function render(parent, nextVNode) {
     return patchElement(parent, prevVNode, nextVNode);
 }
 
-export function h(nodeName, props, ...children) {
-    if (!props || props.nodeType || typeof props.concat === 'function') {
+export function h(tag, props, ...children) {
+    if (!props || props.type === ELEMENT_NODE || props.type === TEXT_NODE || typeof props.concat === 'function') {
         children = [].concat(props || [], ...children);
         props = null;
     }
     props = props || {};
-    children = resolveVTree(children);
-    if (typeof nodeName === 'function') {
-        return nodeName({children: children, ...props});
+    children = normalizeVNode(children);
+    if (typeof tag === 'function') {
+        return tag({children, ...props});
     }
-    return createVNode(nodeName, props, children);
+    return createVNode(tag, props, children);
 }
