@@ -182,6 +182,9 @@ function patchProperty(element, name, prevVal, nextVal, isSvg) {
             name !== 'form' &&
             name !== 'tabIndex' &&
             name !== 'download' &&
+            name !== 'rowSpan' &&
+			name !== 'colSpan' &&
+			name !== 'role' &&
             name in element
         ) {
             try {
