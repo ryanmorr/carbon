@@ -73,7 +73,7 @@ describe('attributes', () => {
         expectHTML('<div foo="baz"></div>');
     });
 
-    it('should not remove an attribute node if only the value has changed', () => {
+    it('should not remove an element or attribute node if only the value has changed', () => {
         const div1 = render(root,
             <div foo="bar" />
         );
@@ -86,6 +86,7 @@ describe('attributes', () => {
         );
         
         const attrNode2 = div2.attributes[0];
+        expect(div1).to.equal(div2);
         expect(attrNode1).to.equal(attrNode2);
         expectHTML('<div foo="baz"></div>');
     });
@@ -868,7 +869,7 @@ describe('attributes', () => {
 		expect(text.value).to.equal('Hello');
 		expect(checkbox.checked).to.equal(true);
 	}); 
-    
+
     it('should remove attributes on pre-existing DOM', () => {
 		const div = document.createElement('div');
 		div.setAttribute('foo', 'bar');
