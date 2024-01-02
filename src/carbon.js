@@ -337,3 +337,7 @@ export function h(tag, props, ...children) {
     }
     return createVNode(tag, props, children);
 }
+
+export function text(str) {
+    return createTextVNode(str);
+}

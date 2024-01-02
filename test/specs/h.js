@@ -1,8 +1,18 @@
-import { h } from '../../src/carbon';
+import { h, text } from '../../src/carbon';
 
 describe('h', () => {
     const TEXT_NODE = 3;
     const ELEMENT_NODE = 1;
+
+    it('should create a virtual text node', () => {
+        const vnode = text('foo');
+
+        expect(vnode).to.deep.equal({
+            type: TEXT_NODE,
+            node: null,
+            text: 'foo'
+        });
+    });
     
     it('should create a virtual element', () => {
         const vnode = h('div');
