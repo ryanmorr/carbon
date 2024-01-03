@@ -434,15 +434,10 @@ describe('attributes', () => {
     });
 
     it('should support boolean attributes', () => {
-        render(root,
+        const el = render(root,
             <div>
                 <input type="radio" checked={true} />
                 <input type="checkbox" checked={false} />
-                <select multiple>
-                    <option value="foo" selected={true}>foo</option>
-                    <option value="bar" selected={false}>bar</option>
-                    <option value="baz" selected={true}>baz</option>
-                </select>
             </div>
         );
 
@@ -450,29 +445,45 @@ describe('attributes', () => {
             <div>
                 <input type="radio">
                 <input type="checkbox">
-                <select multiple="">
-                    <option value="foo">foo</option>
-                    <option value="bar">bar</option>
-                    <option value="baz">baz</option>
-                </select>
             </div>
         `);
 
-        const radio = root.querySelector('[type=radio]');
-        const checkbox = root.querySelector('[type=checkbox]');
-        const select = root.querySelector('select');
-        const option1 = select.children[0];
-        const option2 = select.children[1];
-        const option3 = select.children[2];
-
-        expect(radio.checked).to.equal(true);
-        expect(checkbox.checked).to.equal(false);
-        expect(select.selectedIndex).to.equal(0);
-        expect(Array.from(select.selectedOptions)).to.deep.equal([option1, option3]);
-        expect(option1.selected).to.equal(true);
-        expect(option2.selected).to.equal(false);
-        expect(option3.selected).to.equal(true);
+        expect(el.firstChild.checked).to.equal(true);
+        expect(el.lastChild.checked).to.equal(false);
     });
+
+	it('should support selected attribute', () => {
+		const select = render(root, 
+            <select>
+                <option value="foo">foo</option>
+                <option selected value="bar">bar</option>
+                <option value="baz">baz</option>
+            </select>    
+        );
+
+		expect(select.value).to.equal('bar');
+        expect(select.selectedIndex).to.equal(1);
+        expect(Array.from(select.selectedOptions)).to.deep.equal([select.childNodes[1]]);
+	});
+
+	it('should support multiple selected', () => {
+		const select = render(root, 
+            <select multiple>
+                <option value="foo">foo</option>
+                <option selected value="bar">bar</option>
+                <option selected value="baz">baz</option>
+            </select>    
+        );
+
+        const option1 = select.childNodes[0];
+        const option2 = select.childNodes[1];
+        const option3 = select.childNodes[2];
+
+        expect(Array.from(select.selectedOptions)).to.deep.equal([option2, option3]);
+        expect(option1.selected).to.equal(false);
+        expect(option2.selected).to.equal(true);
+        expect(option3.selected).to.equal(true);
+	});
 
     it('should support DOM properties', () => {
         render(root,
