@@ -109,7 +109,7 @@ render(parent,
 );
 ```
 
-Add a unique `key` for sibling elements to facilitate efficient reordering:
+Add a unique `key` to sibling elements to facilitate efficient reordering:
 
 ```javascript
 render(parent,
