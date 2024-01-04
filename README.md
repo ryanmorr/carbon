@@ -16,36 +16,104 @@ npm install @ryanmorr/carbon
 
 ## Usage
 
-Carbon is a tiny, low-level, no-nonsense, but extendable virtual DOM implementation. It provides only efficient DOM rendering, but with the ability to add middleware to expand functionality:
+Carbon is a tiny, low-level, no-nonsense, virtual DOM implementation that offers robust and efficient DOM rendering:
 
 ```javascript
-import { h, render } from '@ryanmorr/carbon';
+import { h, text, render } from '@ryanmorr/carbon';
 
-const element = render(parentElement,
-    h('div', 
-        h('h1', 'Hello World'),
-        h('p', 'mi bibendum neque egestas congue quisque egestas diam in arcu')
+const setCount = (count) => {
+    render(document.body,
+        h('div', [
+            h('p', text('Count: ' + count)),
+            h('button', {onclick: () => setCount(count + 1)}, text('Increment')),
+        ])
+    );
+};
+
+setCount(0);
+```
+
+Render a single element and return the element reference:
+
+```javascript
+const element = render(parent, 
+    h('div')
+);
+```
+
+Render an array of elements and return an array of the element references:
+
+```javascript
+const elements = render(parent, [
+    h('span'),
+    h('span'),
+    h('span')
+]);
+```
+
+Set attributes using key/value pairs of an object:
+
+```javascript
+render(parent,
+    h('img', {
+        src: '/path/to/file',
+        alt: 'Image description'
+    })
+);
+```
+
+Set an element class name with a string, array, or object:
+
+```javascript
+render(parent, [
+    h('div', {class: 'foo'}),
+    h('div', {class: ['foo', 'bar']}),
+    h('div', {class: {foo: true, bar: false}})
+]);
+```
+
+Set CSS styles with a string or object:
+
+```javascript
+render(parent, [
+    h('div', {style: 'width: 100px; height: 100px; background-color: red'}),
+    h('div', {style: {width: '100px', height: '100px', backgroundColor: 'red'}})
+]);
+```
+
+Set CSS custom properties:
+
+```javascript
+render(parent,
+    h('section', {style: {'--color': 'red'}},
+        h('p', {color: 'var(--color)'}, 'Hello World'),
     )
 );
 ```
 
-Supports patching of attributes and properties, including CSS styles as a string or object and event listeners indicated by a prefix of "on":
+Set event listeners as attributes indicated by a prefix of "on":
 
 ```javascript
-render(parentElement,
+render(parent,
     h('div', {
-        class: ['foo, bar'],
-        style: {width: '100px', height: '100px', backgroundColor: 'red'},
         onclick: (e) => console.log('clicked')
     })
 );
 ```
 
-Supports keyed nodes to efficiently move elements instead of unnecessarily destroying and re-creating them:
+Use the `text` function to explicitly create virtual text nodes:
 
 ```javascript
-render(parentElement,
-    h('ul', null, 
+render(parent,
+    h('h1', text('Hello World'))
+);
+```
+
+Add a unique `key` for sibling elements to facilitate efficient reordering:
+
+```javascript
+render(parent,
+    h('ul', 
         h('li', {key: 'foo'}, 'foo'),
         h('li', {key: 'bar'}, 'bar'),
         h('li', {key: 'baz'}, 'baz'),
@@ -54,40 +122,40 @@ render(parentElement,
 );
 ```
 
-Supports element middleware for adding functionality, such as components or refs:
-
-```javascript
-const middleware = (vnode) => {
-    // Alter the virtual node before element creation
-
-    return (element) => {
-        // Gain access to the DOM element after creation
-    };
-};
-
-render(parentElement, h('div'), [middleware]);
-```
-
 Supports SVG elements:
 
 ```javascript
-render(parentElement,
+render(parent,
     h('svg', {width: 200, height: 200}, 
-        h('circle', {cx: 50, cy: 50, r: 40, fill: "yellow"})
+        h('circle', {cx: 50, cy: 50, r: 40, fill: 'yellow'})
     )
 );
 ```
 
-Supports [JSX](https://reactjs.org/docs/introducing-jsx.html) syntax:
+Supports stateless functional components:
 
 ```javascript
-render(parentElement,
+const Component = ({id, children}) => {
+    return h('div', {id}, children);
+};
+
+render(parent, 
+    h(Component, {id: 'foo'}, text('Hello World'))
+);
+```
+
+Supports [JSX](https://react.dev/learn/writing-markup-with-jsx) syntax:
+
+```javascript
+render(parent,
     <div>
         <h1>{title}</h1>
         <button onclick={handleEvent}>Click Me</button>
     </div>
 );
 ```
+
+Carbon will automatically recycle and patch over pre-existing DOM nodes, such as those generated from server-side rendered HTML.
 
 ## License
 
