@@ -15,8 +15,7 @@
     "ui",
     "virtual dom",
     "vdom",
-    "dom",
-    "middleware"
+    "dom"
   ],
   "type": "module",
   "main": "dist/cjs/carbon.js",
