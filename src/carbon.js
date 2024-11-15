@@ -120,12 +120,16 @@ function createElement(vnode, isSvg) {
     if (vnode.type === TEXT_NODE) {
         node = document.createTextNode(vnode.text);
     } else {
-        const tag = vnode.tag;
+        const { tag, props, children } = vnode;
+        const length = children.length;
         isSvg = (isSvg || tag === 'svg');
         node = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
-        const props = vnode.props;
         Object.keys(props).forEach((name) => patchProperty(node, name, null, props[name], isSvg));
-        vnode.children.forEach((vchild) => node.appendChild(createElement(vchild, isSvg)));
+        if (length === 1) {
+            node.appendChild(createElement(children[0], isSvg));
+        } else if (length > 1) {
+            node.appendChild(children.reduce((frag, vchild) => frag.appendChild(createElement(vchild, isSvg)) && frag, document.createDocumentFragment()));
+        }
     }
     vnode.node = node;
     return node;
